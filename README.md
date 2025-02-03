@@ -1,4 +1,4 @@
-# Morphic
+# Hanzo Chat
 
 An AI-powered search engine with a generative UI.
 
@@ -95,13 +95,13 @@ An AI-powered search engine with a generative UI.
 Fork the repo to your Github account, then run the following command to clone the repo:
 
 ```bash
-git clone git@github.com:[YOUR_GITHUB_ACCOUNT]/morphic.git
+git clone git@github.com:[YOUR_GITHUB_ACCOUNT]/chat.git
 ```
 
 ### 2. Install dependencies
 
 ```bash
-cd morphic
+cd chat
 bun install
 ```
 
@@ -139,30 +139,30 @@ Visit http://localhost:3000 in your browser.
 
 ## 🌐 Deploy
 
-Host your own live version of Morphic with Vercel or Cloudflare Pages.
+Host your own live version of Hanzo Chat with Vercel or Cloudflare Pages.
 
 ### Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmiurla%2Fmorphic&env=OPENAI_API_KEY,TAVILY_API_KEY,UPSTASH_REDIS_REST_URL,UPSTASH_REDIS_REST_TOKEN)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fhanzoai%2Fchat&env=OPENAI_API_KEY,TAVILY_API_KEY,UPSTASH_REDIS_REST_URL,UPSTASH_REDIS_REST_TOKEN)
 
 ## 🔎 Search Engine
 
 ### Setting up the Search Engine in Your Browser
 
-If you want to use Morphic as a search engine in your browser, follow these steps:
+If you want to use Hanzo Chat as a search engine in your browser, follow these steps:
 
 1. Open your browser settings.
 2. Navigate to the search engine settings section.
 3. Select "Manage search engines and site search".
 4. Under "Site search", click on "Add".
 5. Fill in the fields as follows:
-   - **Search engine**: Morphic
-   - **Shortcut**: morphic
-   - **URL with %s in place of query**: `https://morphic.sh/search?q=%s`
+   - **Search engine**: Hanzo Chat
+   - **Shortcut**: hanzo-chat
+  - **URL with %s in place of query**: `https://hanzo.ai/search?q=%s`
 6. Click "Add" to save the new search engine.
-7. Find "Morphic" in the list of site search, click on the three dots next to it, and select "Make default".
+7. Find "Hanzo Chat" in the list of site search, click on the three dots next to it, and select "Make default".
 
-This will allow you to use Morphic as your default search engine in the browser.
+This will allow you to use Hanzo Chat as your default search engine in the browser.
 
 ## ✅ Verified models
 
@@ -193,11 +193,11 @@ This will allow you to use Morphic as your default search engine in the browser.
 
 ### Current Version: AI SDK UI
 
-This version of Morphic uses the AI SDK UI implementation, which is recommended for production use. It provides better streaming performance and more reliable client-side UI updates.
+This version of Hanzo Chat uses the AI SDK UI implementation, which is recommended for production use. It provides better streaming performance and more reliable client-side UI updates.
 
 ### Previous Version: AI SDK RSC (v0.2.34 and earlier)
 
-The React Server Components (RSC) implementation of AI SDK was used in versions up to [v0.2.34](https://github.com/miurla/morphic/releases/tag/v0.2.34) but is now considered experimental and not recommended for production. If you need to reference the RSC implementation, please check the v0.2.34 release tag.
+The React Server Components (RSC) implementation of AI SDK was used in versions up to [v0.2.34](https://github.com/hanzoai/chat/releases/tag/v0.2.34) but is now considered experimental and not recommended for production. If you need to reference the RSC implementation, please check the v0.2.34 release tag.
 
 > Note: v0.2.34 was the final version using RSC implementation before migrating to AI SDK UI.
 
@@ -205,15 +205,15 @@ For more information about choosing between AI SDK UI and RSC, see the [official
 
 ## 📦 Open Source vs Cloud Offering
 
-Morphic is open source software available under the Apache-2.0 license.
+Hanzo Chat is open source software available under the Apache-2.0 license.
 
-To maintain sustainable development and provide cloud-ready features, we offer a hosted version of Morphic alongside our open-source offering. The cloud solution makes Morphic accessible to non-technical users and provides additional features while keeping the core functionality open and available for developers.
+To maintain sustainable development and provide cloud-ready features, we offer a hosted version of Hanzo Chat alongside our open-source offering. The cloud solution makes Hanzo Chat accessible to non-technical users and provides additional features while keeping the core functionality open and available for developers.
 
-For our cloud service, visit [morphic.sh](https://morphic.sh).
+For our cloud service, visit [hanzo.ai](https://hanzo.ai).
 
 ## 👥 Contributing
 
-We welcome contributions to Morphic! Whether it's bug reports, feature requests, or pull requests, all contributions are appreciated.
+We welcome contributions to Hanzo Chat! Whether it's bug reports, feature requests, or pull requests, all contributions are appreciated.
 
 Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
 

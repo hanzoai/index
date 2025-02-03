@@ -1,8 +1,8 @@
-# This is a Docker Compose file for setting up the morphic-stack environment.
+# This is a Docker Compose file for setting up the hanzo-stack environment.
 
-name: morphic-stack
+name: hanzo-stack
 services:
-  morphic:
+  hanzo:
     build:
       context: . # The build context is the current directory
       dockerfile: Dockerfile

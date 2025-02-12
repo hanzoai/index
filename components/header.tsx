@@ -7,7 +7,7 @@ import { IconLogo } from './ui/icons'
 export const Header: React.FC = async () => {
   return (
     <header className="fixed w-full p-2 flex justify-between items-center z-10 backdrop-blur md:backdrop-blur-none bg-background/80 md:bg-transparent">
-      <div>
+      <div className="px-4">
         <a href="/">
           <IconLogo className={cn('w-4 h-4')} />
           <span className="sr-only">Hanzo Chat</span>

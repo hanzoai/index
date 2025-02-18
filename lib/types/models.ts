@@ -90,10 +90,10 @@ export const models: Model[] = [
     provider: 'OpenAI',
     providerId: 'openai'
   },
-  {
-    id: process.env.NEXT_PUBLIC_OPENAI_COMPATIBLE_MODEL || 'undefined',
-    name: process.env.NEXT_PUBLIC_OPENAI_COMPATIBLE_MODEL || 'Undefined',
-    provider: 'OpenAI Compatible',
-    providerId: 'openai-compatible'
-  }
+  // {
+  //   id: process.env.NEXT_PUBLIC_OPENAI_COMPATIBLE_MODEL || 'undefined',
+  //   name: process.env.NEXT_PUBLIC_OPENAI_COMPATIBLE_MODEL || 'Undefined',
+  //   provider: 'OpenAI Compatible',
+  //   providerId: 'openai-compatible'
+  // }
 ]

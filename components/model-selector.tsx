@@ -1,11 +1,11 @@
 'use client'
 
 import { Model, models } from '@/lib/types/models'
-import { getCookie, setCookie } from '@/lib/utils/cookies'
+import { setCookie } from '@/lib/utils/cookies'
 import { isReasoningModel } from '@/lib/utils/registry'
 import { Check, ChevronsUpDown, Lightbulb } from 'lucide-react'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { createModelId } from '../lib/utils'
 import { Button } from './ui/button'
 import {
@@ -30,15 +30,10 @@ function groupModelsByProvider(models: Model[]) {
 }
 
 export function ModelSelector() {
+  // Set the default model to the first model in the list
+  const defaultModelId = createModelId(models[0])
   const [open, setOpen] = useState(false)
-  const [selectedModelId, setSelectedModelId] = useState<string>('')
-
-  useEffect(() => {
-    const savedModel = getCookie('selected-model')
-    if (savedModel) {
-      setSelectedModelId(savedModel)
-    }
-  }, [])
+  const [selectedModelId, setSelectedModelId] = useState<string>(defaultModelId)
 
   const handleModelSelect = (id: string) => {
     setSelectedModelId(id === selectedModelId ? '' : id)
@@ -107,11 +102,10 @@ export function ModelSelector() {
                         </span>
                       </div>
                       <Check
-                        className={`h-4 w-4 ${
-                          selectedModelId === modelId
-                            ? 'opacity-100'
-                            : 'opacity-0'
-                        }`}
+                        className={`h-4 w-4 ${selectedModelId === modelId
+                          ? 'opacity-100'
+                          : 'opacity-0'
+                          }`}
                       />
                     </CommandItem>
                   )

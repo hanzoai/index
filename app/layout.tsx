@@ -5,7 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { cn } from '@/lib/utils'
 import type { Metadata, Viewport } from 'next'
-import { Inter as FontSans } from 'next/font/google'
+import { Plus_Jakarta_Sans as FontSans } from 'next/font/google'
 import './globals.css'
 
 const fontSans = FontSans({

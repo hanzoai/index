@@ -41,6 +41,7 @@ export function ChatPanel({
   const isFirstRender = useRef(true)
   const [isComposing, setIsComposing] = useState(false) // Composition state
   const [enterDisabled, setEnterDisabled] = useState(false) // Disable Enter after composition ends
+  const [showFooter, setShowFooter] = useState(false)
 
   const handleCompositionStart = () => setIsComposing(true)
 
@@ -69,12 +70,28 @@ export function ChatPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query])
 
+  useEffect(() => {
+    const handleMouseWheel = (event: WheelEvent) => {
+      if (event.deltaY > 0) {
+        setShowFooter(true)
+      } else if (event.deltaY < 0 && window.pageYOffset === 0) {
+        setShowFooter(false)
+      }
+    }
+
+    window.addEventListener('wheel', handleMouseWheel)
+
+    return () => {
+      window.removeEventListener('wheel', handleMouseWheel)
+    }
+  }, [])
+
   return (
     <div
       className={cn(
-        'mx-auto w-full',
+        'mx-auto w-full transition-transform duration-300',
         messages.length > 0
-          ? 'fixed bottom-0 left-0 right-0 bg-background'
+          ? `fixed left-0 right-0 bg-background bottom-[10.25rem] ${showFooter ? 'translate-y-5' : 'translate-y-[10.25rem]'}`
           : 'fixed bottom-8 left-0 right-0 top-6 flex flex-col items-center justify-center'
       )}
     >

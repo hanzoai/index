@@ -264,6 +264,7 @@ InvalidMultiSearchFacets                       , InvalidRequest       , BAD_REQU
 InvalidMultiSearchFacetsByIndex                , InvalidRequest       , BAD_REQUEST ;
 InvalidMultiSearchFacetOrder                   , InvalidRequest       , BAD_REQUEST ;
 InvalidMultiSearchQueryPersonalization         , InvalidRequest       , BAD_REQUEST ;
+InvalidMultiSearchQueryShowPerformanceDetails  , InvalidRequest       , BAD_REQUEST ;
 InvalidMultiSearchFederated                    , InvalidRequest       , BAD_REQUEST ;
 InvalidMultiSearchFederationOptions            , InvalidRequest       , BAD_REQUEST ;
 InvalidMultiSearchMaxValuesPerFacet            , InvalidRequest       , BAD_REQUEST ;
@@ -318,7 +319,10 @@ InvalidSearchShowMatchesPosition               , InvalidRequest       , BAD_REQU
 InvalidSearchShowRankingScore                  , InvalidRequest       , BAD_REQUEST ;
 InvalidSimilarShowRankingScore                 , InvalidRequest       , BAD_REQUEST ;
 InvalidSearchShowRankingScoreDetails           , InvalidRequest       , BAD_REQUEST ;
+InvalidSearchShowPerformanceDetails            , InvalidRequest       , BAD_REQUEST ;
+InvalidSearchUseNetwork                        , InvalidRequest       , BAD_REQUEST ;
 InvalidSimilarShowRankingScoreDetails          , InvalidRequest       , BAD_REQUEST ;
+InvalidSimilarShowPerformanceDetails           , InvalidRequest       , BAD_REQUEST ;
 InvalidSearchSort                              , InvalidRequest       , BAD_REQUEST ;
 InvalidSearchDistinct                          , InvalidRequest       , BAD_REQUEST ;
 InvalidSearchPersonalize                       , InvalidRequest       , BAD_REQUEST ;
@@ -507,10 +511,10 @@ impl ErrorCode for milli::Error {
                     | UserError::InvalidDisableBinaryQuantization { .. }
                     | UserError::InvalidSourceForNested { .. }
                     | UserError::MissingSourceForNested { .. }
-                    | UserError::InvalidSettingsEmbedder { .. } => Code::InvalidSettingsEmbedders,
-                    UserError::TooManyEmbedders(_) => Code::InvalidSettingsEmbedders,
-                    UserError::TooManyFragments(_) => Code::InvalidSettingsEmbedders,
-                    UserError::InvalidPromptForEmbeddings(..) => Code::InvalidSettingsEmbedders,
+                    | UserError::InvalidSettingsEmbedder { .. }
+                    | UserError::TooManyEmbedders(_)
+                    | UserError::TooManyFragments(_)
+                    | UserError::InvalidPromptForEmbeddings(..) => Code::InvalidSettingsEmbedders,
                     UserError::NoPrimaryKeyCandidateFound => Code::IndexPrimaryKeyNoCandidateFound,
                     UserError::MultiplePrimaryKeyCandidatesFound { .. } => {
                         Code::IndexPrimaryKeyMultipleCandidatesFound
@@ -527,7 +531,9 @@ impl ErrorCode for milli::Error {
                     UserError::InvalidFacetSearchFacetName { .. } => {
                         Code::InvalidFacetSearchFacetName
                     }
-                    UserError::CriterionError(_) => Code::InvalidSettingsRankingRules,
+                    UserError::CriterionError(_) | UserError::MixedAttributeRankingRulesUsage => {
+                        Code::InvalidSettingsRankingRules
+                    }
                     UserError::InvalidGeoField { .. } | UserError::GeoJsonError(_) => {
                         Code::InvalidDocumentGeoField
                     }

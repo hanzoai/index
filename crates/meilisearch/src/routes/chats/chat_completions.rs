@@ -32,7 +32,7 @@ use meilisearch_types::keys::actions;
 use meilisearch_types::milli::index::ChatConfig;
 use meilisearch_types::milli::progress::Progress;
 use meilisearch_types::milli::{
-    all_obkv_to_json, obkv_to_json, OrderBy, PatternMatch, TimeBudget, TotalProcessingTimeStep,
+    all_obkv_to_json, obkv_to_json, OrderBy, PatternMatch, TotalProcessingTimeStep,
 };
 use meilisearch_types::{Document, Index};
 use serde::Deserialize;
@@ -295,20 +295,16 @@ async fn process_search_request(
     let features = index_scheduler.features();
     let index_cloned = index.clone();
     let output = tokio::task::spawn_blocking(move || -> Result<_, ResponseError> {
-        let time_budget = match index_cloned
-            .search_cutoff(&rtxn)
-            .map_err(|e| MeilisearchHttpError::from_milli(e, Some(index_uid.clone())))?
-        {
-            Some(cutoff) => TimeBudget::new(Duration::from_millis(cutoff)),
-            None => TimeBudget::default(),
-        };
+        let deadline = index_cloned
+            .search_deadline(&rtxn)
+            .map_err(|e| MeilisearchHttpError::from_milli(e, Some(index_uid.clone())))?;
 
         let (search, _is_finite_pagination, _max_total_hits, _offset) = prepare_search(
             &index_cloned,
             &rtxn,
             &query,
             &search_kind,
-            time_budget,
+            deadline,
             features,
             &progress,
         )?;
@@ -402,7 +398,7 @@ async fn non_streamed_chat(
     };
 
     let config = Config::new(&chat_settings);
-    let client = Client::with_config(config);
+    let client = Client::with_config(index_scheduler.ip_policy().clone(), config);
     let auth_token = extract_token_from_request(&req)?.unwrap();
     let system_role = chat_settings.source.system_role(&chat_completion.model);
     // TODO do function support later
@@ -539,7 +535,7 @@ async fn streamed_chat(
     let tx = SseEventSender::new(tx);
     let workspace_uid = workspace_uid.to_string();
     let _join_handle = Handle::current().spawn(async move {
-        let client = Client::with_config(config.clone());
+        let client = Client::with_config(index_scheduler.ip_policy().clone(), config.clone());
         let mut global_tool_calls = HashMap::<u32, Call>::new();
 
         // Limit the number of internal calls to satisfy the search requests of the LLM

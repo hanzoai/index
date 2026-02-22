@@ -125,7 +125,10 @@ impl SegmentAnalytics {
         let instance_uid = instance_uid.unwrap_or_else(Uuid::new_v4);
         write_user_id(&opt.db_path, &instance_uid);
 
-        let client = reqwest::Client::builder().connect_timeout(Duration::from_secs(10)).build();
+        let client = http_client::reqwest::Client::builder()
+            .prepare(|inner| inner.connect_timeout(Duration::from_secs(10)))
+            // NO DANGER: we send requests to an owned and fixed domain
+            .danger_build_no_ip_policy();
 
         // if reqwest throws an error we won't be able to send analytics
         if client.is_err() {
@@ -205,10 +208,9 @@ struct Infos {
     experimental_no_snapshot_compaction: bool,
     experimental_no_edition_2024_for_dumps: bool,
     experimental_no_edition_2024_for_settings: bool,
-    experimental_no_edition_2024_for_prefix_post_processing: bool,
-    experimental_no_edition_2024_for_facet_post_processing: bool,
     experimental_vector_store_setting: bool,
     experimental_personalization: bool,
+    experimental_allowed_ip_networks: bool,
     gpu_enabled: bool,
     db_path: bool,
     import_dump: bool,
@@ -259,6 +261,7 @@ impl Infos {
             experimental_limit_batched_tasks_total_size,
             experimental_embedding_cache_entries,
             experimental_no_snapshot_compaction,
+            experimental_allowed_ip_networks,
             http_addr,
             master_key: _,
             env,
@@ -302,8 +305,6 @@ impl Infos {
             skip_index_budget: _,
             experimental_no_edition_2024_for_settings,
             experimental_no_edition_2024_for_dumps,
-            experimental_no_edition_2024_for_prefix_post_processing,
-            experimental_no_edition_2024_for_facet_post_processing,
         } = indexer_options;
 
         let RuntimeTogglableFeatures {
@@ -343,6 +344,7 @@ impl Infos {
             experimental_no_snapshot_compaction,
             experimental_no_edition_2024_for_dumps,
             experimental_vector_store_setting: vector_store_setting,
+            experimental_allowed_ip_networks: !experimental_allowed_ip_networks.is_empty(),
             gpu_enabled: meilisearch_types::milli::vector::is_cuda_enabled(),
             db_path: db_path != Path::new("./data.ms"),
             import_dump: import_dump.is_some(),
@@ -374,8 +376,6 @@ impl Infos {
             ssl_resumption,
             ssl_tickets,
             experimental_no_edition_2024_for_settings,
-            experimental_no_edition_2024_for_prefix_post_processing,
-            experimental_no_edition_2024_for_facet_post_processing,
             experimental_personalization: experimental_personalization_api_key.is_some(),
         }
     }

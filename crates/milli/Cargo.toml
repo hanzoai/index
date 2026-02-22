@@ -23,6 +23,8 @@ cellulite = "0.3.1-nested-rtxns-2"
 concat-arrays = "0.1.2"
 convert_case = "0.9.0"
 crossbeam-channel = "0.5.15"
+# for compatibility with the ureq of hf-hub
+danger-ureq = { package = "ureq", version = "2.12.1", features = ["json"] }
 deserr = "0.6.4"
 either = { version = "1.15.0", features = ["serde"] }
 flatten-serde-json = { path = "../flatten-serde-json" }
@@ -38,6 +40,7 @@ heed = { version = "0.22.1-nested-rtxns-6", default-features = false, features =
     "serde-json",
     "serde-bincode",
 ] }
+http-client = { path = "../http-client" }
 indexmap = { version = "2.12.0", features = ["serde", "rayon"] }
 json-depth-checker = { path = "../json-depth-checker" }
 levenshtein_automata = { version = "0.2.1", features = ["fst_automaton"] }
@@ -57,7 +60,7 @@ smallvec = "1.15.1"
 smartstring = "1.0.1"
 tempfile = "3.23.0"
 thiserror = "2.0.17"
-time = { version = "0.3.44", features = [
+time = { version = "0.3.47", features = [
     "serde-well-known",
     "formatting",
     "parsing",
@@ -91,10 +94,9 @@ rhai = { version = "1.23.6", features = [
     "sync",
 ] }
 arroy = "0.6.4-nested-rtxns"
-hannoy = { version = "0.1.4-nested-rtxns", features = ["arroy"] }
+hannoy = { version = "0.1.5-nested-rtxns", features = ["arroy"] }
 rand = "0.8.5"
 tracing = "0.1.41"
-ureq = { version = "2.12.1", features = ["json"] }
 url = "2.5.7"
 hashbrown = "0.15.5"
 bumpalo = "3.19.0"
@@ -119,7 +121,7 @@ twox-hash = { version = "2.1.2", default-features = false, features = [
     "xxhash3_64",
     "xxhash64",
 ] }
-geo-types = "0.7.17"
+geo-types = "=0.7.17" # fixed version: see <https://github.com/meilisearch/meilisearch/pull/6118>
 zerometry = "0.3.0"
 
 [dev-dependencies]

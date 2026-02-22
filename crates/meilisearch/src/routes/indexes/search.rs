@@ -1,3 +1,4 @@
+use actix_http::StatusCode;
 use actix_web::web::Data;
 use actix_web::{web, HttpRequest, HttpResponse};
 use deserr::actix_web::{AwebJson, AwebQueryParameter};
@@ -21,14 +22,15 @@ use crate::error::MeilisearchHttpError;
 use crate::extractors::authentication::policies::*;
 use crate::extractors::authentication::GuardedData;
 use crate::extractors::sequential_extractor::SeqHandler;
-use crate::metrics::MEILISEARCH_DEGRADED_SEARCH_REQUESTS;
+use crate::personalization::PersonalizationService;
 use crate::routes::indexes::search_analytics::{SearchAggregator, SearchGET, SearchPOST};
 use crate::routes::parse_include_metadata_header;
 use crate::search::{
-    add_search_rules, perform_search, HybridQuery, MatchingStrategy, Personalize,
-    RankingScoreThreshold, RetrieveVectors, SearchKind, SearchParams, SearchQuery, SearchResult,
-    SemanticRatio, DEFAULT_CROP_LENGTH, DEFAULT_CROP_MARKER, DEFAULT_HIGHLIGHT_POST_TAG,
-    DEFAULT_HIGHLIGHT_PRE_TAG, DEFAULT_SEARCH_LIMIT, DEFAULT_SEARCH_OFFSET, DEFAULT_SEMANTIC_RATIO,
+    add_search_rules, network_partition, perform_federated_search, perform_search, Federation,
+    HybridQuery, MatchingStrategy, Personalize, RankingScoreThreshold, RetrieveVectors, SearchKind,
+    SearchParams, SearchQuery, SearchResult, SemanticRatio, DEFAULT_CROP_LENGTH,
+    DEFAULT_CROP_MARKER, DEFAULT_HIGHLIGHT_POST_TAG, DEFAULT_HIGHLIGHT_PRE_TAG,
+    DEFAULT_SEARCH_LIMIT, DEFAULT_SEARCH_OFFSET, DEFAULT_SEMANTIC_RATIO,
 };
 use crate::search_queue::SearchQueue;
 
@@ -42,7 +44,6 @@ use crate::search_queue::SearchQueue;
 
 - A POST route: this is the preferred route when using API authentication, as it allows [preflight request](https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request) caching and better performance.
 - A GET route: the usage of this route is discouraged, unless you have good reason to do otherwise (specific caching abilities for example)",
-            external_docs(url = "https://www.meilisearch.com/docs/reference/api/search"),
         ),
     ),
 )]
@@ -63,6 +64,7 @@ pub struct SearchQueryGet {
     /// The search query string. Meilisearch will return documents that match
     /// this query. Supports prefix search (words matching the beginning of
     /// the query) and typo tolerance. Leave empty to match all documents.
+    #[param(required = false)]
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchQ>)]
     q: Option<String>,
     /// A vector of floating-point numbers for semantic/vector search. The
@@ -70,150 +72,174 @@ pub struct SearchQueryGet {
     /// documents are ranked by vector similarity. Can be combined with `q`
     /// for hybrid search.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchVector>)]
-    #[param(value_type = Vec<f32>, explode = false)]
+    #[param(required = false, value_type = Vec<f32>, explode = false)]
     vector: Option<CS<f32>>,
     /// Number of search results to skip. Use together with `limit` for
     /// pagination. For example, to get results 21-40, set `offset=20` and
     /// `limit=20`. Defaults to `0`. Cannot be used with `page`/`hitsPerPage`.
     #[deserr(default = Param(DEFAULT_SEARCH_OFFSET()), error = DeserrQueryParamError<InvalidSearchOffset>)]
-    #[param(value_type = usize, default = DEFAULT_SEARCH_OFFSET)]
+    #[param(required = false, value_type = usize, default = DEFAULT_SEARCH_OFFSET)]
     offset: Param<usize>,
     /// Maximum number of search results to return. Use together with `offset`
     /// for pagination. Defaults to `20`. Cannot be used with
     /// `page`/`hitsPerPage`.
     #[deserr(default = Param(DEFAULT_SEARCH_LIMIT()), error = DeserrQueryParamError<InvalidSearchLimit>)]
-    #[param(value_type = usize, default = DEFAULT_SEARCH_LIMIT)]
+    #[param(required = false, value_type = usize, default = DEFAULT_SEARCH_LIMIT)]
     limit: Param<usize>,
     /// Request a specific page of results (1-indexed). Use together with
     /// `hitsPerPage` for page-based pagination. Cannot be used with
     /// `offset`/`limit`.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchPage>)]
-    #[param(value_type = Option<usize>)]
+    #[param(required = false, value_type = Option<usize>)]
     page: Option<Param<usize>>,
     /// Number of results per page when using page-based pagination. Use
     /// together with `page`. Cannot be used with `offset`/`limit`.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchHitsPerPage>)]
-    #[param(value_type = Option<usize>)]
+    #[param(required = false, value_type = Option<usize>)]
     hits_per_page: Option<Param<usize>>,
     /// Comma-separated list of attributes to include in the returned
     /// documents. Use `*` to return all attributes. By default, returns
     /// attributes from the `displayedAttributes` setting.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchAttributesToRetrieve>)]
-    #[param(value_type = Vec<String>, explode = false)]
+    #[param(required = false, value_type = Vec<String>, explode = false)]
     attributes_to_retrieve: Option<CS<String>>,
     /// When `true`, includes vector embeddings in the response for documents
     /// that have them. Defaults to `false`.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchRetrieveVectors>)]
-    #[param(value_type = bool, default)]
+    #[param(required = false, value_type = bool, default)]
     retrieve_vectors: Param<bool>,
     /// Comma-separated list of attributes whose values should be cropped to
     /// fit within `cropLength`. Useful for displaying long text attributes
     /// in search results. Format: `attribute` or `attribute:length`.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchAttributesToCrop>)]
-    #[param(value_type = Vec<String>, explode = false)]
+    #[param(required = false, value_type = Vec<String>, explode = false)]
     attributes_to_crop: Option<CS<String>>,
     /// Maximum number of words to keep when cropping attribute values. The
     /// cropped text will be centered around the matching terms. Defaults to
     /// `10`.
     #[deserr(default = Param(DEFAULT_CROP_LENGTH()), error = DeserrQueryParamError<InvalidSearchCropLength>)]
-    #[param(value_type = usize, default = DEFAULT_CROP_LENGTH)]
+    #[param(required = false, value_type = usize, default = DEFAULT_CROP_LENGTH)]
     crop_length: Param<usize>,
     /// Comma-separated list of attributes whose matching terms should be
     /// highlighted with `highlightPreTag` and `highlightPostTag`. Use `*` to
     /// highlight all searchable attributes.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchAttributesToHighlight>)]
-    #[param(value_type = Vec<String>, explode = false)]
+    #[param(required = false, value_type = Vec<String>, explode = false)]
     attributes_to_highlight: Option<CS<String>>,
     /// Filter expression to narrow down search results. Uses SQL-like syntax.
     /// Example: `genres = action AND rating > 4`. Only attributes in
     /// `filterableAttributes` can be used.
+    #[param(required = false)]
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchFilter>)]
     filter: Option<String>,
     /// Comma-separated list of attributes to sort by. Format: `attribute:asc`
     /// or `attribute:desc`. Only attributes in `sortableAttributes` can be
     /// used. Custom ranking rules can also affect sort order.
+    #[param(required = false)]
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchSort>)]
     sort: Option<String>,
     /// Attribute used to ensure only one document with each unique value is
     /// returned. Useful for deduplication. Only attributes in
     /// `filterableAttributes` can be used.
+    #[param(required = false)]
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchDistinct>)]
     distinct: Option<String>,
     /// When `true`, returns the position (start and length) of each matched
     /// term in the original document attributes. Useful for custom
     /// highlighting implementations.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchShowMatchesPosition>)]
-    #[param(value_type = bool)]
+    #[param(required = false, value_type = bool)]
     show_matches_position: Param<bool>,
     /// When `true`, includes a `_rankingScore` field (0.0 to 1.0) in each
     /// document indicating how well it matches the query. Higher scores mean
     /// better matches.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchShowRankingScore>)]
-    #[param(value_type = bool)]
+    #[param(required = false, value_type = bool)]
     show_ranking_score: Param<bool>,
     /// When `true`, includes a `_rankingScoreDetails` object showing the
     /// contribution of each ranking rule to the final score. Useful for
     /// debugging relevancy.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchShowRankingScoreDetails>)]
-    #[param(value_type = bool)]
+    #[param(required = false, value_type = bool)]
     show_ranking_score_details: Param<bool>,
+    /// When `true`, includes a `_performanceDetails` object showing the
+    /// performance details of the search.
+    #[deserr(default, error = DeserrQueryParamError<InvalidSearchShowPerformanceDetails>)]
+    #[param(required = false, value_type = bool)]
+    show_performance_details: Param<bool>,
     /// Comma-separated list of attributes for which to return facet
     /// distribution (value counts). Only attributes in `filterableAttributes`
     /// can be used. Returns the count of documents matching each facet value.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchFacets>)]
-    #[param(value_type = Vec<String>, explode = false)]
+    #[param(required = false, value_type = Vec<String>, explode = false)]
     facets: Option<CS<String>>,
     /// HTML tag or string to insert before highlighted matching terms.
     /// Defaults to `<em>`.
     #[deserr(default = DEFAULT_HIGHLIGHT_PRE_TAG(), error = DeserrQueryParamError<InvalidSearchHighlightPreTag>)]
-    #[param(default = DEFAULT_HIGHLIGHT_PRE_TAG)]
+    #[param(required = false, default = DEFAULT_HIGHLIGHT_PRE_TAG)]
     highlight_pre_tag: String,
     /// HTML tag or string to insert after highlighted matching terms.
     /// Defaults to `</em>`.
     #[deserr(default = DEFAULT_HIGHLIGHT_POST_TAG(), error = DeserrQueryParamError<InvalidSearchHighlightPostTag>)]
-    #[param(default = DEFAULT_HIGHLIGHT_POST_TAG)]
+    #[param(required = false, default = DEFAULT_HIGHLIGHT_POST_TAG)]
     highlight_post_tag: String,
     /// String used to indicate truncated content when cropping. Defaults to
     /// `…` (ellipsis).
     #[deserr(default = DEFAULT_CROP_MARKER(), error = DeserrQueryParamError<InvalidSearchCropMarker>)]
-    #[param(default = DEFAULT_CROP_MARKER)]
+    #[param(required = false, default = DEFAULT_CROP_MARKER)]
     crop_marker: String,
     /// Strategy for matching query terms. `last` (default): all terms must
     /// match, removing terms from the end if needed. `all`: all terms must
     /// match exactly. `frequency`: prioritizes matching frequent terms.
+    #[param(required = false)]
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchMatchingStrategy>)]
     matching_strategy: MatchingStrategy,
     /// Comma-separated list of attributes to search in. By default, searches
     /// all `searchableAttributes`. Use this to restrict search to specific
     /// fields for better performance or relevance.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchAttributesToSearchOn>)]
-    #[param(value_type = Vec<String>, explode = false)]
+    #[param(required = false, value_type = Vec<String>, explode = false)]
     pub attributes_to_search_on: Option<CS<String>>,
     /// Name of the embedder to use for hybrid/semantic search. Must match an
     /// embedder configured in the index settings.
+    #[param(required = false)]
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchEmbedder>)]
     pub hybrid_embedder: Option<String>,
     /// Balance between keyword search (0.0) and semantic/vector search (1.0)
     /// in hybrid search. A value of 0.5 gives equal weight to both. Defaults
     /// to `0.5`.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchSemanticRatio>)]
-    #[param(value_type = f32)]
+    #[param(required = false, value_type = f32)]
     pub hybrid_semantic_ratio: Option<SemanticRatioGet>,
     /// Minimum ranking score (0.0 to 1.0) a document must have to be
     /// included in results. Documents with lower scores are excluded. Useful
     /// for filtering out poor matches.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchRankingScoreThreshold>)]
-    #[param(value_type = f32)]
+    #[param(required = false, value_type = f32)]
     pub ranking_score_threshold: Option<RankingScoreThresholdGet>,
     /// Comma-separated list of language locales to use for tokenization and
     /// processing. Useful for multilingual content. Example: `en,fr,de`.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchLocales>)]
-    #[param(value_type = Vec<Locale>, explode = false)]
+    #[param(required = false, value_type = Vec<Locale>, explode = false)]
     pub locales: Option<CS<Locale>>,
     /// User-specific context for personalized search results. The format
     /// depends on your personalization configuration.
+    #[param(required = false)]
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchPersonalizeUserContext>)]
     pub personalize_user_context: Option<String>,
+    /// When `true`, runs the query on the whole network (all shards covered, documents
+    /// deduplicated across remotes). When `false` or omitted, the query runs locally.
+    ///
+    /// **Enterprise Edition only.** This feature is available in the Enterprise Edition.
+    /// It also requires the `network` experimental feature.
+    ///
+    /// Values: `true` = use the whole network; `false` or omitted = local (default).
+    ///
+    /// When using the network, the index must exist with compatible settings on all remotes;
+    /// documents with the same id are assumed identical for deduplication.
+    #[deserr(default, error = DeserrQueryParamError<InvalidSearchUseNetwork>)]
+    #[param(required = false, value_type = Option<bool>)]
+    use_network: Option<Param<bool>>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, deserr::Deserr)]
@@ -288,6 +314,8 @@ impl TryFrom<SearchQueryGet> for SearchQuery {
         let personalize =
             other.personalize_user_context.map(|user_context| Personalize { user_context });
 
+        let use_network = other.use_network.map(|use_network| use_network.0);
+
         Ok(Self {
             q: other.q,
             // `media` not supported for `GET`
@@ -308,6 +336,7 @@ impl TryFrom<SearchQueryGet> for SearchQuery {
             show_matches_position: other.show_matches_position.0,
             show_ranking_score: other.show_ranking_score.0,
             show_ranking_score_details: other.show_ranking_score_details.0,
+            show_performance_details: other.show_performance_details.0,
             facets: other.facets.map(|o| o.into_iter().collect()),
             highlight_pre_tag: other.highlight_pre_tag,
             highlight_post_tag: other.highlight_post_tag,
@@ -318,6 +347,7 @@ impl TryFrom<SearchQueryGet> for SearchQuery {
             ranking_score_threshold: other.ranking_score_threshold.map(|o| o.0),
             locales: other.locales.map(|o| o.into_iter().collect()),
             personalize,
+            use_network,
         })
     }
 }
@@ -347,20 +377,22 @@ pub fn fix_sort_query_parameters(sort_query: &str) -> Vec<String> {
     sort_parameters
 }
 
-/// Search an index with GET
+/// Search with GET
 ///
-/// Search for documents matching a specific query in the given index.
+/// Search for documents matching a query in the given index.
+///
+/// > Equivalent to the [search with POST route](/reference/api/search/search-with-post) in the Meilisearch API.
 #[utoipa::path(
     get,
     path = "/{indexUid}/search",
-    tags = ["Indexes", "Search"],
+    tags = ["Search"],
     security(("Bearer" = ["search", "*"])),
     params(
-        ("indexUid" = String, Path, example = "movies", description = "Index Unique Identifier", nullable = false),
+        ("indexUid" = String, Path, example = "movies", description = "Unique identifier of the index.", nullable = false),
         SearchQueryGet
     ),
     responses(
-        (status = 200, description = "The documents are returned", body = SearchResult, content_type = "application/json", example = json!(
+        (status = 200, description = "The documents are returned.", body = SearchResult, content_type = "application/json", example = json!(
             {
               "hits": [
                 {
@@ -385,7 +417,7 @@ pub fn fix_sort_query_parameters(sort_query: &str) -> Vec<String> {
               "query": "american "
             }
         )),
-        (status = 404, description = "Index not found", body = ResponseError, content_type = "application/json", example = json!(
+        (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
             {
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
@@ -393,7 +425,7 @@ pub fn fix_sort_query_parameters(sort_query: &str) -> Vec<String> {
                 "link": "https://docs.meilisearch.com/errors#index_not_found"
             }
         )),
-        (status = 401, description = "The authorization header is missing", body = ResponseError, content_type = "application/json", example = json!(
+        (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
             {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
@@ -429,78 +461,149 @@ pub async fn search_with_url_query(
 
     let mut aggregate = SearchAggregator::<SearchGET>::from_query(&query);
 
-    let index = index_scheduler.index(&index_uid)?;
-
-    // Extract personalization and query string before moving query
-    let personalize = query.personalize.take();
-
-    let search_kind =
-        search_kind(&query, index_scheduler.get_ref(), index_uid.to_string(), &index)?;
-    let retrieve_vector = RetrieveVectors::new(query.retrieve_vectors);
-
-    // Save the query string for personalization if requested
-    let personalize_query = personalize.is_some().then(|| query.q.clone()).flatten();
-
     let include_metadata = parse_include_metadata_header(&req);
 
-    let progress_clone = progress.clone();
-    let search_result = tokio::task::spawn_blocking(move || {
-        perform_search(
-            SearchParams {
-                index_uid: index_uid.to_string(),
-                query,
-                search_kind,
-                retrieve_vectors: retrieve_vector,
-                features: index_scheduler.features(),
-                request_uid,
-                include_metadata,
-            },
-            &index,
-            &progress_clone,
-        )
-    })
+    let search_result = search(
+        query,
+        index_scheduler.clone(),
+        index_uid,
+        request_uid,
+        include_metadata,
+        &progress,
+        &personalization_service,
+        StatusCode::NOT_FOUND,
+    )
     .await;
-    permit.drop().await;
-    let search_result = search_result?;
 
-    if let Ok((search_result, _)) = search_result.as_ref() {
+    permit.drop().await;
+
+    if let Ok(search_result) = search_result.as_ref() {
         aggregate.succeed(search_result);
     }
     analytics.publish(aggregate, &req);
 
-    let (mut search_result, time_budget) = search_result?;
+    let search_result = search_result?;
+
+    debug!(request_uid = ?request_uid, returns = ?search_result, progress = ?progress.accumulated_durations(), "Search get");
+
+    Ok(HttpResponse::Ok().json(search_result))
+}
+
+#[allow(clippy::too_many_arguments)]
+pub(crate) async fn search(
+    mut query: SearchQuery,
+    index_scheduler: Data<IndexScheduler>,
+    index_uid: IndexUid,
+    request_uid: Uuid,
+    include_metadata: bool,
+    progress: &Progress,
+    service: &PersonalizationService,
+    index_not_found_http_code: StatusCode,
+) -> Result<SearchResult, ResponseError> {
+    // Extract personalization and query string before moving query
+    let personalize = query.personalize.take();
+    // Save the query string for personalization if requested
+    let personalize_query = personalize.is_some().then(|| query.q.clone()).flatten();
+
+    let features = index_scheduler.features();
+    if query.use_network.is_some() {
+        features.check_network("passing `useNetwork` in a search query")?
+    }
+
+    let (mut search_result, deadline) = if query
+        .use_network
+        // avoid accidental recursion
+        .take()
+        // false by default for now
+        .unwrap_or_default()
+    {
+        let network = index_scheduler.network();
+        let mut federation = Federation::default();
+        let queries =
+            network_partition(&mut federation, &query, None, &index_uid, network).collect();
+        let search_result = perform_federated_search(
+            &index_scheduler,
+            queries,
+            federation,
+            features,
+            false,
+            request_uid,
+            include_metadata,
+            progress,
+        )
+        .await;
+
+        let (search_result, deadline) = search_result?;
+        let search_result =
+            search_result.into_search_result(query.q.unwrap_or_default(), index_uid.as_str());
+
+        (search_result, deadline)
+    } else {
+        let index = index_scheduler.index(&index_uid).map_err(|err| match &err {
+            index_scheduler::Error::IndexNotFound(_) => {
+                let mut err = ResponseError::from(err);
+                err.code = index_not_found_http_code;
+                err
+            }
+            _ => ResponseError::from(err),
+        })?;
+
+        let search_kind = search_kind(&query, &index_scheduler, index_uid.to_string(), &index)?;
+        let retrieve_vector = RetrieveVectors::new(query.retrieve_vectors);
+
+        let progress_clone = progress.clone();
+        let search_result = tokio::task::spawn_blocking(move || {
+            perform_search(
+                SearchParams {
+                    index_uid: index_uid.to_string(),
+                    query,
+                    search_kind,
+                    retrieve_vectors: retrieve_vector,
+                    features,
+                    request_uid,
+                    include_metadata,
+                },
+                &index,
+                &progress_clone,
+            )
+        })
+        .await;
+
+        search_result??
+    };
 
     // Apply personalization if requested
-    if let Some(personalize) = personalize.as_ref() {
-        search_result = personalization_service
+    if let Some(personalize) = personalize {
+        search_result.hits = service
             .rerank_search_results(
-                search_result,
-                personalize,
+                std::mem::take(&mut search_result.hits),
+                &personalize,
                 personalize_query.as_deref(),
-                time_budget,
-                &progress,
+                deadline,
+                progress,
             )
             .await?;
     }
 
-    debug!(request_uid = ?request_uid, returns = ?search_result, progress = ?progress.accumulated_durations(), "Search get");
-    Ok(HttpResponse::Ok().json(search_result))
+    Ok(search_result)
 }
 
 /// Search with POST
 ///
-/// Search for documents matching a specific query in the given index.
+/// Search for documents matching a query in the given index.
+///
+/// > Equivalent to the [search with GET route](/reference/api/search/search-with-get) in the Meilisearch API.
 #[utoipa::path(
     post,
     path = "/{indexUid}/search",
-    tags = ["Indexes", "Search"],
+    tags = ["Search"],
     security(("Bearer" = ["search", "*"])),
     params(
-        ("indexUid", example = "movies", description = "Index Unique Identifier", nullable = false),
+        ("indexUid", example = "movies", description = "Unique identifier of the index.", nullable = false),
     ),
     request_body = SearchQuery,
     responses(
-        (status = 200, description = "The documents are returned", body = SearchResult, content_type = "application/json", example = json!(
+        (status = 200, description = "The documents are returned.", body = SearchResult, content_type = "application/json", example = json!(
             {
               "hits": [
                 {
@@ -525,7 +628,7 @@ pub async fn search_with_url_query(
               "query": "american "
             }
         )),
-        (status = 404, description = "Index not found", body = ResponseError, content_type = "application/json", example = json!(
+        (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
             {
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
@@ -533,7 +636,7 @@ pub async fn search_with_url_query(
                 "link": "https://docs.meilisearch.com/errors#index_not_found"
             }
         )),
-        (status = 401, description = "The authorization header is missing", body = ResponseError, content_type = "application/json", example = json!(
+        (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
             {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
@@ -570,63 +673,31 @@ pub async fn search_with_post(
 
     let mut aggregate = SearchAggregator::<SearchPOST>::from_query(&query);
 
-    let index = index_scheduler.index(&index_uid)?;
-
-    // Extract personalization and query string before moving query
-    let personalize = query.personalize.take();
-
-    let search_kind =
-        search_kind(&query, index_scheduler.get_ref(), index_uid.to_string(), &index)?;
-    let retrieve_vectors = RetrieveVectors::new(query.retrieve_vectors);
-
     let include_metadata = parse_include_metadata_header(&req);
 
-    // Save the query string for personalization if requested
-    let personalize_query = personalize.is_some().then(|| query.q.clone()).flatten();
-
-    let progress_clone = progress.clone();
-    let search_result = tokio::task::spawn_blocking(move || {
-        perform_search(
-            SearchParams {
-                index_uid: index_uid.to_string(),
-                query,
-                search_kind,
-                retrieve_vectors,
-                features: index_scheduler.features(),
-                request_uid,
-                include_metadata,
-            },
-            &index,
-            &progress_clone,
-        )
-    })
+    let search_result = search(
+        query,
+        index_scheduler.clone(),
+        index_uid,
+        request_uid,
+        include_metadata,
+        &progress,
+        &personalization_service,
+        StatusCode::NOT_FOUND,
+    )
     .await;
+
     permit.drop().await;
-    let search_result = search_result?;
-    if let Ok((ref search_result, _)) = search_result {
+
+    if let Ok(search_result) = search_result.as_ref() {
         aggregate.succeed(search_result);
-        if search_result.degraded {
-            MEILISEARCH_DEGRADED_SEARCH_REQUESTS.inc();
-        }
     }
     analytics.publish(aggregate, &req);
 
-    let (mut search_result, time_budget) = search_result?;
-
-    // Apply personalization if requested
-    if let Some(personalize) = personalize.as_ref() {
-        search_result = personalization_service
-            .rerank_search_results(
-                search_result,
-                personalize,
-                personalize_query.as_deref(),
-                time_budget,
-                &progress,
-            )
-            .await?;
-    }
+    let search_result = search_result?;
 
     debug!(request_uid = ?request_uid, returns = ?search_result, progress = ?progress.accumulated_durations(), "Search post");
+
     Ok(HttpResponse::Ok().json(search_result))
 }
 

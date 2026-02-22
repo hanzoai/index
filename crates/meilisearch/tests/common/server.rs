@@ -506,10 +506,9 @@ pub fn default_settings(dir: impl AsRef<Path>) -> Opt {
             max_indexing_threads: MaxThreads::from_str("2").unwrap(),
             experimental_no_edition_2024_for_settings: false,
             experimental_no_edition_2024_for_dumps: false,
-            experimental_no_edition_2024_for_prefix_post_processing: false,
-            experimental_no_edition_2024_for_facet_post_processing: false,
         },
         experimental_enable_metrics: false,
+        experimental_allowed_ip_networks: vec![cidr::AnyIpCidr::Any],
         ..Parser::parse_from(None as Option<&str>)
     }
 }

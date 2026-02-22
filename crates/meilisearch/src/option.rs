@@ -12,6 +12,7 @@ use std::{env, fmt, fs};
 
 use byte_unit::{Byte, ParseError, UnitType};
 use clap::Parser;
+use itertools::Itertools as _;
 use meilisearch_types::features::InstanceTogglableFeatures;
 use meilisearch_types::milli::update::{IndexerConfig, S3SnapshotOptions};
 use meilisearch_types::milli::ThreadPoolNoAbortBuilder;
@@ -56,10 +57,6 @@ const MEILI_EXPERIMENTAL_ENABLE_LOGS_ROUTE: &str = "MEILI_EXPERIMENTAL_ENABLE_LO
 const MEILI_EXPERIMENTAL_CONTAINS_FILTER: &str = "MEILI_EXPERIMENTAL_CONTAINS_FILTER";
 const MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_SETTINGS: &str =
     "MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_SETTINGS";
-const MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_FACET_POST_PROCESSING: &str =
-    "MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_FACET_POST_PROCESSING";
-const MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_PREFIX_POST_PROCESSING: &str =
-    "MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_PREFIX_POST_PROCESSING";
 const MEILI_EXPERIMENTAL_ENABLE_METRICS: &str = "MEILI_EXPERIMENTAL_ENABLE_METRICS";
 const MEILI_EXPERIMENTAL_SEARCH_QUEUE_SIZE: &str = "MEILI_EXPERIMENTAL_SEARCH_QUEUE_SIZE";
 const MEILI_EXPERIMENTAL_DROP_SEARCH_AFTER: &str = "MEILI_EXPERIMENTAL_DROP_SEARCH_AFTER";
@@ -77,6 +74,8 @@ const MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_DUMPS: &str =
     "MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_DUMPS";
 const MEILI_EXPERIMENTAL_PERSONALIZATION_API_KEY: &str =
     "MEILI_EXPERIMENTAL_PERSONALIZATION_API_KEY";
+
+const MEILI_EXPERIMENTAL_ALLOWED_IP_NETWORKS: &str = "MEILI_EXPERIMENTAL_ALLOWED_IP_NETWORKS";
 
 // Related to S3 snapshots
 const MEILI_S3_BUCKET_URL: &str = "MEILI_S3_BUCKET_URL";
@@ -508,6 +507,13 @@ pub struct Opt {
     #[clap(long, env = MEILI_EXPERIMENTAL_PERSONALIZATION_API_KEY)]
     pub experimental_personalization_api_key: Option<String>,
 
+    /// Experimental control over IP policy.
+    ///
+    /// Sets this to override the default IP policy of blocking all internal IPs and allow some internal IPs.
+    #[clap(long, env = MEILI_EXPERIMENTAL_ALLOWED_IP_NETWORKS, value_delimiter=',', action=clap::ArgAction::Set)]
+    #[serde(default)]
+    pub experimental_allowed_ip_networks: Vec<cidr::AnyIpCidr>,
+
     #[serde(flatten)]
     #[clap(flatten)]
     pub indexer_options: IndexerOpts,
@@ -618,6 +624,7 @@ impl Opt {
             experimental_embedding_cache_entries,
             experimental_no_snapshot_compaction,
             experimental_personalization_api_key,
+            experimental_allowed_ip_networks,
             s3_snapshot_options,
         } = self;
         export_to_env_if_not_present(MEILI_DB_PATH, db_path);
@@ -727,6 +734,18 @@ impl Opt {
                 experimental_personalization_api_key,
             );
         }
+
+        if !experimental_allowed_ip_networks.is_empty() {
+            let experimental_allowed_ip_networks: String = experimental_allowed_ip_networks
+                .iter()
+                .map(|any_or_cidr| any_or_cidr.to_string())
+                .join(",");
+            export_to_env_if_not_present(
+                MEILI_EXPERIMENTAL_ALLOWED_IP_NETWORKS,
+                experimental_allowed_ip_networks,
+            );
+        }
+
         indexer_options.export_to_env();
         if let Some(s3_snapshot_options) = s3_snapshot_options {
             #[cfg(not(unix))]
@@ -832,22 +851,6 @@ pub struct IndexerOpts {
     #[clap(long, env = MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_DUMPS)]
     #[serde(default)]
     pub experimental_no_edition_2024_for_dumps: bool,
-
-    /// Experimental no edition 2024 to compute prefixes. For more information,
-    /// see: <https://github.com/orgs/meilisearch/discussions/862>
-    ///
-    /// Enables the experimental no edition 2024 to compute prefixes.
-    #[clap(long, env = MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_PREFIX_POST_PROCESSING)]
-    #[serde(default)]
-    pub experimental_no_edition_2024_for_prefix_post_processing: bool,
-
-    /// Experimental no edition 2024 to compute facets. For more information,
-    /// see: <https://github.com/orgs/meilisearch/discussions/862>
-    ///
-    /// Enables the experimental no edition 2024 to compute facets.
-    #[clap(long, env = MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_FACET_POST_PROCESSING)]
-    #[serde(default)]
-    pub experimental_no_edition_2024_for_facet_post_processing: bool,
 }
 
 impl IndexerOpts {
@@ -859,8 +862,6 @@ impl IndexerOpts {
             skip_index_budget: _,
             experimental_no_edition_2024_for_settings,
             experimental_no_edition_2024_for_dumps,
-            experimental_no_edition_2024_for_prefix_post_processing,
-            experimental_no_edition_2024_for_facet_post_processing,
         } = self;
         if let Some(max_indexing_memory) = max_indexing_memory.0 {
             export_to_env_if_not_present(
@@ -886,18 +887,6 @@ impl IndexerOpts {
                 experimental_no_edition_2024_for_dumps.to_string(),
             );
         }
-        if experimental_no_edition_2024_for_prefix_post_processing {
-            export_to_env_if_not_present(
-                MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_PREFIX_POST_PROCESSING,
-                experimental_no_edition_2024_for_prefix_post_processing.to_string(),
-            );
-        }
-        if experimental_no_edition_2024_for_facet_post_processing {
-            export_to_env_if_not_present(
-                MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_FACET_POST_PROCESSING,
-                experimental_no_edition_2024_for_facet_post_processing.to_string(),
-            );
-        }
     }
 }
 
@@ -911,8 +900,6 @@ impl TryFrom<&IndexerOpts> for IndexerConfig {
             skip_index_budget,
             experimental_no_edition_2024_for_settings,
             experimental_no_edition_2024_for_dumps,
-            experimental_no_edition_2024_for_prefix_post_processing,
-            experimental_no_edition_2024_for_facet_post_processing,
         } = other;
 
         let thread_pool = ThreadPoolNoAbortBuilder::new_for_indexing()
@@ -932,10 +919,6 @@ impl TryFrom<&IndexerOpts> for IndexerConfig {
             chunk_compression_level: Default::default(),
             documents_chunk_size: Default::default(),
             max_nb_chunks: Default::default(),
-            experimental_no_edition_2024_for_prefix_post_processing:
-                *experimental_no_edition_2024_for_prefix_post_processing,
-            experimental_no_edition_2024_for_facet_post_processing:
-                *experimental_no_edition_2024_for_facet_post_processing,
             s3_snapshot_options: None,
         })
     }

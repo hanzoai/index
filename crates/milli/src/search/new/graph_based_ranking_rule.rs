@@ -54,7 +54,7 @@ use crate::score_details::Rank;
 use crate::search::new::query_term::LocatedQueryTermSubset;
 use crate::search::new::ranking_rule_graph::PathVisitor;
 use crate::search::new::ranking_rules::RankingRuleId;
-use crate::{Result, TermsMatchingStrategy, TimeBudget};
+use crate::{Deadline, Result, TermsMatchingStrategy};
 
 pub type Words = GraphBasedRankingRule<WordsGraph>;
 impl GraphBasedRankingRule<WordsGraph> {
@@ -71,7 +71,7 @@ impl GraphBasedRankingRule<ProximityGraph> {
 pub type Fid = GraphBasedRankingRule<FidGraph>;
 impl GraphBasedRankingRule<FidGraph> {
     pub fn new(terms_matching_strategy: Option<TermsMatchingStrategy>) -> Self {
-        Self::new_with_id(RankingRuleId::AttributePosition, terms_matching_strategy)
+        Self::new_with_id(RankingRuleId::WordPosition, terms_matching_strategy)
     }
 }
 pub type Position = GraphBasedRankingRule<PositionGraph>;
@@ -139,7 +139,7 @@ impl<'ctx, G: RankingRuleGraphTrait> RankingRule<'ctx, QueryGraph> for GraphBase
         _logger: &mut dyn SearchLogger<QueryGraph>,
         _universe: &RoaringBitmap,
         query_graph: &QueryGraph,
-        _time_budget: &TimeBudget,
+        _deadline: &Deadline,
     ) -> Result<()> {
         // the `next_max_cost` is the successor integer to the maximum cost of the paths in the graph.
         //
@@ -222,7 +222,7 @@ impl<'ctx, G: RankingRuleGraphTrait> RankingRule<'ctx, QueryGraph> for GraphBase
         ctx: &mut SearchContext<'ctx>,
         logger: &mut dyn SearchLogger<QueryGraph>,
         universe: &RoaringBitmap,
-        _time_budget: &TimeBudget,
+        _deadline: &Deadline,
     ) -> Result<Option<RankingRuleOutput<QueryGraph>>> {
         // Will crash if `next_bucket` is called before `start_iteration` or after `end_iteration`,
         // should never happen

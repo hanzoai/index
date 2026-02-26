@@ -23,8 +23,8 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Meilisearch version:**
-[e.g. v0.20.0]
+**Hanzo Search version:**
+[e.g. v1.36.0]
 
 **Additional context**
 Additional information that may be relevant to the issue.

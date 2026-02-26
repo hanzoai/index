@@ -1,18 +1,18 @@
 # Security
 
-Meilisearch takes the security of our software products and services seriously.
+Hanzo AI takes the security of our software products and services seriously.
 
-If you believe you have found a security vulnerability in any Meilisearch-owned repository, please report it to us as described below.
+If you believe you have found a security vulnerability in any Hanzo-owned repository, please report it to us as described below.
 
 ## Supported versions
 
-As long as we are pre-v1.0, only the latest version of Meilisearch will be supported with security updates.
+As long as we are pre-v1.0, only the latest version of Hanzo Search will be supported with security updates.
 
 ## Reporting security issues
 
-⚠️ Please do not report security vulnerabilities through public GitHub issues. ⚠️
+Please do not report security vulnerabilities through public GitHub issues.
 
-Instead, please kindly email us at security@meilisearch.com
+Instead, please kindly email us at security@hanzo.ai
 
 Please include the requested information listed below (as much as you can provide) to help us better understand the nature and scope of the possible issue:
 

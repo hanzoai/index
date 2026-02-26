@@ -28,11 +28,11 @@ members = [
 [workspace.package]
 version = "1.36.0"
 authors = [
-    "Quentin de Quelen <quentin@dequelen.me>",
-    "Clément Renault <clement@meilisearch.com>",
+    "Hanzo AI <dev@hanzo.ai>",
 ]
-description = "Meilisearch HTTP server"
-homepage = "https://meilisearch.com"
+description = "Hanzo Search -- lightning-fast search engine for AI workloads"
+homepage = "https://hanzo.ai"
+repository = "https://github.com/hanzoai/search"
 readme = "README.md"
 edition = "2021"
 license = "MIT"

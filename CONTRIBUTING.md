@@ -1,12 +1,12 @@
 # Contributing
 
-First, thank you for contributing to Meilisearch! The goal of this document is to provide everything you need to start contributing to Meilisearch.
+First, thank you for contributing to Hanzo Search! The goal of this document is to provide everything you need to start contributing.
 
-Remember that there are many ways to contribute other than writing code: writing [tutorials or blog posts](https://github.com/meilisearch/awesome-meilisearch), improving [the documentation](https://github.com/meilisearch/documentation), submitting [bug reports](https://github.com/meilisearch/meilisearch/issues/new?assignees=&labels=&template=bug_report.md&title=) and [feature requests](https://github.com/meilisearch/product/discussions/categories/feedback-feature-proposal)...
+Remember that there are many ways to contribute other than writing code: improving [the documentation](https://docs.hanzo.ai/search), submitting [bug reports](https://github.com/hanzoai/search/issues/new?assignees=&labels=&template=bug_report.md&title=) and [feature requests](https://github.com/hanzoai/search/discussions)...
 
-Meilisearch can manage multiple indexes, handle the update store, and expose an HTTP API. Search and indexation are the domain of our core engine, [`milli`](https://github.com/meilisearch/meilisearch/tree/main/milli), while tokenization is handled by [our `charabia` library](https://github.com/meilisearch/charabia/).
+Hanzo Search can manage multiple indexes, handle the update store, and expose an HTTP API. Search and indexation are the domain of the core engine, [`milli`](https://github.com/hanzoai/search/tree/main/milli), while tokenization is handled by [the `charabia` library](https://github.com/meilisearch/charabia/).
 
-If Meilisearch does not offer optimized support for your language, please consider contributing to `charabia` by following the [CONTRIBUTING.md file](https://github.com/meilisearch/charabia/blob/main/CONTRIBUTING.md) and integrating your intended normalizer/segmenter.
+If Hanzo Search does not offer optimized support for your language, please consider contributing to `charabia` by following the [CONTRIBUTING.md file](https://github.com/meilisearch/charabia/blob/main/CONTRIBUTING.md) and integrating your intended normalizer/segmenter.
 
 ## Table of Contents
 
@@ -21,43 +21,42 @@ If Meilisearch does not offer optimized support for your language, please consid
 
 We require that you transparently disclose any usage of generative AI tooling (GitHub Copilot, ChatGPT, Claude Code, Cursor, etc.) in contributions, if it was used to generate code (including test code) or documentation.
 
-We stress that you need to own any contribution you make to Meilisearch even if it was generated.
+We stress that you need to own any contribution you make even if it was generated.
 
 In particular, in generated contributions:
 
 - Please check that any generated claim is true.
 - Please limit the scope of the change in your contribution.
-  - Avoid drive-by contribution not related to the core of your contribution (adding a Changelog.md to Meilisearch, upgrading all dependencies when it is not necessary, introducing a new testing convention alongside your feature).
+  - Avoid drive-by contribution not related to the core of your contribution (adding a Changelog.md, upgrading all dependencies when it is not necessary, introducing a new testing convention alongside your feature).
   - If your contribution contains architectural changes to the engine, it might not be the best-suited to an external contribution. Please check the implementation strategy beforehand with a maintainer.
 - Please ensure the quality and consistency with the existing codebase of the generated portions of your contribution. For example, we do not check code assertions with `print` statements and favor using `insta` snapshots.
 
 ## Assumptions
 
 1. **You're familiar with [GitHub](https://github.com) and the [Pull Requests (PR)](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests) workflow.**
-2. **You've read the Meilisearch [documentation](https://www.meilisearch.com/docs).**
-3. **You know about the [Meilisearch community on Discord](https://discord.meilisearch.com).
-   Please use this for help.**
+2. **You've read the Hanzo Search [documentation](https://docs.hanzo.ai/search).**
+3. **You know about the [Hanzo community on Discord](https://discord.gg/hanzo).**
 
 ## How to Contribute
 
 1. Ensure your change has an issue! Find an
-   [existing issue](https://github.com/meilisearch/meilisearch/issues/) or [open a new issue](https://github.com/meilisearch/meilisearch/issues/new).
+   [existing issue](https://github.com/hanzoai/search/issues/) or [open a new issue](https://github.com/hanzoai/search/issues/new).
    * This is where you can get a feel if the change will be accepted or not.
-2. Once approved, [fork the Meilisearch repository](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) in your own GitHub account.
+2. Once approved, [fork the repository](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) in your own GitHub account.
 3. [Create a new Git branch](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-and-deleting-branches-within-your-repository)
 4. Review the [Development Workflow](#development-workflow) section that describes the steps to maintain the repository.
 5. Make your changes on your branch. If you use AI tools during your work, remember to disclose it in your PR description (see [Use of generative AI tools](#use-of-generative-ai-tools)).
-6. [Submit the branch as a Pull Request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork) pointing to the `main` branch of the Meilisearch repository. A maintainer should comment and/or review your Pull Request within a few days. Although depending on the circumstances, it may take longer.
+6. [Submit the branch as a Pull Request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork) pointing to the `main` branch of this repository. A maintainer should comment and/or review your Pull Request within a few days. Although depending on the circumstances, it may take longer.
 
 ## Development Workflow
 
-### Setup and run Meilisearch
+### Setup and run Hanzo Search
 
 ```bash
 cargo run --release
 ```
 
-We recommend using the `--release` flag to test the full performance of Meilisearch.
+We recommend using the `--release` flag to test the full performance of the search engine.
 
 ### Test
 
@@ -86,7 +85,7 @@ export MILLI_BENCH_DATASETS_PATH=$HOME/.cache/meili/benches
 ```
 
 Furthermore, you can improve incremental compilation by setting the `MEILI_NO_VERGEN` environment variable.
-Setting this variable will prevent the Meilisearch binary from being rebuilt each time the directory that hosts the Meilisearch repository changes.
+Setting this variable will prevent the binary from being rebuilt each time the directory that hosts the repository changes.
 Do not enable this environment variable for production builds (as it will break the `version` route, among other things).
 
 #### Snapshot-based tests
@@ -114,20 +113,20 @@ ulimit -Sn 3000
 
 #### Build tools
 
-Meilisearch follows the [cargo xtask](https://github.com/matklad/cargo-xtask) workflow to provide some build tools.
+Hanzo Search follows the [cargo xtask](https://github.com/matklad/cargo-xtask) workflow to provide some build tools.
 
 Run `cargo xtask --help` from the root of the repository to find out what is available.
 
-#### Update the openAPI file if the API changed
+#### Update the openAPI file if the API changed
 
-To update the openAPI file in the code, see [sprint_issue.md](https://github.com/meilisearch/meilisearch/blob/main/.github/ISSUE_TEMPLATE/sprint_issue.md#reminders-when-modifying-the-api).
+To update the openAPI file in the code, see [sprint_issue.md](https://github.com/hanzoai/search/blob/main/.github/ISSUE_TEMPLATE/sprint_issue.md#reminders-when-modifying-the-api).
 
 If you want to generate OpenAPI file manually:
 
 With swagger:
-- Starts Meilisearch with the `swagger` feature flag: `cargo run --features swagger`
+- Start the server with the `swagger` feature flag: `cargo run --features swagger`
 - On a browser, open the following URL: http://localhost:7700/scalar
-- Click the « Download openAPI file »
+- Click the "Download openAPI file"
 
 With the internal crate:
 ```bash
@@ -137,7 +136,7 @@ cargo run --release -- --pretty
 
 ### Logging
 
-Meilisearch uses [`tracing`](https://lib.rs/crates/tracing) for logging purposes. Tracing logs are structured and can be displayed as JSON to the end user, so prefer passing arguments as fields rather than interpolating them in the message.
+Hanzo Search uses [`tracing`](https://lib.rs/crates/tracing) for logging purposes. Tracing logs are structured and can be displayed as JSON to the end user, so prefer passing arguments as fields rather than interpolating them in the message.
 
 Refer to the [documentation](https://docs.rs/tracing/0.1.40/tracing/index.html#using-the-macros) for the syntax of the spans and events.
 
@@ -185,7 +184,7 @@ Some notes on GitHub PRs:
 - The PR title should be accurate and descriptive of the changes.
 - [Convert your PR as a draft](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/changing-the-stage-of-a-pull-request) if your changes are a work in progress: no one will review it until you pass your PR as ready for review.<br>
   The draft PRs are recommended when you want to show that you are working on something and make your work visible.
-- The branch related to the PR must be **up-to-date with `main`** before merging. Fortunately, this project uses [GitHub Merge Queues](https://github.blog/news-insights/product-news/github-merge-queue-is-generally-available/) to automatically enforce this requirement without the PR author having to rebase manually.
+- The branch related to the PR must be **up-to-date with `main`** before merging. This project uses [GitHub Merge Queues](https://github.blog/news-insights/product-news/github-merge-queue-is-generally-available/) to automatically enforce this requirement without the PR author having to rebase manually.
 
 ## Merging PRs
 
@@ -194,22 +193,21 @@ This project uses GitHub Merge Queues that helps us manage pull requests merging
 Before merging a PR, the maintainer should ensure the following requirements are met
 - Automated tests have been added.
 - If some tests cannot be automated, manual rigorous tests should be applied.
-- ⚠️ If there is an change in the DB: it's mandatory to manually test the `--experimental-dumpless-upgrade` on a DB of the previous Meilisearch minor version (e.g. v1.13 for the v1.14 release).
-- If necessary, the feature have been tested in the Cloud production environment (with [prototypes](./documentation/prototypes.md)) and the Cloud UI is ready.
-- If necessary, the [documentation](https://github.com/meilisearch/documentation) related to the implemented feature in the PR is ready.
-- If necessary, the [integrations](https://github.com/meilisearch/integration-guides) related to the implemented feature in the PR are ready.
+- If there is a change in the DB: it's mandatory to manually test the `--experimental-dumpless-upgrade` on a DB of the previous minor version.
+- If necessary, the feature has been tested in the production environment (with [prototypes](./documentation/prototypes.md)).
+- If necessary, the [documentation](https://docs.hanzo.ai/search) related to the implemented feature in the PR is ready.
 
 ## Publish Process (for internal team only)
 
-Meilisearch tools follow the [Semantic Versioning Convention](https://semver.org/).
+Hanzo Search follows the [Semantic Versioning Convention](https://semver.org/).
 
 ### How to publish a new release
 
-The full Meilisearch release process is described in [this guide](./documentation/release.md).
+The full release process is described in [this guide](./documentation/release.md).
 
 ### How to publish a prototype
 
-Depending on the developed feature, you might need to provide a prototyped version of Meilisearch to make it easier to test by the users.
+Depending on the developed feature, you might need to provide a prototyped version to make it easier to test by the users.
 
 This happens in two steps:
 - [Release the prototype](./documentation/prototypes.md#how-to-publish-a-prototype)
@@ -231,4 +229,4 @@ For each release, the following assets are created:
 
 <hr>
 
-Thank you again for reading this through, we can not wait to begin to work with you if you made your way through this contributing guide ❤️
+Thank you again for reading this through, we can not wait to begin to work with you if you made your way through this contributing guide.

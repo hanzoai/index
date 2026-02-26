@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 use meilisearch_types::heed::types::{SerdeJson, Str};
-use meilisearch_types::heed::{Env, RwTxn, WithoutTls};
+use meilisearch_types::heed::{Env, RoTxn, RwTxn, WithoutTls};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -79,4 +79,14 @@ fn set_network(env: &Env<WithoutTls>, wtxn: &mut RwTxn<'_>, network: &Network) -
 
     network_db.put(wtxn, db_keys::NETWORK, network)?;
     Ok(())
+}
+
+pub fn get_network(env: &Env<WithoutTls>, rtxn: &RoTxn<'_>) -> Result<Option<Network>> {
+    let Some(network_db) =
+        env.open_database::<Str, SerdeJson<Network>>(rtxn, Some(db_name::EXPERIMENTAL_FEATURES))?
+    else {
+        return Ok(None);
+    };
+
+    Ok(network_db.get(rtxn, db_keys::NETWORK)?)
 }

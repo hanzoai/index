@@ -1,0 +1,573 @@
+---
+title: Hanzo Search
+description: AI-powered search engine built in Rust with sub-50ms response times, hybrid semantic/full-text search, faceted filtering, geo search, chat completions, and multi-language support.
+---
+
+# Hanzo Search
+
+Hanzo Search is a high-performance, AI-powered search engine built in Rust. It delivers sub-50ms query responses with typo tolerance, hybrid semantic and full-text search, faceted filtering, geo search, and built-in chat completions powered by LLMs.
+
+**Endpoint:** `search.hanzo.ai`
+**Gateway:** `api.hanzo.ai/v1/search/*`
+**Default Port:** `7700`
+**Source:** [github.com/hanzoai/search](https://github.com/hanzoai/search)
+
+## Features
+
+- **Hybrid Search** -- Combine semantic vector search with full-text keyword search using configurable semantic ratios for maximum relevance
+- **Search-as-you-type** -- Sub-50ms query responses with prefix matching for instant, interactive search
+- **Typo Tolerance** -- Return relevant results even when queries contain typos and misspellings
+- **Faceted Filtering** -- Build rich, filterable search interfaces with custom facets and facet search
+- **Geo Search** -- Filter and sort documents by geographic coordinates and radius
+- **Multi-Language** -- Optimized tokenization for Chinese, Japanese, Hebrew, Thai, and Latin-alphabet languages
+- **Custom Ranking Rules** -- Define attribute-level ranking with words, typo, proximity, attribute, sort, and exactness rules
+- **Synonyms and Stop Words** -- Configure synonym mappings and stop word lists per index
+- **Chat Completions** -- OpenAI-compatible chat endpoint that searches your indexes and generates answers via LLMs
+- **Multi-Index Search** -- Federated search across multiple indexes in a single request
+- **Multi-Tenancy** -- Fine-grained API key permissions and tenant token isolation for SaaS applications
+- **Embedder Support** -- Built-in integrations with OpenAI, Ollama, Hugging Face, and custom REST embedders
+- **Prometheus Metrics** -- Expose search and indexing metrics at `/metrics`
+- **S3 Snapshots** -- Stream database snapshots directly to S3-compatible storage
+
+## Architecture
+
+```
++------------------------------------------------------------------+
+|                        HANZO SEARCH                               |
++------------------------------------------------------------------+
+|                                                                    |
+|  +------------------------------+  +----------------------------+ |
+|  |        HTTP API (actix)      |  |     Chat Completions       | |
+|  |  +--------+ +--------+      |  |  +--------+ +----------+   | |
+|  |  | Search | | Index  |      |  |  | OpenAI | | Streaming|   | |
+|  |  | Routes | | Routes |      |  |  | Compat | |   SSE    |   | |
+|  |  +--------+ +--------+      |  |  +--------+ +----------+   | |
+|  +------------------------------+  +----------------------------+ |
+|                                                                    |
+|  +------------------------------+  +----------------------------+ |
+|  |     Index Scheduler          |  |      Vector Engine          | |
+|  |  +--------+ +--------+      |  |  +--------+ +----------+   | |
+|  |  | Tasks  | | Batches|      |  |  | HNSW   | | Embedders|   | |
+|  |  +--------+ +--------+      |  |  +--------+ +----------+   | |
+|  +------------------------------+  +----------------------------+ |
+|                                                                    |
+|  +------------------------------+  +----------------------------+ |
+|  |     milli (Core Engine)      |  |      Auth & Tenancy        | |
+|  |  +--------+ +--------+      |  |  +--------+ +----------+   | |
+|  |  | BM25   | | Filters|      |  |  | API    | | Tenant   |   | |
+|  |  | Ranking| | & Facets|     |  |  | Keys   | | Tokens   |   | |
+|  |  +--------+ +--------+      |  |  +--------+ +----------+   | |
+|  +------------------------------+  +----------------------------+ |
+|                                                                    |
+|  +--------------------------------------------------------------+ |
+|  |                  LMDB Storage (heed)                          | |
+|  +--------------------------------------------------------------+ |
++------------------------------------------------------------------+
+```
+
+**Core crates:**
+- `hanzo-search` -- HTTP server, routes, authentication, search queue
+- `milli` -- Core search engine: indexing, ranking, filtering, vector search, hybrid search
+- `index-scheduler` -- Asynchronous task scheduling and batch processing
+- `hanzo-search-auth` -- API key management and tenant token validation
+- `filter-parser` -- Filter expression parser for faceted search
+- `hanzo-search-types` -- Shared types, settings, and error codes
+
+## Quick Start
+
+### Docker
+
+```bash
+docker run -d \
+  --name hanzo-search \
+  -p 7700:7700 \
+  -v hanzo_search_data:/meili_data \
+  hanzoai/search:latest \
+  hanzo-search --master-key="YOUR_MASTER_KEY"
+```
+
+### From Source
+
+```bash
+git clone https://github.com/hanzoai/search.git && cd search
+cargo build --release
+./target/release/hanzo-search --master-key="YOUR_MASTER_KEY"
+```
+
+### curl
+
+```bash
+# Add documents
+curl -X POST 'http://localhost:7700/indexes/products/documents' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '[
+    { "id": 1, "title": "Hanzo Agent SDK", "category": "AI", "price": 0 },
+    { "id": 2, "title": "Hanzo MCP Server", "category": "Infrastructure", "price": 49 },
+    { "id": 3, "title": "Hanzo LLM Gateway", "category": "AI", "price": 99 }
+  ]'
+
+# Search
+curl 'http://localhost:7700/indexes/products/search' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '{ "q": "agent" }'
+```
+
+### Python
+
+```python
+import requests
+
+BASE = "http://localhost:7700"
+HEADERS = {
+    "Authorization": "Bearer YOUR_MASTER_KEY",
+    "Content-Type": "application/json",
+}
+
+# Index documents
+requests.post(f"{BASE}/indexes/products/documents", headers=HEADERS, json=[
+    {"id": 1, "title": "Hanzo Agent SDK", "category": "AI"},
+    {"id": 2, "title": "Hanzo MCP Server", "category": "Infrastructure"},
+])
+
+# Search
+resp = requests.post(f"{BASE}/indexes/products/search", headers=HEADERS, json={
+    "q": "agent",
+    "limit": 10,
+    "attributesToHighlight": ["title"],
+})
+print(resp.json()["hits"])
+```
+
+### JavaScript / TypeScript
+
+```typescript
+import { HanzoSearch } from '@hanzo/search'
+
+const client = new HanzoSearch({
+  host: 'http://localhost:7700',
+  apiKey: 'YOUR_MASTER_KEY',
+})
+
+// Index documents
+const index = client.index('products')
+await index.addDocuments([
+  { id: 1, title: 'Hanzo Agent SDK', category: 'AI' },
+  { id: 2, title: 'Hanzo MCP Server', category: 'Infrastructure' },
+])
+
+// Search
+const results = await index.search('agent', {
+  limit: 10,
+  attributesToHighlight: ['title'],
+})
+console.log(results.hits)
+```
+
+## Indexing
+
+### Create an Index
+
+Indexes are created automatically when you add documents, or explicitly:
+
+```bash
+curl -X POST 'http://localhost:7700/indexes' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  -H 'Content-Type: application/json' \
+  --data-binary '{ "uid": "products", "primaryKey": "id" }'
+```
+
+### Add Documents
+
+Documents are JSON objects. Hanzo Search accepts arrays, NDJSON, and CSV formats. The maximum payload size defaults to 100 MB.
+
+```bash
+# JSON array
+curl -X POST 'http://localhost:7700/indexes/products/documents' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary @products.json
+
+# NDJSON
+curl -X POST 'http://localhost:7700/indexes/products/documents' \
+  -H 'Content-Type: application/x-ndjson' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary @products.ndjson
+```
+
+### Update Documents
+
+Use `PUT` to replace documents or `PATCH` (via update endpoint) to partially update:
+
+```bash
+curl -X PUT 'http://localhost:7700/indexes/products/documents' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  -H 'Content-Type: application/json' \
+  --data-binary '[{ "id": 1, "price": 29.99 }]'
+```
+
+## Searching
+
+### Full-Text Search
+
+```bash
+curl -X POST 'http://localhost:7700/indexes/products/search' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '{
+    "q": "agent sdk",
+    "limit": 20,
+    "offset": 0,
+    "attributesToRetrieve": ["id", "title", "category"],
+    "attributesToHighlight": ["title"],
+    "attributesToCrop": ["description"],
+    "cropLength": 50,
+    "showMatchesPosition": true,
+    "showRankingScore": true
+  }'
+```
+
+### Hybrid Search
+
+Combine keyword and semantic search by configuring an embedder and using `hybrid`:
+
+```bash
+curl -X POST 'http://localhost:7700/indexes/products/search' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '{
+    "q": "tools for building AI agents",
+    "hybrid": {
+      "semanticRatio": 0.5,
+      "embedder": "default"
+    }
+  }'
+```
+
+A `semanticRatio` of `0.0` uses pure keyword search, `1.0` uses pure vector search, and `0.5` blends both equally.
+
+### Multi-Index Search
+
+Search across multiple indexes in a single request:
+
+```bash
+curl -X POST 'http://localhost:7700/multi-search' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '{
+    "queries": [
+      { "indexUid": "products", "q": "agent" },
+      { "indexUid": "docs", "q": "agent", "limit": 5 }
+    ]
+  }'
+```
+
+### Facet Search
+
+Search within facet values for building autocomplete on filters:
+
+```bash
+curl -X POST 'http://localhost:7700/indexes/products/facet-search' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '{
+    "facetName": "category",
+    "facetQuery": "infra"
+  }'
+```
+
+## Filtering
+
+Declare filterable attributes in settings, then use filter expressions in search:
+
+```bash
+# Configure filterable attributes
+curl -X PATCH 'http://localhost:7700/indexes/products/settings' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '{
+    "filterableAttributes": ["category", "price", "tags", "_geo"]
+  }'
+
+# Filter by exact match
+curl -X POST 'http://localhost:7700/indexes/products/search' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '{
+    "q": "sdk",
+    "filter": "category = AI AND price < 100"
+  }'
+
+# Complex filters with OR and nested expressions
+curl -X POST 'http://localhost:7700/indexes/products/search' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '{
+    "q": "sdk",
+    "filter": "(category = AI OR category = Infrastructure) AND price >= 0"
+  }'
+```
+
+### Geo Search
+
+Filter and sort by geographic location:
+
+```bash
+# Filter within radius (meters)
+curl -X POST 'http://localhost:7700/indexes/stores/search' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '{
+    "filter": "_geoRadius(37.7749, -122.4194, 5000)",
+    "sort": ["_geoPoint(37.7749, -122.4194):asc"]
+  }'
+
+# Bounding box filter
+curl -X POST 'http://localhost:7700/indexes/stores/search' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '{
+    "filter": "_geoBoundingBox([37.8, -122.5], [37.7, -122.3])"
+  }'
+```
+
+Documents must include a `_geo` field with `lat` and `lng` properties.
+
+### Faceted Filtering
+
+Return facet value counts alongside search results:
+
+```bash
+curl -X POST 'http://localhost:7700/indexes/products/search' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '{
+    "q": "",
+    "facets": ["category", "tags"],
+    "filter": "price < 100"
+  }'
+```
+
+## AI Features
+
+### Chat Completions
+
+Hanzo Search includes an OpenAI-compatible chat completions endpoint. The LLM automatically searches your indexes to answer questions, with streaming SSE responses:
+
+```bash
+curl -X POST 'http://localhost:7700/chats/default/chat/completions' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  -H 'Content-Type: application/json' \
+  --data-binary '{
+    "model": "gpt-4o",
+    "messages": [
+      { "role": "user", "content": "What AI tools do you have?" }
+    ],
+    "stream": true
+  }'
+```
+
+The chat system:
+- Automatically calls `_searchInIndex` to find relevant documents
+- Reports search progress via `_searchProgress` tool calls
+- Returns source citations via `_searchSources`
+- Supports conversation context via `_appendConversationMessage`
+
+### Embedder Configuration
+
+Configure embedders per index for semantic and hybrid search:
+
+```bash
+# OpenAI embedder
+curl -X PATCH 'http://localhost:7700/indexes/products/settings' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '{
+    "embedders": {
+      "default": {
+        "source": "openAi",
+        "apiKey": "sk-...",
+        "model": "text-embedding-3-small",
+        "documentTemplate": "A product titled {{doc.title}} in category {{doc.category}}"
+      }
+    }
+  }'
+
+# Ollama embedder (self-hosted)
+curl -X PATCH 'http://localhost:7700/indexes/products/settings' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '{
+    "embedders": {
+      "local": {
+        "source": "ollama",
+        "url": "http://localhost:11434/api/embeddings",
+        "model": "nomic-embed-text"
+      }
+    }
+  }'
+
+# Hugging Face embedder (runs locally)
+curl -X PATCH 'http://localhost:7700/indexes/products/settings' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '{
+    "embedders": {
+      "hf": {
+        "source": "huggingFace",
+        "model": "BAAI/bge-base-en-v1.5"
+      }
+    }
+  }'
+```
+
+Supported embedder sources: `openAi`, `ollama`, `huggingFace`, `rest` (custom endpoint), `userProvided` (bring your own vectors), and `composite` (different embedders for indexing vs search).
+
+### Binary Quantization
+
+Reduce vector storage by enabling quantization on embedders:
+
+```json
+{
+  "embedders": {
+    "default": {
+      "source": "openAi",
+      "binaryQuantized": true
+    }
+  }
+}
+```
+
+## Configuration
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `MEILI_DB_PATH` | `./data.ms` | Database storage directory |
+| `MEILI_HTTP_ADDR` | `localhost:7700` | Bind address and port |
+| `MEILI_MASTER_KEY` | -- | Master API key (required in production) |
+| `MEILI_ENV` | `development` | `development` or `production` |
+| `MEILI_HTTP_PAYLOAD_SIZE_LIMIT` | `100 MB` | Maximum request payload size |
+| `MEILI_LOG_LEVEL` | `INFO` | Log level: OFF, ERROR, WARN, INFO, DEBUG, TRACE |
+| `MEILI_NO_ANALYTICS` | `false` | Disable telemetry |
+| `MEILI_SCHEDULE_SNAPSHOT` | `false` | Enable periodic snapshots |
+| `MEILI_SNAPSHOT_DIR` | `snapshots/` | Snapshot storage directory |
+| `MEILI_DUMP_DIR` | `dumps/` | Dump storage directory |
+
+### S3 Snapshot Configuration
+
+Stream snapshots to S3-compatible storage (Hanzo S3, AWS S3):
+
+| Variable | Description |
+|----------|-------------|
+| `MEILI_S3_BUCKET_URL` | S3 endpoint URL |
+| `MEILI_S3_BUCKET_REGION` | Bucket region |
+| `MEILI_S3_BUCKET_NAME` | Bucket name |
+| `MEILI_S3_ACCESS_KEY` | Access key |
+| `MEILI_S3_SECRET_KEY` | Secret key |
+
+### Index Settings
+
+```bash
+curl -X PATCH 'http://localhost:7700/indexes/products/settings' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '{
+    "searchableAttributes": ["title", "description", "category"],
+    "filterableAttributes": ["category", "price", "tags", "_geo"],
+    "sortableAttributes": ["price", "created_at"],
+    "rankingRules": ["words", "typo", "proximity", "attribute", "sort", "exactness"],
+    "distinctAttribute": "sku",
+    "synonyms": {
+      "phone": ["smartphone", "mobile"],
+      "laptop": ["notebook", "computer"]
+    },
+    "stopWords": ["the", "a", "an", "is"],
+    "typoTolerance": {
+      "enabled": true,
+      "minWordSizeForTypos": { "oneTypo": 5, "twoTypos": 9 }
+    },
+    "pagination": { "maxTotalHits": 1000 },
+    "faceting": { "maxValuesPerFacet": 100 }
+  }'
+```
+
+### API Key Management
+
+Create scoped API keys for multi-tenant access:
+
+```bash
+# Create a search-only key for a specific index
+curl -X POST 'http://localhost:7700/keys' \
+  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
+  --data-binary '{
+    "description": "Products search key",
+    "actions": ["search"],
+    "indexes": ["products"],
+    "expiresAt": "2027-01-01T00:00:00Z"
+  }'
+```
+
+## SDKs
+
+| Language | Package | Repository |
+|----------|---------|------------|
+| JavaScript / TypeScript | `@hanzo/search` | [hanzoai/search-js](https://github.com/hanzoai/search-js) |
+| Python | `hanzo-search` | [hanzoai/search-python](https://github.com/hanzoai/search-python) |
+| Go | `github.com/hanzoai/search-go` | [hanzoai/search-go](https://github.com/hanzoai/search-go) |
+| Rust | `hanzo-search` | [hanzoai/search-rust](https://github.com/hanzoai/search-rust) |
+
+## API Reference
+
+### Indexes
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/indexes` | List all indexes |
+| `POST` | `/indexes` | Create an index |
+| `GET` | `/indexes/{uid}` | Get index details |
+| `PATCH` | `/indexes/{uid}` | Update index (primary key) |
+| `DELETE` | `/indexes/{uid}` | Delete an index |
+| `POST` | `/swap-indexes` | Swap two indexes atomically |
+
+### Documents
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/indexes/{uid}/documents` | Add or replace documents |
+| `PUT` | `/indexes/{uid}/documents` | Add or update documents |
+| `GET` | `/indexes/{uid}/documents` | List documents |
+| `GET` | `/indexes/{uid}/documents/{id}` | Get a single document |
+| `DELETE` | `/indexes/{uid}/documents` | Delete documents by filter or IDs |
+
+### Search
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/indexes/{uid}/search` | Search an index |
+| `GET` | `/indexes/{uid}/search` | Search an index (GET) |
+| `POST` | `/indexes/{uid}/facet-search` | Search facet values |
+| `POST` | `/multi-search` | Federated multi-index search |
+
+### Chat
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/chats` | List chat workspaces |
+| `GET` | `/chats/{uid}` | Get workspace details |
+| `DELETE` | `/chats/{uid}` | Delete a workspace |
+| `POST` | `/chats/{uid}/chat/completions` | Chat completion with search |
+
+### Settings
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/indexes/{uid}/settings` | Get all settings |
+| `PATCH` | `/indexes/{uid}/settings` | Update settings |
+| `DELETE` | `/indexes/{uid}/settings` | Reset all settings |
+
+### Tasks
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/tasks` | List tasks |
+| `GET` | `/tasks/{uid}` | Get task status |
+| `DELETE` | `/tasks` | Cancel/delete tasks |
+
+### System
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/health` | Health check |
+| `GET` | `/version` | Version info |
+| `GET` | `/stats` | Database statistics |
+| `GET` | `/metrics` | Prometheus metrics |
+| `POST` | `/dumps` | Create a database dump |
+| `POST` | `/snapshots` | Create a snapshot |

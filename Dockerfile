@@ -20,6 +20,10 @@ RUN     set -eux; \
 # Run
 FROM    alpine:3.22
 LABEL   org.opencontainers.image.source="https://github.com/hanzoai/search"
+LABEL   org.opencontainers.image.title="Hanzo Search"
+LABEL   org.opencontainers.image.description="AI-powered search engine built on Meilisearch"
+LABEL   org.opencontainers.image.vendor="Hanzo AI Inc."
+LABEL   org.opencontainers.image.url="https://hanzo.ai"
 
 ENV     MEILI_HTTP_ADDR 0.0.0.0:7700
 ENV     MEILI_SERVER_PROVIDER docker

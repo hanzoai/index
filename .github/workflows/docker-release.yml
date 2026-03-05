@@ -14,4 +14,5 @@ jobs:
         COMMIT_SHA=${{ github.sha }}
         COMMIT_DATE=${{ github.event.head_commit.timestamp }}
         GIT_TAG=${{ github.ref_name }}
+        EXTRA_ARGS=
     secrets: inherit

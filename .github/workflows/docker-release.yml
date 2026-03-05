@@ -1,0 +1,21 @@
+name: Docker Release
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+    paths-ignore:
+      - "docs/**"
+      - "documentation/**"
+      - "**/*.md"
+
+jobs:
+  docker:
+    uses: hanzoai/.github/.github/workflows/docker-build.yml@main
+    with:
+      image: ghcr.io/hanzoai/search
+      build-args: |
+        COMMIT_SHA=${{ github.sha }}
+        COMMIT_DATE=${{ github.event.head_commit.timestamp }}
+        GIT_TAG=${{ github.ref_name }}
+    secrets: inherit

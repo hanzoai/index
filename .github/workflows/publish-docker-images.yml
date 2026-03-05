@@ -1,17 +1,13 @@
-name: Publish images to Docker Hub
+name: "[DISABLED] Publish images to Docker Hub (upstream)"
 
+# DISABLED: Replaced by docker-release.yml which pushes to ghcr.io/hanzoai/search
+# via the hanzoai/.github reusable workflow.
 on:
-  push:
-    # Will run for every tag pushed except `latest`
-    # When the `latest` git tag is created with this [CI](../latest-git-tag.yml)
-    # we don't need to create a Docker `latest` image again.
-    # The `latest` Docker image push is already done in this CI when releasing a stable version of Meilisearch.
-    tags-ignore:
-      - latest
-  # Both `schedule` and `workflow_dispatch` build the nightly tag
-  schedule:
-    - cron: '0 23 * * *' # Every day at 11:00pm
   workflow_dispatch:
+    inputs:
+      confirm:
+        description: "This workflow is disabled. Use docker-release.yml instead."
+        required: true
 
 jobs:
   build:

@@ -1,3 +1,5 @@
+pub mod compact;
+
 use std::io::ErrorKind;
 
 use actix_web::web::Data;
@@ -20,38 +22,29 @@ use time::macros::format_description;
 use time::{Date, Duration, OffsetDateTime, Time};
 use tokio::io::AsyncReadExt;
 use tokio::task;
-use utoipa::{IntoParams, OpenApi, ToSchema};
+use utoipa::{IntoParams, ToSchema};
 
 use super::{get_task_id, is_dry_run, SummarizedTaskView, PAGINATION_DEFAULT_LIMIT};
 use crate::analytics::{Aggregate, AggregateMethod, Analytics};
 use crate::extractors::authentication::policies::*;
 use crate::extractors::authentication::GuardedData;
-use crate::extractors::sequential_extractor::SeqHandler;
 use crate::{aggregate_methods, Opt};
 
-#[derive(OpenApi)]
-#[openapi(
-    paths(get_tasks, delete_tasks, cancel_tasks, get_task),
+#[routes::routes(
+    routes(
+        "" => [get(get_tasks), delete(delete_tasks)],
+        "/cancel" => post(cancel_tasks),
+        "/compact" => post(compact::compact_task_queue),
+        "/{task_id}" => get(get_task),
+        "/{task_id}/documents" => get(get_task_documents_file),
+    ),
+    tag = "Async task management",
     tags((
         name = "Tasks",
         description = "The tasks route gives information about the progress of the [asynchronous operations](https://docs.meilisearch.com/learn/advanced/asynchronous_operations.html).",
     )),
 )]
 pub struct TaskApi;
-
-pub fn configure(cfg: &mut web::ServiceConfig) {
-    cfg.service(
-        web::resource("")
-            .route(web::get().to(SeqHandler(get_tasks)))
-            .route(web::delete().to(SeqHandler(delete_tasks))),
-    )
-    .service(web::resource("/cancel").route(web::post().to(SeqHandler(cancel_tasks))))
-    .service(web::resource("/{task_id}").route(web::get().to(SeqHandler(get_task))))
-    .service(
-        web::resource("/{task_id}/documents")
-            .route(web::get().to(SeqHandler(get_task_documents_file))),
-    );
-}
 
 #[derive(Debug, Deserr, IntoParams)]
 #[deserr(error = DeserrQueryParamError, rename_all = camelCase, deny_unknown_fields)]
@@ -342,10 +335,7 @@ impl<Method: AggregateMethod + 'static> Aggregate for TaskFilterAnalytics<Method
 /// Cancel tasks
 ///
 /// Cancel enqueued and/or processing [tasks](https://www.meilisearch.com/docs/learn/async/asynchronous_operations). You must provide at least one filter (e.g. `uids`, `indexUids`, `statuses`) to specify which tasks to cancel.
-#[utoipa::path(
-    post,
-    path = "/cancel",
-    tag = "Async task management",
+#[routes::path(
     security(("Bearer" = ["tasks.cancel", "tasks.*", "*"])),
     params(TaskDeletionOrCancelationQuery),
     responses(
@@ -422,16 +412,14 @@ async fn cancel_tasks(
             .await??;
     let task: SummarizedTaskView = task.into();
 
+    // FIXME: This should be 202 Accepted, but changing would be breaking so we need to wait 2.0
     Ok(HttpResponse::Ok().json(task))
 }
 
 /// Delete tasks
 ///
 /// Permanently delete [tasks](https://docs.meilisearch.com/learn/advanced/asynchronous_operations.html) matching the given filters. You must provide at least one filter (e.g. `uids`, `indexUids`, `statuses`) to specify which tasks to delete.
-#[utoipa::path(
-    delete,
-    path = "",
-    tag = "Async task management",
+#[routes::path(
     security(("Bearer" = ["tasks.delete", "tasks.*", "*"])),
     params(TaskDeletionOrCancelationQuery),
     responses(
@@ -515,6 +503,7 @@ async fn delete_tasks(
         .await??;
     let task: SummarizedTaskView = task.into();
 
+    // FIXME: This should be 202 Accepted, but changing would be breaking so we need to wait 2.0
     Ok(HttpResponse::Ok().json(task))
 }
 
@@ -538,10 +527,7 @@ pub struct AllTasks {
 /// The `/tasks` route returns information about [asynchronous operations](https://docs.meilisearch.com/learn/advanced/asynchronous_operations.html) (indexing, document updates, settings changes, and so on).
 ///
 /// Tasks are returned in descending order of uid by default, so the most recently created or updated tasks appear first. Results are paginated and can be filtered using query parameters such as `indexUids`, `statuses`, `types`, and date ranges.
-#[utoipa::path(
-    get,
-    path = "",
-    tag = "Async task management",
+#[routes::path(
     security(("Bearer" = ["tasks.get", "tasks.*", "*"])),
     params(TasksFilterQuery),
     responses(
@@ -605,12 +591,9 @@ async fn get_tasks(
 /// Get task
 ///
 /// Retrieve a single [task](https://www.meilisearch.com/docs/learn/async/asynchronous_operations) by its uid.
-#[utoipa::path(
-    get,
-    path = "/{taskUid}",
-    tag = "Async task management",
+#[routes::path(
     security(("Bearer" = ["tasks.get", "tasks.*", "*"])),
-    params(("taskUid", format = UInt32, example = "0", description = "The task identifier.", nullable = false)),
+    params(("task_id" = u32, format = UInt32, example = 0, description = "The task identifier.", nullable = false)),
     responses(
         (status = 200, description = "Task successfully retrieved.", body = TaskView, content_type = "application/json", example = json!(
             {
@@ -670,15 +653,13 @@ async fn get_task(
     }
 }
 
-/// Get task's documents
+/// Get task's document payload
 ///
-/// Retrieve the list of documents that were processed or affected by a given [task](https://www.meilisearch.com/docs/learn/async/asynchronous_operations). Only available for document-related tasks.
-#[utoipa::path(
-    get,
-    path = "/{taskUid}/documents",
-    tag = "Async task management",
+/// Retrieve the document payload that was sent with this [task](https://www.meilisearch.com/docs/learn/async/asynchronous_operations).
+/// Only available for document-related tasks that are enqueued or processing.
+#[routes::path(
     security(("Bearer" = ["tasks.get", "tasks.*", "*"])),
-    params(("taskUid", format = UInt32, example = "0", description = "The task identifier.", nullable = false)),
+    params(("task_id" = u32, format = UInt32, example = 0, description = "The task identifier.", nullable = false)),
     responses(
         (status = 200, description = "The content of the task update.", body = serde_json::Value, content_type = "application/x-ndjson"),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(

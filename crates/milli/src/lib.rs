@@ -19,6 +19,7 @@ mod external_documents_ids;
 pub mod facet;
 mod fields_ids_map;
 mod filterable_attributes_rules;
+mod foreign_key;
 pub mod heed_codec;
 pub mod index;
 mod localized_attributes_rules;
@@ -75,6 +76,7 @@ pub use self::filterable_attributes_rules::{
     FilterFeatures, FilterableAttributesFeatures, FilterableAttributesPatterns,
     FilterableAttributesRule,
 };
+pub use self::foreign_key::ForeignKey;
 pub use self::heed_codec::{
     BEU16StrCodec, BEU32StrCodec, BoRoaringBitmapCodec, BoRoaringBitmapLenCodec,
     CboRoaringBitmapCodec, CboRoaringBitmapLenCodec, FieldIdWordCountCodec, ObkvCodec,
@@ -87,8 +89,9 @@ pub use self::search::facet::{FacetValueHit, SearchForFacetValues, SHARD_FIELD};
 pub use self::search::similar::Similar;
 pub use self::search::steps::{FederatingResultsStep, SearchStep, TotalProcessingTimeStep};
 pub use self::search::{
-    FacetDistribution, Filter, FormatOptions, MatchBounds, MatcherBuilder, MatchingWords, OrderBy,
-    Search, SearchResult, SemanticSearch, TermsMatchingStrategy, DEFAULT_VALUES_PER_FACET,
+    merge_positioned_hits_into_page, FacetDistribution, Filter, FormatOptions, MatchBounds,
+    MatcherBuilder, MatchingWords, OrderBy, PinDoc, Search, SearchResult, SemanticSearch,
+    TermsMatchingStrategy, DEFAULT_VALUES_PER_FACET,
 };
 pub use self::update::{
     ChannelCongestion, FragmentDiff, InnerIndexSettings, InnerIndexSettingsDiff, SettingsDelta,

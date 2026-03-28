@@ -80,8 +80,12 @@ make_enum_progress! {
 
 make_enum_progress! {
     pub enum TaskDeletionProgress {
+        RetrievingTasks,
+        RetrievingBatchTasks,
         DeletingTasksDateTime,
+        DeletingBatchesDateTime,
         DeletingTasksMetadata,
+        DeletingBatchesMetadata,
         DeletingTasks,
         DeletingBatches,
     }
@@ -108,6 +112,7 @@ make_enum_progress! {
         DumpTheIndexes,
         DumpTheExperimentalFeatures,
         DumpTheWebhooks,
+        DumpDynamicSearchRules,
         CompressTheDump,
     }
 }

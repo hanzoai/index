@@ -1,49 +1,55 @@
 use std::cmp::Ordering;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet, HashSet};
 use std::iter::Zip;
 use std::rc::Rc;
 use std::str::FromStr as _;
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 use std::vec::{IntoIter, Vec};
 
+use super::super::ranking_rules::{self, RankingRules};
+use super::super::{
+    compute_facet_distribution_stats, prepare_search, resolve_pins, AttributesFormat,
+    ComputedFacets, HitMaker, HitsInfo, RetrieveVectors, SearchHit, SearchKind, SearchMetadata,
+    SearchQuery, SearchQueryWithIndex,
+};
+use super::proxy::{proxy_search, ProxySearchError, ProxySearchParams};
+use super::types::{
+    FederatedFacets, FederatedSearchResult, Federation, FederationOptions, MergeFacets, Weight,
+    FEDERATION_HIT, FEDERATION_REMOTE, PINNED_POSITION, WEIGHTED_SCORE_VALUES,
+};
+use super::weighted_scores;
+use crate::error::MeilisearchHttpError;
+use crate::routes::indexes::search::search_kind;
+use crate::search::federated::types::{
+    FEDERATION_EXTRA_DOCUMENT, INDEX_UID, QUERIES_POSITION, WEIGHTED_RANKING_SCORE,
+};
+use crate::search::hydration::{FederatedHydrationFormatter, HydrationContext};
+use crate::search::{NetworkableQuery as _, DEFAULT_SEARCH_LIMIT};
 use actix_http::StatusCode;
+use actix_web::web::Data;
 use index_scheduler::{IndexScheduler, RoFeatures};
 use itertools::Itertools;
+use meilisearch_types::dynamic_search_rules::DynamicSearchRules;
 use meilisearch_types::error::ResponseError;
 use meilisearch_types::milli::order_by_map::OrderByMap;
 use meilisearch_types::milli::progress::Progress;
 use meilisearch_types::milli::score_details::{ScoreDetails, WeightedScoreValue};
 use meilisearch_types::milli::vector::Embedding;
 use meilisearch_types::milli::{
-    self, Deadline, DocumentId, FederatingResultsStep, OrderBy, SearchStep,
-    DEFAULT_VALUES_PER_FACET,
+    self, merge_positioned_hits_into_page, Deadline, DocumentId, FederatingResultsStep, ForeignKey,
+    OrderBy, DEFAULT_VALUES_PER_FACET,
 };
 use meilisearch_types::network::{Network, Remote};
 use meilisearch_types::settings::DEFAULT_PAGINATION_MAX_TOTAL_HITS;
+use meilisearch_types::Document;
 use roaring::RoaringBitmap;
 use tokio::task::JoinHandle;
 use uuid::Uuid;
 
-use super::super::ranking_rules::{self, RankingRules};
-use super::super::{
-    compute_facet_distribution_stats, prepare_search, AttributesFormat, ComputedFacets, HitMaker,
-    HitsInfo, RetrieveVectors, SearchHit, SearchKind, SearchMetadata, SearchQuery,
-    SearchQueryWithIndex,
-};
-use super::proxy::{proxy_search, ProxySearchError, ProxySearchParams};
-use super::types::{
-    FederatedFacets, FederatedSearchResult, Federation, FederationOptions, MergeFacets, Weight,
-    FEDERATION_HIT, FEDERATION_REMOTE, WEIGHTED_SCORE_VALUES,
-};
-use super::weighted_scores;
-use crate::error::MeilisearchHttpError;
-use crate::routes::indexes::search::search_kind;
-use crate::search::federated::types::{INDEX_UID, QUERIES_POSITION, WEIGHTED_RANKING_SCORE};
-use crate::search::DEFAULT_SEARCH_LIMIT;
-
 #[allow(clippy::too_many_arguments)]
 pub async fn perform_federated_search(
-    index_scheduler: &IndexScheduler,
+    index_scheduler: Data<IndexScheduler>,
     queries: Vec<SearchQueryWithIndex>,
     federation: Federation,
     features: RoFeatures,
@@ -80,6 +86,7 @@ pub async fn perform_federated_search(
     let retrieve_vectors = queries.iter().any(|q| q.retrieve_vectors);
 
     let network = index_scheduler.network();
+    let dynamic_search_rules = index_scheduler.dynamic_search_rules();
 
     // Preconstruct metadata keeping the original queries order for later metadata building
     let precomputed_query_metadata: Option<Vec<_>> = include_metadata.then(|| {
@@ -94,11 +101,19 @@ pub async fn perform_federated_search(
             .collect()
     });
 
+    // Document join: list of indexes in the order of the queries
+    // only create the hydration cache if the foreign keys feature is enabled
+    let mut hydration_cache = features
+        .runtime_features()
+        .foreign_keys
+        .then(|| HydrationContext::new(queries.iter().map(|q| q.index_uid.to_string())));
+
     // this implementation partition the queries by index to guarantee an important property:
     // - all the queries to a particular index use the same read transaction.
     // This is an important property, otherwise we cannot guarantee the self-consistency of the results.
 
     // 1. partition queries by host and index
+    progress.update_progress(FederatingResultsStep::PartitionQueries);
     let mut partitioned_queries = PartitionedQueries::new();
 
     let mut federation = federation;
@@ -115,23 +130,26 @@ pub async fn perform_federated_search(
 
     // 2. perform queries, merge and make hits index by index
     // 2.1. start remote queries
+    progress.update_progress(FederatingResultsStep::StartRemoteSearch);
     let remote_search = RemoteSearch::start(
         partitioned_queries.remote_queries_by_host,
         &federation,
         deadline,
         include_metadata,
-        index_scheduler.ip_policy().clone(),
+        index_scheduler.web_client(),
     );
 
     // 2.2. concurrently execute local queries
+    progress.update_progress(FederatingResultsStep::ExecuteLocalSearch);
     let params = SearchByIndexParams {
         index_scheduler,
         features,
         is_proxy,
-        network: &network,
+        network,
         has_remote: partitioned_queries.has_remote,
         is_exhaustive: federation.is_exhaustive(),
         required_hit_count,
+        dynamic_search_rules,
     };
     let mut search_by_index = SearchByIndex::new(
         federation,
@@ -140,14 +158,26 @@ pub async fn perform_federated_search(
     );
 
     let mut deadline = Deadline::never();
-    for (index_uid, queries) in partitioned_queries.local_queries_by_index {
-        // note: this is the only place we open `index_uid`
-        let index_deadline = search_by_index.execute(index_uid, queries, &params, progress)?;
-        deadline = Deadline::earliest(deadline, index_deadline);
-    }
 
-    // bonus step, make sure to return an error if an index wants a non-faceted field, even if no query actually uses that index.
-    search_by_index.check_unused_facets(index_scheduler)?;
+    let (search_by_index, params, deadline) = tokio::task::spawn_blocking({
+        let progress = progress.clone();
+        move || -> Result<_, ResponseError> {
+            for (index_uid, queries) in partitioned_queries.local_queries_by_index {
+                // note: this is the only place we open `index_uid`
+                let index_deadline =
+                    search_by_index.execute(index_uid, queries, &params, &progress)?;
+                deadline = Deadline::earliest(deadline, index_deadline);
+            }
+
+            // bonus step, make sure to return an error if an index wants a non-faceted field, even if no query actually uses that index.
+            search_by_index.check_unused_facets(&params.index_scheduler)?;
+
+            Ok((search_by_index, params, deadline))
+        }
+    })
+    .await??;
+
+    let SearchByIndexParams { network, index_scheduler, .. } = params;
 
     let SearchByIndex {
         federation,
@@ -158,7 +188,6 @@ pub async fn perform_federated_search(
         facet_order,
     } = search_by_index;
 
-    progress.update_progress(SearchStep::Federation);
     progress.update_progress(FederatingResultsStep::WaitForRemoteResults);
     let before_waiting_remote_results = std::time::Instant::now();
 
@@ -182,8 +211,18 @@ pub async fn perform_federated_search(
         )
     });
 
+    // Document join: register foreign settings for each index
+    if let Some(hydration_cache) = hydration_cache.as_mut() {
+        for result_by_index in results_by_index.iter_mut() {
+            hydration_cache.register_foreign_settings(
+                result_by_index.index.clone(),
+                std::mem::take(&mut result_by_index.foreign_keys),
+            );
+        }
+    }
+
     // 3.2. merge federation metadata
-    let (hit_number, degraded, used_negative_operator, facets, max_remote_duration) =
+    let (mut hit_number, degraded, used_negative_operator, facets, max_remote_duration) =
         merge_metadata(&mut results_by_index, &remote_results);
 
     let (skip, take) = match (federation.page, federation.hits_per_page) {
@@ -199,9 +238,66 @@ pub async fn perform_federated_search(
     };
 
     // 3.3. merge hits
-    let merged_hits: Vec<_> = merge_index_global_results(results_by_index, &mut remote_results)
-        .skip(skip)
-        .take(take)
+    // Pinned documents are extracted before the score-based merge so they do
+    // not compete with organic results. We keep an organic prefix and then
+    // merge pins into the requested page in linear time.
+    let mut pins = Vec::new();
+    for result_by_index in &mut results_by_index {
+        let prev_hits = std::mem::take(&mut result_by_index.hits);
+        for hit in prev_hits {
+            if let Some(ScoreDetails::Pin { position }) = hit.score.first() {
+                pins.push((*position, hit.query_index, hit.hit));
+            } else {
+                result_by_index.hits.push(hit);
+            }
+        }
+    }
+    extract_remote_pin_hits(&mut remote_results, &mut pins);
+    pins.sort_by_key(|&(pos, _, _)| pos);
+
+    // store remote rejected hits to fixup the facet distributions
+    // ideally could fixup in the iterator,
+    // but we cannot double borrows of `remote_results` (from `hit` and `facets_by_index`).
+    let mut rejected_hits: BTreeMap<String, Vec<SearchHit>> = Default::default();
+
+    let mut distinct_values = HashSet::new();
+
+    // When pins are present we need the organic prefix up to the end of the requested page,
+    // then we inject pins into that prefix before applying the final slice. This mirrors
+    // milli's bucket_sort behavior and naturally pumps late pins forward when organic
+    // results run out.
+    let (ranked_skip, ranked_take) =
+        if pins.is_empty() { (skip, take) } else { (0, skip.saturating_add(take)) };
+    let mut hit_it = merge_index_global_results(&mut results_by_index, &mut remote_results)
+        .filter_map(|hit| {
+            if let Some(distinct) = federation.distinct.as_deref() {
+                let mut facet_values = Vec::new();
+                hit.as_hit().facet_values(distinct, |value| facet_values.push(value));
+                let is_rejected =
+                    facet_values.iter().any(|facet_value| distinct_values.contains(facet_value));
+
+                if is_rejected {
+                    hit_number = hit_number.saturating_sub(1);
+
+                    let index_uid = match hit.index_uid() {
+                        Ok(index_uid) => index_uid,
+                        Err(err) => {
+                            tracing::warn!("skipping remote hit due to error: {err}");
+                            return None;
+                        }
+                    };
+                    rejected_hits.entry(index_uid.to_string()).or_default().push(hit.into_hit());
+
+                    return None;
+                }
+
+                distinct_values.extend(facet_values.into_iter());
+            }
+            Some(hit)
+        })
+        .skip(ranked_skip);
+    let mut merged_hits: Vec<_> = (&mut hit_it)
+        .take(ranked_take)
         .inspect(|hit| {
             if let Some(semantic_hit_count) = &mut semantic_hit_count {
                 if hit.to_score().0.any(|score| matches!(&score, WeightedScoreValue::VectorSort(_)))
@@ -210,8 +306,39 @@ pub async fn perform_federated_search(
                 }
             }
         })
-        .map(|hit| hit.hit())
+        .map(|hit| (hit.query_index(), hit.into_hit()))
         .collect();
+
+    if federation.distinct.is_some() {
+        // when using distinct, exhaust any remaining hit from the merged list
+        // so that the list of rejected hits is complete and the facet distribution is
+        // fully adjusted by removing the facet values of all rejected hits.
+        let _ = hit_it.count();
+    } else {
+        // since this variable is Drop and borrows local variables,
+        // it needs to be dropped explicitly before going to the next step that use these
+        // same variable.
+        drop(hit_it);
+    }
+
+    merged_hits = merge_pinned_hits_into_page(pins, skip, take, merged_hits);
+
+    // 3.3.1. hydrate documents based on the hydration points
+    progress.update_progress(FederatingResultsStep::HydrateDocuments);
+    if let Some(hydration_cache) = hydration_cache.as_mut() {
+        for (query_index, hit) in &merged_hits {
+            hydration_cache.register_foreign_docids(hit, *query_index);
+        }
+    }
+    if let Some(hydration_cache) = hydration_cache {
+        let hydration_formatter =
+            FederatedHydrationFormatter::new(hydration_cache, &index_scheduler)?;
+        hydration_formatter.hydrate_documents(&mut merged_hits)?;
+    }
+
+    let mut merged_hits = merged_hits.into_iter().map(|(_, hit)| hit).collect::<Vec<_>>();
+
+    merged_hits.truncate(take);
 
     // 3.4. merge query vectors
     let query_vectors = if retrieve_vectors {
@@ -235,7 +362,7 @@ pub async fn perform_federated_search(
     // 3.5. merge facets
     progress.update_progress(FederatingResultsStep::MergeFacets);
     let (facet_distribution, facet_stats, facets_by_index) =
-        facet_order.merge(federation.merge_facets, remote_results, facets);
+        facet_order.merge(federation.merge_facets, remote_results, facets, rejected_hits);
 
     let after_merge = std::time::Instant::now();
 
@@ -352,16 +479,21 @@ fn merge_index_local_results(
     )
 }
 
-fn merge_index_global_results(
-    results_by_index: Vec<SearchResultByIndex>,
-    remote_results: &mut [FederatedSearchResult],
-) -> impl Iterator<Item = MergedSearchHit> + '_ {
+// NOTE: Pinned documents (ScoreDetails::Pin) are extracted by the caller before invoking this
+// function, so they never reach the score-based comparator. The caller re-injects pins at their
+// target positions after this merge completes.
+fn merge_index_global_results<'a>(
+    results_by_index: &'a mut [SearchResultByIndex],
+    remote_results: &'a mut [FederatedSearchResult],
+) -> impl Iterator<Item = MergedSearchHit<'a>> + 'a {
     itertools::kmerge_by(
         // local results
         results_by_index
-            .into_iter()
+            .iter_mut()
             .map(|result_by_index| {
-                either::Either::Left(result_by_index.hits.into_iter().map(MergedSearchHit::Local))
+                either::Either::Left(std::mem::take(&mut result_by_index.hits).into_iter().map(
+                    |hit| MergedSearchHit::Local { hit, index: result_by_index.index.as_str() },
+                ))
             })
             // remote results
             .chain(remote_results.iter_mut().map(|x| either::Either::Right(iter_remote_hits(x)))),
@@ -385,17 +517,49 @@ fn merge_index_global_results(
     )
 }
 
-enum MergedSearchHit {
-    Local(SearchHitByIndex),
-    Remote {
-        hit: SearchHit,
-        score: Vec<WeightedScoreValue>,
-        global_weighted_score: f64,
-        query_index: usize,
-    },
+enum MergedSearchHit<'a> {
+    Local { hit: SearchHitByIndex, index: &'a str },
+    Remote(RemoteSearchHit),
 }
 
-impl MergedSearchHit {
+struct RemoteSearchHit {
+    hit: SearchHit,
+    score: Vec<WeightedScoreValue>,
+    global_weighted_score: f64,
+    query_index: usize,
+}
+
+impl RemoteSearchHit {
+    fn remote_index_uid(&self) -> Result<&str, ProxySearchError> {
+        let hit = &self.hit;
+        let federation = hit
+            .document
+            .get(FEDERATION_HIT)
+            .ok_or(ProxySearchError::MissingPathInResponse("._federation"))?;
+        let federation = match federation.as_object() {
+            Some(federation) => federation,
+            None => {
+                return Err(ProxySearchError::UnexpectedValueInPath {
+                    path: "._federation",
+                    expected_type: "map",
+                    received_value: federation.to_string(),
+                });
+            }
+        };
+        let index = federation
+            .get(INDEX_UID)
+            .ok_or(ProxySearchError::MissingPathInResponse("._federation.indexUid"))?;
+        let index = index.as_str().ok_or_else(|| ProxySearchError::UnexpectedValueInPath {
+            path: "._federation.indexUid",
+            expected_type: "string",
+            received_value: index.to_string(),
+        })?;
+
+        Ok(index)
+    }
+}
+
+impl MergedSearchHit<'_> {
     fn remote(mut hit: SearchHit) -> Result<Self, ProxySearchError> {
         let federation = hit
             .document
@@ -439,19 +603,38 @@ impl MergedSearchHit {
                 received_value: query_index.to_string(),
             })? as usize;
 
-        Ok(Self::Remote { hit, score, global_weighted_score, query_index })
+        // Mount `extra_document` to the search hit, see documentation for `Hit::extra_document`
+        let extra_document =
+            federation.remove(FEDERATION_EXTRA_DOCUMENT).and_then(|extra_document| {
+                if let serde_json::Value::Object(extra_document) = extra_document {
+                    Some(extra_document)
+                } else {
+                    None
+                }
+            });
+
+        hit.extra_document = extra_document.unwrap_or_default();
+
+        Ok(Self::Remote(RemoteSearchHit { hit, score, global_weighted_score, query_index }))
     }
 
-    fn hit(self) -> SearchHit {
+    fn into_hit(self) -> SearchHit {
         match self {
-            MergedSearchHit::Local(search_hit_by_index) => search_hit_by_index.hit,
-            MergedSearchHit::Remote { hit, .. } => hit,
+            MergedSearchHit::Local { hit: search_hit_by_index, .. } => search_hit_by_index.hit,
+            MergedSearchHit::Remote(RemoteSearchHit { hit, .. }) => hit,
+        }
+    }
+
+    fn as_hit(&self) -> &SearchHit {
+        match self {
+            MergedSearchHit::Local { hit: search_hit_by_index, .. } => &search_hit_by_index.hit,
+            MergedSearchHit::Remote(RemoteSearchHit { hit, .. }) => hit,
         }
     }
 
     fn to_score(&self) -> (impl Iterator<Item = WeightedScoreValue> + '_, f64, usize) {
         match self {
-            MergedSearchHit::Local(search_hit_by_index) => (
+            MergedSearchHit::Local { hit: search_hit_by_index, .. } => (
                 either::Left(ScoreDetails::weighted_score_values(
                     search_hit_by_index.score.iter(),
                     *search_hit_by_index.weight,
@@ -460,26 +643,139 @@ impl MergedSearchHit {
                     * *search_hit_by_index.weight,
                 search_hit_by_index.query_index,
             ),
-            MergedSearchHit::Remote { hit: _, score, global_weighted_score, query_index } => {
+            MergedSearchHit::Remote(RemoteSearchHit {
+                score,
+                global_weighted_score,
+                query_index,
+                hit: _,
+            }) => {
                 let global_weighted_score = *global_weighted_score;
                 let query_index = *query_index;
                 (either::Right(score.iter().cloned()), global_weighted_score, query_index)
             }
         }
     }
+
+    fn index_uid(&self) -> Result<&str, ProxySearchError> {
+        match self {
+            MergedSearchHit::Local { hit: _, index } => Ok(index),
+            MergedSearchHit::Remote(remote_search_hit) => remote_search_hit.remote_index_uid(),
+        }
+    }
+
+    fn query_index(&self) -> usize {
+        match self {
+            MergedSearchHit::Local { hit: search_hit_by_index, .. } => {
+                search_hit_by_index.query_index
+            }
+            MergedSearchHit::Remote(RemoteSearchHit { query_index, .. }) => *query_index,
+        }
+    }
 }
 
 fn iter_remote_hits(
     results_by_host: &mut FederatedSearchResult,
-) -> impl Iterator<Item = MergedSearchHit> + '_ {
+) -> impl Iterator<Item = MergedSearchHit<'_>> + '_ {
     // have a per node registry of failed hits
-    results_by_host.hits.drain(..).filter_map(|hit| match MergedSearchHit::remote(hit) {
+    results_by_host.hits.drain(..).filter_map(move |hit| match MergedSearchHit::remote(hit) {
         Ok(hit) => Some(hit),
         Err(err) => {
             tracing::warn!("skipping remote hit due to error: {err}");
             None
         }
     })
+}
+
+fn merge_pinned_hits_into_page<T>(
+    pins: Vec<(u32, usize, T)>,
+    skip: usize,
+    take: usize,
+    organic_hits: Vec<(usize, T)>,
+) -> Vec<(usize, T)> {
+    merge_positioned_hits_into_page(
+        pins,
+        skip,
+        take,
+        organic_hits,
+        |&(position, _, _)| position,
+        |(_, query_index, hit)| (query_index, hit),
+    )
+}
+
+fn extract_remote_pin_hits(
+    remote_results: &mut [FederatedSearchResult],
+    pins: &mut Vec<(u32, usize, SearchHit)>,
+) {
+    fn parse_pin_pos_and_query_idx(
+        federation: &mut serde_json::Map<String, serde_json::Value>,
+    ) -> Option<(u32, usize)> {
+        let pin_pos: u32 = federation.remove(PINNED_POSITION)?.as_u64()?.try_into().ok()?;
+        let _ = federation.remove(WEIGHTED_SCORE_VALUES);
+        let _ = federation.remove(FEDERATION_EXTRA_DOCUMENT);
+        let query_idx: usize = federation.get(QUERIES_POSITION)?.as_u64()?.try_into().ok()?;
+
+        Some((pin_pos, query_idx))
+    }
+
+    for remote_result in remote_results {
+        let previous_hits = std::mem::take(&mut remote_result.hits);
+        for mut hit in previous_hits {
+            let pair = hit
+                .document
+                .get_mut(FEDERATION_HIT)
+                .and_then(|federation| federation.as_object_mut())
+                .and_then(parse_pin_pos_and_query_idx);
+
+            if let Some((position, query_index)) = pair {
+                pins.push((position, query_index, hit));
+            } else {
+                remote_result.hits.push(hit);
+            }
+        }
+    }
+}
+
+fn build_federation_hit(
+    params: &SearchByIndexParams,
+    index_uid: &str,
+    query_index: usize,
+    score: &[ScoreDetails],
+    weight: Weight,
+    extra_document: &mut Document,
+) -> serde_json::Value {
+    let weighted_score = ScoreDetails::global_score(score.iter()) * *weight;
+    let mut federation = serde_json::json!({
+        INDEX_UID: index_uid,
+        QUERIES_POSITION: query_index,
+        WEIGHTED_RANKING_SCORE: weighted_score,
+    });
+
+    if params.has_remote && !params.is_proxy {
+        federation
+            .as_object_mut()
+            .unwrap()
+            .insert(FEDERATION_REMOTE.to_string(), params.network.local.clone().into());
+    }
+
+    if params.is_proxy {
+        let federation = federation.as_object_mut().unwrap();
+        federation.insert(
+            WEIGHTED_SCORE_VALUES.to_string(),
+            serde_json::json!(
+                ScoreDetails::weighted_score_values(score.iter(), *weight).collect_vec()
+            ),
+        );
+        federation.insert(
+            FEDERATION_EXTRA_DOCUMENT.to_string(),
+            serde_json::Value::Object(std::mem::take(extra_document)),
+        );
+
+        if let Some(ScoreDetails::Pin { position }) = score.first() {
+            federation.insert(PINNED_POSITION.to_string(), serde_json::json!(position));
+        }
+    }
+
+    federation
 }
 
 impl<'a> Iterator for SearchResultByQueryIter<'a> {
@@ -512,6 +808,7 @@ struct SearchResultByIndex {
     degraded: bool,
     used_negative_operator: bool,
     facets: Option<ComputedFacets>,
+    foreign_keys: Vec<ForeignKey>,
 }
 
 /// Builds query metadata for federated search results.
@@ -586,6 +883,7 @@ fn merge_metadata(
         facets: facets_by_index,
         degraded: degraded_by_index,
         used_negative_operator: used_negative_operator_by_index,
+        foreign_keys: _,
     } in results_by_index
     {
         estimated_total_hits += *estimated_total_hits_by_index;
@@ -593,9 +891,8 @@ fn merge_metadata(
         used_negative_operator |= *used_negative_operator_by_index;
 
         let facets_by_index = std::mem::take(facets_by_index);
-        let index = std::mem::take(index);
 
-        facets.insert(index, facets_by_index);
+        facets.insert(index.clone(), facets_by_index);
     }
     for FederatedSearchResult {
         hits: _,
@@ -686,19 +983,16 @@ impl PartitionedQueries {
             );
         }
 
-        if federated_query.use_network.is_some() {
-            features.check_network("passing `.useNetwork` in a federated search query")?;
+        if federated_query.has_distinct() && federation.distinct.is_some() {
+            return Err(
+                MeilisearchHttpError::DistinctInFederatedQueryAndFederation(query_index).into()
+            );
         }
 
         let mut partition = None;
 
         let (index_uid, query, federation_options);
-        let queries = if federated_query
-            .use_network
-            // avoid accidental recursion
-            .take()
-            .unwrap_or_default()
-        {
+        let queries = if federated_query.must_use_network(network, &features)? {
             let partition = partition.get_or_insert_with(|| super::Partition::new(network.clone()));
             (index_uid, query, federation_options) = federated_query.into_index_query_federation();
 
@@ -734,8 +1028,12 @@ impl PartitionedQueries {
                             _ => {
                                 // node from the network
                                 let Some(remote) = network.remotes.get(&remote_name) else {
-                                    return Err(ResponseError::from_msg(format!("Invalid `queries[{query_index}].federation_options.remote`: remote `{remote_name}` is not registered"),
-                           meilisearch_types::error::Code::InvalidMultiSearchRemote));
+                                    return Err(ResponseError::from_msg(
+                                        format!(
+                                            "Invalid `queries[{query_index}].federation_options.remote`: remote `{remote_name}` is not registered"
+                                        ),
+                                        meilisearch_types::error::Code::InvalidMultiSearchRemote,
+                                    ));
                                 };
                                 let query = SearchQueryWithIndex::from_index_query_federation(
                                     index_uid,
@@ -789,13 +1087,14 @@ impl RemoteSearch {
         federation: &Federation,
         deadline: Instant,
         include_metadata: bool,
-        ip_policy: http_client::policy::IpPolicy,
+        client: &http_client::reqwest::Client,
     ) -> Self {
         let mut in_flight_remote_queries = BTreeMap::new();
-        let client = http_client::reqwest::ClientBuilder::new()
-            .prepare(|client| client.connect_timeout(std::time::Duration::from_millis(200)))
-            .build_with_policies(ip_policy, Default::default())
-            .unwrap();
+
+        if queries.is_empty() {
+            return Self { in_flight_remote_queries };
+        }
+
         let params =
             ProxySearchParams { deadline: Some(deadline), try_count: 3, client: client.clone() };
         for (node_name, (node, queries)) in queries {
@@ -914,14 +1213,15 @@ impl RemoteSearch {
     }
 }
 
-struct SearchByIndexParams<'a> {
-    index_scheduler: &'a IndexScheduler,
+struct SearchByIndexParams {
+    index_scheduler: Data<IndexScheduler>,
     required_hit_count: usize,
     is_exhaustive: bool,
     features: RoFeatures,
     is_proxy: bool,
     has_remote: bool,
-    network: &'a Network,
+    network: Network,
+    dynamic_search_rules: Arc<DynamicSearchRules>,
 }
 
 struct SearchByIndex {
@@ -957,7 +1257,7 @@ impl SearchByIndex {
         &mut self,
         index_uid: String,
         queries: Vec<QueryByIndex>,
-        params: &SearchByIndexParams<'_>,
+        params: &SearchByIndexParams,
         progress: &Progress,
     ) -> Result<Deadline, ResponseError> {
         let first_query_index = queries.first().map(|query| query.query_index);
@@ -1014,12 +1314,21 @@ impl SearchByIndex {
         // all queries for an index share the same deadline
         let deadline = index.search_deadline(&rtxn)?;
 
+        let extra_attributes_to_retrieve: BTreeSet<_> =
+            if let Some(distinct) = self.federation.distinct.as_deref() {
+                std::iter::once(distinct.to_string())
+                    .chain(facets_by_index.iter().flatten().cloned())
+                    .collect()
+            } else {
+                Default::default()
+            };
+
         for QueryByIndex { query, weight, query_index } in queries {
             // use an immediately invoked lambda to capture the result without returning from the function
 
             let res: Result<(), ResponseError> = (|| {
                 let search_kind =
-                    search_kind(&query, params.index_scheduler, index_uid.to_string(), &index)?;
+                    search_kind(&query, &params.index_scheduler, index_uid.to_string(), &index)?;
 
                 let canonicalization_kind = match (&search_kind, &query.q) {
                     (SearchKind::SemanticOnly { .. }, _) => {
@@ -1036,7 +1345,7 @@ impl SearchByIndex {
                             Err(asc_desc_error) => {
                                 return Err(milli::SortError::from(asc_desc_error)
                                     .into_search_error()
-                                    .into())
+                                    .into());
                             }
                         };
                     Some(sorts)
@@ -1099,11 +1408,24 @@ impl SearchByIndex {
                 search.offset(0);
                 search.limit(required_hit_count);
                 search.exhaustive_number_hits(params.is_exhaustive);
+                let pins = if params.features.runtime_features().dynamic_search_rules {
+                    resolve_pins(&params.dynamic_search_rules, &query, &index_uid, &index, &rtxn)?
+                } else {
+                    Vec::new()
+                };
+                if !pins.is_empty() {
+                    search.pins(pins);
+                }
+
+                if let Some(distinct) = self.federation.distinct.as_deref() {
+                    search.distinct(distinct.to_owned());
+                }
 
                 let (result, _semantic_hit_count) =
                     super::super::search_from_kind(index_uid.to_string(), search_kind, search)?;
                 let format = AttributesFormat {
                     attributes_to_retrieve: query.attributes_to_retrieve,
+                    extra_attributes_to_retrieve: extra_attributes_to_retrieve.clone(),
                     retrieve_vectors,
                     attributes_to_highlight: query.attributes_to_highlight,
                     attributes_to_crop: query.attributes_to_crop,
@@ -1167,52 +1489,102 @@ impl SearchByIndex {
             }
         }
         let mut documents_seen = RoaringBitmap::new();
-        let merged_result: Result<Vec<_>, ResponseError> =
-            merge_index_local_results(results_by_query)
-                // skip documents we've already seen & mark that we saw the current document
-                .filter(|SearchResultByQueryIterItem { docid, .. }| documents_seen.insert(*docid))
-                .take(required_hit_count)
-                // 2.3 make hits
-                .map(
-                    |SearchResultByQueryIterItem {
-                         docid,
-                         score,
-                         weight,
-                         hit_maker,
-                         query_index,
-                     }| {
-                        let mut hit = hit_maker.make_hit(docid, &score, progress)?;
-                        let weighted_score = ScoreDetails::global_score(score.iter()) * (*weight);
+        let mut local_pinned_hits = Vec::new();
+        for result_by_query in &mut results_by_query {
+            let prev_documents_ids = std::mem::take(&mut result_by_query.documents_ids);
+            let prev_scores = std::mem::take(&mut result_by_query.document_scores);
 
-                        let mut _federation = serde_json::json!(
-                            {
-                                INDEX_UID: index_uid,
-                                QUERIES_POSITION: query_index,
-                                WEIGHTED_RANKING_SCORE: weighted_score,
+            for (doc_id, score) in prev_documents_ids.into_iter().zip(prev_scores.into_iter()) {
+                if let Some(ScoreDetails::Pin { position }) = score.first() {
+                    let mut hit = result_by_query.hit_maker.make_hit(doc_id, &score, progress)?;
+                    let _federation = build_federation_hit(
+                        params,
+                        &index_uid,
+                        result_by_query.query_index,
+                        &score,
+                        result_by_query.weight,
+                        &mut hit.extra_document,
+                    );
+
+                    hit.document.insert(FEDERATION_HIT.to_string(), _federation);
+                    local_pinned_hits.push((
+                        *position,
+                        result_by_query.query_index,
+                        SearchHitByIndex {
+                            hit,
+                            score,
+                            weight: result_by_query.weight,
+                            query_index: result_by_query.query_index,
+                        },
+                    ));
+                } else {
+                    result_by_query.documents_ids.push(doc_id);
+                    result_by_query.document_scores.push(score);
+                }
+            }
+        }
+
+        local_pinned_hits.sort_by_key(|&(pos, _, _)| pos);
+
+        // A set of the seen values for the facet.
+        // Whenever we consider a document, we check that its value for the distinct fid has not already been seen.
+        // If it was seen, it is rejected, which shouldn't happen "too often" as the intermediate lists of results were
+        // already dedup'd.
+        // If it wasn't seen, it is accepted and we update the list of seen values accordingly.
+        let mut distinct_values = HashSet::new();
+
+        let organic_hits = merge_index_local_results(results_by_query)
+            // skip documents we've already seen & mark that we saw the current document
+            // 2.3 make hits
+            .filter_map(
+                |SearchResultByQueryIterItem { docid, hit_maker, score, weight, query_index }| {
+                    let already_seen = !documents_seen.insert(docid);
+                    if already_seen {
+                        return None;
+                    }
+
+                    let hit = (|| {
+                        let mut hit = hit_maker.make_hit(docid, &score, progress)?;
+
+                        if let Some(distinct) = self.federation.distinct.as_deref() {
+                            let mut facet_values = Vec::new();
+                            hit.facet_values(distinct, |value| facet_values.push(value));
+                            let is_rejected = facet_values
+                                .iter()
+                                .any(|facet_value| distinct_values.contains(facet_value));
+
+                            if is_rejected {
+                                candidates.remove(docid);
+
+                                return Ok(None);
                             }
+
+                            distinct_values.extend(facet_values);
+                        }
+
+                        let _federation = build_federation_hit(
+                            params,
+                            &index_uid,
+                            query_index,
+                            &score,
+                            weight,
+                            &mut hit.extra_document,
                         );
-                        if params.has_remote && !params.is_proxy {
-                            _federation.as_object_mut().unwrap().insert(
-                                FEDERATION_REMOTE.to_string(),
-                                params.network.local.clone().into(),
-                            );
-                        }
-                        if params.is_proxy {
-                            _federation.as_object_mut().unwrap().insert(
-                                WEIGHTED_SCORE_VALUES.to_string(),
-                                serde_json::json!(ScoreDetails::weighted_score_values(
-                                    score.iter(),
-                                    *weight
-                                )
-                                .collect_vec()),
-                            );
-                        }
+
                         hit.document.insert(FEDERATION_HIT.to_string(), _federation);
-                        Ok(SearchHitByIndex { hit, score, weight, query_index })
-                    },
-                )
+                        Ok(Some(SearchHitByIndex { hit, score, weight, query_index }))
+                    })();
+                    hit.transpose()
+                },
+            )
+            .take(required_hit_count)
+            .map_ok(|hit| (hit.query_index, hit))
+            .collect::<Result<Vec<_>, ResponseError>>()?;
+        let merged_result =
+            merge_pinned_hits_into_page(local_pinned_hits, 0, required_hit_count, organic_hits)
+                .into_iter()
+                .map(|(_, hit)| hit)
                 .collect();
-        let merged_result = merged_result?;
         let estimated_total_hits = candidates.len() as usize;
         let facets = facets_by_index
             .map(|facets_by_index| {
@@ -1237,6 +1609,8 @@ impl SearchByIndex {
                 );
                 error
             })?;
+
+        let foreign_keys = index.foreign_keys(&rtxn)?;
         self.results_by_index.push(SearchResultByIndex {
             index: index_uid,
             primary_key,
@@ -1245,6 +1619,7 @@ impl SearchByIndex {
             degraded,
             used_negative_operator,
             facets,
+            foreign_keys,
         });
         Ok(deadline)
     }
@@ -1262,9 +1637,9 @@ impl SearchByIndex {
                     // here the resource not found is not part of the URL.
                     err.code = StatusCode::BAD_REQUEST;
                     err.message = format!(
-                "Inside `.federation.facetsByIndex.{index_uid}`: {}\n - Note: index `{index_uid}` is not used in queries",
-                err.message
-            );
+                        "Inside `.federation.facetsByIndex.{index_uid}`: {}\n - Note: index `{index_uid}` is not used in queries",
+                        err.message
+                    );
                     return Err(err);
                 }
             };
@@ -1276,8 +1651,8 @@ impl SearchByIndex {
                 self.facet_order.check_facet_order(&index_uid, &facets, &index, &rtxn)
             {
                 error.message = format!(
-            "Inside `.federation.facetsByIndex.{index_uid}`: {error}\n - Note: index `{index_uid}` is not used in queries",
-        );
+                    "Inside `.federation.facetsByIndex.{index_uid}`: {error}\n - Note: index `{index_uid}` is not used in queries",
+                );
                 return Err(error);
             }
 
@@ -1289,8 +1664,10 @@ impl SearchByIndex {
                     Default::default(),
                     super::super::Route::MultiSearch,
                 ) {
-                    error.message =
-                format!("Inside `.federation.facetsByIndex.{index_uid}`: {}\n - Note: index `{index_uid}` is not used in queries", error.message);
+                    error.message = format!(
+                        "Inside `.federation.facetsByIndex.{index_uid}`: {}\n - Note: index `{index_uid}` is not used in queries",
+                        error.message
+                    );
                     return Err(error);
                 }
             }
@@ -1379,6 +1756,7 @@ impl FacetOrder {
         merge_facets: Option<MergeFacets>,
         remote_results: Vec<FederatedSearchResult>,
         mut facets: FederatedFacets,
+        rejected_hits: BTreeMap<String, Vec<SearchHit>>,
     ) -> (Option<FacetDistributions>, Option<FacetStats>, FederatedFacets) {
         let (facet_distribution, facet_stats, facets_by_index) = match (self, merge_facets) {
             (FacetOrder::ByFacet(facet_order), Some(merge_facets)) => {
@@ -1387,7 +1765,16 @@ impl FacetOrder {
                 {
                     facets.append(remote_facets_by_index);
                 }
-                let facets = facets.merge(merge_facets, facet_order);
+                let mut facets = facets.merge(merge_facets, facet_order);
+
+                if let Some(facets) = &mut facets {
+                    let rejected_hits =
+                        rejected_hits.into_values().fold(Vec::new(), |mut init, mut v| {
+                            init.append(&mut v);
+                            init
+                        });
+                    facets.remove_hits(&rejected_hits);
+                }
 
                 let (facet_distribution, facet_stats) = facets
                     .map(|ComputedFacets { distribution, stats }| (distribution, stats))
@@ -1402,9 +1789,24 @@ impl FacetOrder {
                     facets.append(remote_facets_by_index);
                 }
                 facets.sort_and_truncate(facet_order);
+
+                for (index, facets) in &mut facets.0 {
+                    let Some(rejected_hits) = rejected_hits.get(index) else {
+                        continue;
+                    };
+                    facets.remove_hits(rejected_hits);
+                }
                 (None, None, facets)
             }
-            _ => (None, None, facets),
+            _ => {
+                for (index, facets) in &mut facets.0 {
+                    let Some(rejected_hits) = rejected_hits.get(index) else {
+                        continue;
+                    };
+                    facets.remove_hits(rejected_hits);
+                }
+                (None, None, facets)
+            }
         };
         (facet_distribution, facet_stats, facets_by_index)
     }

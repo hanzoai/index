@@ -205,6 +205,42 @@ impl Server<Owned> {
         self.service.patch(url, value).await
     }
 
+    pub async fn create_dynamic_search_rule(
+        &self,
+        uid: impl AsRef<str>,
+        value: Value,
+    ) -> (Value, StatusCode) {
+        let url = format!("/dynamic-search-rules/{}", uid.as_ref());
+        self.service.patch(url, value).await
+    }
+
+    pub async fn get_dynamic_search_rule(&self, uid: impl AsRef<str>) -> (Value, StatusCode) {
+        let url = format!("/dynamic-search-rules/{}", uid.as_ref());
+        self.service.get(url).await
+    }
+
+    pub async fn list_dynamic_search_rules(&self) -> (Value, StatusCode) {
+        self.list_dynamic_search_rules_with(json!({})).await
+    }
+
+    pub async fn list_dynamic_search_rules_with(&self, value: Value) -> (Value, StatusCode) {
+        self.service.post("/dynamic-search-rules", value).await
+    }
+
+    pub async fn patch_dynamic_search_rule(
+        &self,
+        uid: impl AsRef<str>,
+        value: Value,
+    ) -> (Value, StatusCode) {
+        let url = format!("/dynamic-search-rules/{}", uid.as_ref());
+        self.service.patch(url, value).await
+    }
+
+    pub async fn delete_dynamic_search_rule(&self, uid: impl AsRef<str>) -> (Value, StatusCode) {
+        let url = format!("/dynamic-search-rules/{}", uid.as_ref());
+        self.service.delete(url).await
+    }
+
     pub async fn get_metrics(&self) -> (Value, StatusCode) {
         self.service.get("/metrics").await
     }
@@ -442,7 +478,13 @@ impl<State> Server<State> {
         self.service.delete(format!("/tasks?{}", value)).await
     }
 
-    pub async fn wait_task(&self, update_id: u64) -> Value {
+    pub async fn compact_task_queue(&self) -> (Value, StatusCode) {
+        self.service.post("/tasks/compact", json!(null)).await
+    }
+
+    pub async fn wait_task(&self, update_id: impl super::IntoTaskUid) -> Value {
+        let update_id = update_id.uid();
+
         // try several times to get status, or panic to not wait forever
         let url = format!("/tasks/{update_id}");
         let max_attempts = 400; // 200 seconds in total, 0.5secs per attempt

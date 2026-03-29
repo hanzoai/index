@@ -98,6 +98,19 @@ impl RoFeatures {
         }
     }
 
+    pub fn check_dynamic_search_rules(&self, disabled_action: &'static str) -> Result<()> {
+        if self.runtime.dynamic_search_rules {
+            Ok(())
+        } else {
+            Err(FeatureNotEnabledError {
+                disabled_action,
+                feature: "dynamic search rules",
+                issue_link: "https://github.com/orgs/meilisearch/discussions/884",
+            }
+            .into())
+        }
+    }
+
     pub fn check_network(&self, disabled_action: &'static str) -> Result<()> {
         if self.runtime.network {
             Ok(())
@@ -119,6 +132,19 @@ impl RoFeatures {
                 disabled_action: "Getting the documents of an enqueued task",
                 feature: "get task documents route",
                 issue_link: "https://github.com/orgs/meilisearch/discussions/808",
+            }
+            .into())
+        }
+    }
+
+    pub fn check_task_queue_compaction_route(&self) -> Result<()> {
+        if self.runtime.task_queue_compaction_route {
+            Ok(())
+        } else {
+            Err(FeatureNotEnabledError {
+                disabled_action: "Using the /tasks/compact route",
+                feature: "task queue compaction route",
+                issue_link: "https://github.com/orgs/meilisearch/discussions/883",
             }
             .into())
         }
@@ -158,6 +184,19 @@ impl RoFeatures {
                 disabled_action,
                 feature: "multimodal",
                 issue_link: "https://github.com/orgs/meilisearch/discussions/846",
+            }
+            .into())
+        }
+    }
+
+    pub fn check_foreign_keys_setting(&self, disabled_action: &'static str) -> Result<()> {
+        if self.runtime.foreign_keys {
+            Ok(())
+        } else {
+            Err(FeatureNotEnabledError {
+                disabled_action,
+                feature: "foreign_keys",
+                issue_link: "https://github.com/orgs/meilisearch/discussions/873",
             }
             .into())
         }

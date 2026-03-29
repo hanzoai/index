@@ -31,6 +31,7 @@ pub fn snapshot_index_scheduler(scheduler: &IndexScheduler) -> String {
 
         index_mapper,
         features: _,
+        dynamic_search_rules: _,
         webhooks: _,
         test_breakpoint_sdr: _,
         planned_failures: _,
@@ -38,6 +39,7 @@ pub fn snapshot_index_scheduler(scheduler: &IndexScheduler) -> String {
         embedders: _,
         chat_settings: _,
         runtime: _,
+        web_client: _,
     } = scheduler;
 
     let rtxn = env.read_txn().unwrap();

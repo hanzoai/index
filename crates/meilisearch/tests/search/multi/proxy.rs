@@ -739,6 +739,795 @@ async fn remote_sharding_auto_search() {
 }
 
 #[actix_rt::test]
+async fn remote_search_filters_out_pinned_documents_excluded_by_filters() {
+    let ms0 = Server::new().await;
+    let ms1 = Server::new().await;
+
+    let (response, code) = ms0.set_features(json!({"network": true})).await;
+    assert_eq!(code, StatusCode::OK, "{response}");
+    assert_eq!(response["network"], json!(true));
+    let (response, code) = ms1.set_features(json!({"network": true})).await;
+    assert_eq!(code, StatusCode::OK, "{response}");
+    assert_eq!(response["network"], json!(true));
+    let (response, code) = ms1.set_features(json!({"dynamicSearchRules": true})).await;
+    assert_eq!(code, StatusCode::OK, "{response}");
+    assert_eq!(response["dynamicSearchRules"], json!(true));
+
+    let index0 = ms0.index("test");
+    let index1 = ms1.index("test");
+
+    let (task, code) = index0.update_settings_filterable_attributes(json!(["kind"])).await;
+    snapshot!(code, @"202 Accepted");
+    ms0.wait_task(task.uid()).await.succeeded();
+
+    let (task, code) = index1.update_settings_filterable_attributes(json!(["kind"])).await;
+    snapshot!(code, @"202 Accepted");
+    ms1.wait_task(task.uid()).await.succeeded();
+
+    let (task, code) = index0
+        .add_documents(
+            json!([
+                { "id": "local-non-match", "title": "Spider-Man", "kind": "keep" }
+            ]),
+            None,
+        )
+        .await;
+    snapshot!(code, @"202 Accepted");
+    ms0.wait_task(task.uid()).await.succeeded();
+
+    let (task, code) = index1
+        .add_documents(
+            json!([
+                { "id": "remote-keep", "title": "Batman Returns", "kind": "keep" },
+                { "id": "remote-filtered", "title": "The Matrix", "kind": "drop" }
+            ]),
+            None,
+        )
+        .await;
+    snapshot!(code, @"202 Accepted");
+    ms1.wait_task(task.uid()).await.succeeded();
+
+    let (_response, code) = ms1
+        .create_dynamic_search_rule(
+            "pin-filtered-remote",
+            json!({
+                "active": true,
+                "conditions": [
+                    { "scope": "query", "contains": "returns" }
+                ],
+                "actions": [
+                    {
+                        "selector": { "id": "remote-filtered" },
+                        "action": { "type": "pin", "position": 0 }
+                    }
+                ]
+            }),
+        )
+        .await;
+    snapshot!(code, @"201 Created");
+
+    let ms0 = Arc::new(ms0);
+    let ms1 = Arc::new(ms1);
+
+    let rms0 = LocalMeili::new(ms0.clone()).await;
+    let rms1 = LocalMeili::new(ms1.clone()).await;
+
+    let network = json!({"remotes": {
+        "ms0": {
+            "url": rms0.url()
+        },
+        "ms1": {
+            "url": rms1.url()
+        }
+    }});
+
+    let (_response, code) = ms0.set_network(network.clone()).await;
+    snapshot!(code, @"200 OK");
+    let (_response, code) = ms1.set_network(network).await;
+    snapshot!(code, @"200 OK");
+
+    let (response, code) = ms0
+        .index("test")
+        .search_post(json!({
+            "q": "Batman Returns",
+            "filter": "kind = keep",
+            "useNetwork": true
+        }))
+        .await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response, { ".processingTimeMs" => "[time]", ".requestUid" => "[uuid]" }), @r###"
+    {
+      "hits": [
+        {
+          "id": "remote-keep",
+          "title": "Batman Returns",
+          "kind": "keep",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": 1.0,
+            "remote": "ms1"
+          }
+        }
+      ],
+      "query": "Batman Returns",
+      "processingTimeMs": "[time]",
+      "limit": 20,
+      "offset": 0,
+      "estimatedTotalHits": 1,
+      "requestUid": "[uuid]",
+      "remoteErrors": {}
+    }
+    "###);
+}
+
+#[actix_rt::test]
+async fn remote_search_keeps_remote_pins() {
+    let ms0 = Server::new().await;
+    let ms1 = Server::new().await;
+
+    let (response, code) = ms0.set_features(json!({"network": true})).await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response["network"]), @"true");
+    let (response, code) = ms1.set_features(json!({"network": true})).await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response["network"]), @"true");
+    let (response, code) = ms1.set_features(json!({"dynamicSearchRules": true})).await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response["dynamicSearchRules"]), @"true");
+
+    let index0 = ms0.index("test");
+    let index1 = ms1.index("test");
+
+    let (task, code) = index0
+        .add_documents(
+            json!([
+                { "id": "local", "title": "Batman Returns" }
+            ]),
+            None,
+        )
+        .await;
+    snapshot!(code, @"202 Accepted");
+    ms0.wait_task(task.uid()).await.succeeded();
+
+    let (task, code) = index1
+        .add_documents(
+            json!([
+                { "id": "remote", "title": "Batman" }
+            ]),
+            None,
+        )
+        .await;
+    snapshot!(code, @"202 Accepted");
+    ms1.wait_task(task.uid()).await.succeeded();
+
+    let (_response, code) = ms1
+        .create_dynamic_search_rule(
+            "pin-remote",
+            json!({
+                "active": true,
+                "actions": [
+                    {
+                        "selector": { "id": "remote" },
+                        "action": { "type": "pin", "position": 0 }
+                    }
+                ]
+            }),
+        )
+        .await;
+    snapshot!(code, @"201 Created");
+
+    let ms0 = Arc::new(ms0);
+    let ms1 = Arc::new(ms1);
+
+    let rms0 = LocalMeili::new(ms0.clone()).await;
+    let rms1 = LocalMeili::new(ms1.clone()).await;
+
+    let network = json!({"remotes": {
+        "ms0": {
+            "url": rms0.url()
+        },
+        "ms1": {
+            "url": rms1.url()
+        }
+    }});
+
+    let (_response, code) = ms0.set_network(network.clone()).await;
+    snapshot!(code, @"200 OK");
+    let (_response, code) = ms1.set_network(network).await;
+    snapshot!(code, @"200 OK");
+
+    let (response, code) = ms0
+        .index("test")
+        .search_post(json!({
+            "q": "batman returns",
+            "useNetwork": true
+        }))
+        .await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response["hits"]));
+}
+
+#[actix_rt::test]
+async fn remote_search_pagination_counts_pins_that_miss_query() {
+    let ms0 = Server::new().await;
+    let ms1 = Server::new().await;
+
+    let (response, code) = ms0.set_features(json!({"network": true})).await;
+    assert_eq!(code, StatusCode::OK, "{response}");
+    assert_eq!(response["network"], json!(true));
+    let (response, code) = ms1.set_features(json!({"network": true})).await;
+    assert_eq!(code, StatusCode::OK, "{response}");
+    assert_eq!(response["network"], json!(true));
+    let (response, code) = ms1.set_features(json!({"dynamicSearchRules": true})).await;
+    assert_eq!(code, StatusCode::OK, "{response}");
+    assert_eq!(response["dynamicSearchRules"], json!(true));
+
+    let index0 = ms0.index("test");
+    let index1 = ms1.index("test");
+
+    let (task, code) = index0
+        .add_documents(
+            json!([
+                { "id": "local-non-match", "title": "Spider-Man" }
+            ]),
+            None,
+        )
+        .await;
+    snapshot!(code, @"202 Accepted");
+    ms0.wait_task(task.uid()).await.succeeded();
+
+    let (task, code) = index1
+        .add_documents(
+            json!([
+                { "id": "remote-organic", "title": "Batman Returns" },
+                { "id": "remote-pinned", "title": "The Matrix" }
+            ]),
+            None,
+        )
+        .await;
+    snapshot!(code, @"202 Accepted");
+    ms1.wait_task(task.uid()).await.succeeded();
+
+    let (_response, code) = ms1
+        .create_dynamic_search_rule(
+            "pin-remote-query-miss",
+            json!({
+                "active": true,
+                "conditions": [
+                    { "scope": "query", "contains": "returns" }
+                ],
+                "actions": [
+                    {
+                        "selector": { "id": "remote-pinned" },
+                        "action": { "type": "pin", "position": 0 }
+                    }
+                ]
+            }),
+        )
+        .await;
+    snapshot!(code, @"201 Created");
+
+    let ms0 = Arc::new(ms0);
+    let ms1 = Arc::new(ms1);
+
+    let rms0 = LocalMeili::new(ms0.clone()).await;
+    let rms1 = LocalMeili::new(ms1.clone()).await;
+
+    let network = json!({"remotes": {
+        "ms0": {
+            "url": rms0.url()
+        },
+        "ms1": {
+            "url": rms1.url()
+        }
+    }});
+
+    let (_response, code) = ms0.set_network(network.clone()).await;
+    snapshot!(code, @"200 OK");
+    let (_response, code) = ms1.set_network(network).await;
+    snapshot!(code, @"200 OK");
+
+    let (response, code) = ms0
+        .index("test")
+        .search_post(json!({
+            "q": "Batman Returns",
+            "page": 2,
+            "hitsPerPage": 1,
+            "useNetwork": true
+        }))
+        .await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response, { ".processingTimeMs" => "[time]", ".requestUid" => "[uuid]" }), @r###"
+    {
+      "hits": [
+        {
+          "id": "remote-organic",
+          "title": "Batman Returns",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": 1.0,
+            "remote": "ms1"
+          }
+        }
+      ],
+      "query": "Batman Returns",
+      "processingTimeMs": "[time]",
+      "hitsPerPage": 1,
+      "page": 2,
+      "totalPages": 2,
+      "totalHits": 2,
+      "requestUid": "[uuid]",
+      "remoteErrors": {}
+    }
+    "###);
+}
+
+#[actix_rt::test]
+async fn remote_search_pumps_pins_when_organic_results_run_out() {
+    let ms0 = Server::new().await;
+    let ms1 = Server::new().await;
+
+    let (response, code) = ms0.set_features(json!({"network": true})).await;
+    assert_eq!(code, StatusCode::OK, "{response}");
+    assert_eq!(response["network"], json!(true));
+    let (response, code) = ms1.set_features(json!({"network": true})).await;
+    assert_eq!(code, StatusCode::OK, "{response}");
+    assert_eq!(response["network"], json!(true));
+    let (response, code) = ms1.set_features(json!({"dynamicSearchRules": true})).await;
+    assert_eq!(code, StatusCode::OK, "{response}");
+    assert_eq!(response["dynamicSearchRules"], json!(true));
+
+    let index0 = ms0.index("test");
+    let index1 = ms1.index("test");
+
+    let (task, code) = index0
+        .add_documents(json!([{ "id": "local-non-match", "title": "Spider-Man" }]), None)
+        .await;
+    snapshot!(code, @"202 Accepted");
+    ms0.wait_task(task.uid()).await.succeeded();
+
+    let (task, code) = index1
+        .add_documents(
+            json!([
+                { "id": "organic-1", "title": "Batman Returns" },
+                { "id": "late-pin-1", "title": "The Matrix" },
+                { "id": "organic-2", "title": "Batman Forever" },
+                { "id": "late-pin-2", "title": "Superman" }
+            ]),
+            None,
+        )
+        .await;
+    snapshot!(code, @"202 Accepted");
+    ms1.wait_task(task.uid()).await.succeeded();
+
+    let (_response, code) = ms1
+        .create_dynamic_search_rule(
+            "pump-remote-pins",
+            json!({
+                "active": true,
+                "conditions": [
+                    { "scope": "query", "contains": "batman" }
+                ],
+                "actions": [
+                    {
+                        "selector": { "id": "late-pin-1" },
+                        "action": { "type": "pin", "position": 10 }
+                    },
+                    {
+                        "selector": { "id": "late-pin-2" },
+                        "action": { "type": "pin", "position": 20 }
+                    }
+                ]
+            }),
+        )
+        .await;
+    snapshot!(code, @"201 Created");
+
+    let ms0 = Arc::new(ms0);
+    let ms1 = Arc::new(ms1);
+
+    let rms0 = LocalMeili::new(ms0.clone()).await;
+    let rms1 = LocalMeili::new(ms1.clone()).await;
+
+    let network = json!({"remotes": {
+        "ms0": {
+            "url": rms0.url()
+        },
+        "ms1": {
+            "url": rms1.url()
+        }
+    }});
+
+    let (_response, code) = ms0.set_network(network.clone()).await;
+    snapshot!(code, @"200 OK");
+    let (_response, code) = ms1.set_network(network).await;
+    snapshot!(code, @"200 OK");
+
+    let (response, code) = ms0
+        .index("test")
+        .search_post(json!({
+            "q": "Batman",
+            "limit": 10,
+            "useNetwork": true
+        }))
+        .await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response, { ".processingTimeMs" => "[time]", ".requestUid" => "[uuid]", ".**.weightedRankingScore" => "[score]" }), @r#"
+    {
+      "hits": [
+        {
+          "id": "organic-1",
+          "title": "Batman Returns",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": "[score]",
+            "remote": "ms1"
+          }
+        },
+        {
+          "id": "organic-2",
+          "title": "Batman Forever",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": "[score]",
+            "remote": "ms1"
+          }
+        },
+        {
+          "id": "late-pin-1",
+          "title": "The Matrix",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": "[score]",
+            "remote": "ms1"
+          }
+        },
+        {
+          "id": "late-pin-2",
+          "title": "Superman",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": "[score]",
+            "remote": "ms1"
+          }
+        }
+      ],
+      "query": "Batman",
+      "processingTimeMs": "[time]",
+      "limit": 10,
+      "offset": 0,
+      "estimatedTotalHits": 4,
+      "requestUid": "[uuid]",
+      "remoteErrors": {}
+    }
+    "#);
+
+    let (response, code) = ms0
+        .index("test")
+        .search_post(json!({
+            "q": "Batman",
+            "offset": 2,
+            "limit": 2,
+            "useNetwork": true
+        }))
+        .await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response, { ".processingTimeMs" => "[time]", ".requestUid" => "[uuid]", ".**.weightedRankingScore" => "[score]" }), @r#"
+    {
+      "hits": [
+        {
+          "id": "late-pin-1",
+          "title": "The Matrix",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": "[score]",
+            "remote": "ms1"
+          }
+        },
+        {
+          "id": "late-pin-2",
+          "title": "Superman",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": "[score]",
+            "remote": "ms1"
+          }
+        }
+      ],
+      "query": "Batman",
+      "processingTimeMs": "[time]",
+      "limit": 2,
+      "offset": 2,
+      "estimatedTotalHits": 4,
+      "requestUid": "[uuid]",
+      "remoteErrors": {}
+    }
+    "#);
+}
+
+#[actix_rt::test]
+#[ignore = "distinct/pinning semantics to revisit"]
+async fn remote_search_distinct_deduplicates_pinned_documents() {
+    let ms0 = Server::new().await;
+    let ms1 = Server::new().await;
+
+    let (response, code) = ms0.set_features(json!({"network": true})).await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response["network"]), @"true");
+    let (response, code) = ms1.set_features(json!({"network": true})).await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response["network"]), @"true");
+    let (response, code) = ms1.set_features(json!({"dynamicSearchRules": true})).await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response["dynamicSearchRules"]), @"true");
+
+    let index0 = ms0.index("test");
+    let index1 = ms1.index("test");
+
+    let (task, code) = index0.update_settings_filterable_attributes(json!(["series"])).await;
+    snapshot!(code, @"202 Accepted");
+    ms0.wait_task(task.uid()).await.succeeded();
+
+    let (task, code) = index1.update_settings_filterable_attributes(json!(["series"])).await;
+    snapshot!(code, @"202 Accepted");
+    ms1.wait_task(task.uid()).await.succeeded();
+
+    let (task, code) = index0
+        .add_documents(
+            json!([
+                { "id": "local-duplicate", "title": "Batman Returns", "series": "batman" },
+                { "id": "local-unique", "title": "Batman Forever", "series": "forever" }
+            ]),
+            None,
+        )
+        .await;
+    snapshot!(code, @"202 Accepted");
+    ms0.wait_task(task.uid()).await.succeeded();
+
+    let (task, code) = index1
+        .add_documents(
+            json!([
+                { "id": "remote-pinned", "title": "The Matrix", "series": "batman" }
+            ]),
+            None,
+        )
+        .await;
+    snapshot!(code, @"202 Accepted");
+    ms1.wait_task(task.uid()).await.succeeded();
+
+    let (_response, code) = ms1
+        .create_dynamic_search_rule(
+            "pin-remote-duplicate",
+            json!({
+                "active": true,
+                "actions": [
+                    {
+                        "selector": { "id": "remote-pinned" },
+                        "action": { "type": "pin", "position": 0 }
+                    }
+                ]
+            }),
+        )
+        .await;
+    snapshot!(code, @"201 Created");
+
+    let ms0 = Arc::new(ms0);
+    let ms1 = Arc::new(ms1);
+
+    let rms0 = LocalMeili::new(ms0.clone()).await;
+    let rms1 = LocalMeili::new(ms1.clone()).await;
+
+    let network = json!({"remotes": {
+        "ms0": {
+            "url": rms0.url()
+        },
+        "ms1": {
+            "url": rms1.url()
+        }
+    }});
+
+    let (_response, code) = ms0.set_network(network.clone()).await;
+    snapshot!(code, @"200 OK");
+    let (_response, code) = ms1.set_network(network).await;
+    snapshot!(code, @"200 OK");
+
+    let (response, code) = ms0
+        .index("test")
+        .search_post(json!({
+            "q": "batman",
+            "distinct": "series",
+            "useNetwork": true
+        }))
+        .await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response, { ".processingTimeMs" => "[time]", ".requestUid" => "[uuid]" }), @r###"
+    {
+      "hits": [
+        {
+          "id": "remote-pinned",
+          "title": "The Matrix",
+          "series": "batman",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": 1.0,
+            "extra_document": {},
+            "remote": "ms1"
+          }
+        },
+        {
+          "id": "local-unique",
+          "title": "Batman Forever",
+          "series": "forever",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 0,
+            "weightedRankingScore": 0.9848484848484848,
+            "remote": "ms0"
+          }
+        }
+      ],
+      "query": "batman",
+      "processingTimeMs": "[time]",
+      "limit": 20,
+      "offset": 0,
+      "estimatedTotalHits": 2,
+      "requestUid": "[uuid]",
+      "remoteErrors": {}
+    }
+    "###);
+}
+
+#[actix_rt::test]
+async fn remote_search_facet_distribution_counts_pins_that_miss_query() {
+    let ms0 = Server::new().await;
+    let ms1 = Server::new().await;
+
+    let (response, code) = ms0.set_features(json!({"network": true})).await;
+    assert_eq!(code, StatusCode::OK, "{response}");
+    assert_eq!(response["network"], json!(true));
+    let (response, code) = ms1.set_features(json!({"network": true})).await;
+    assert_eq!(code, StatusCode::OK, "{response}");
+    assert_eq!(response["network"], json!(true));
+    let (response, code) = ms1.set_features(json!({"dynamicSearchRules": true})).await;
+    assert_eq!(code, StatusCode::OK, "{response}");
+    assert_eq!(response["dynamicSearchRules"], json!(true));
+
+    let index0 = ms0.index("test");
+    let index1 = ms1.index("test");
+
+    let (task, code) = index0.update_settings_filterable_attributes(json!(["color"])).await;
+    snapshot!(code, @"202 Accepted");
+    ms0.wait_task(task.uid()).await.succeeded();
+
+    let (task, code) = index1.update_settings_filterable_attributes(json!(["color"])).await;
+    snapshot!(code, @"202 Accepted");
+    ms1.wait_task(task.uid()).await.succeeded();
+
+    let (task, code) = index0
+        .add_documents(
+            json!([
+                { "id": "local-non-match", "title": "Spider-Man", "color": "green" }
+            ]),
+            None,
+        )
+        .await;
+    snapshot!(code, @"202 Accepted");
+    ms0.wait_task(task.uid()).await.succeeded();
+
+    let (task, code) = index1
+        .add_documents(
+            json!([
+                { "id": "remote-organic", "title": "Batman Returns", "color": "red" },
+                { "id": "remote-pinned", "title": "The Matrix", "color": "blue" }
+            ]),
+            None,
+        )
+        .await;
+    snapshot!(code, @"202 Accepted");
+    ms1.wait_task(task.uid()).await.succeeded();
+
+    let (_response, code) = ms1
+        .create_dynamic_search_rule(
+            "pin-remote-for-facets",
+            json!({
+                "active": true,
+                "conditions": [
+                    { "scope": "query", "contains": "returns" }
+                ],
+                "actions": [
+                    {
+                        "selector": { "id": "remote-pinned" },
+                        "action": { "type": "pin", "position": 0 }
+                    }
+                ]
+            }),
+        )
+        .await;
+    snapshot!(code, @"201 Created");
+
+    let ms0 = Arc::new(ms0);
+    let ms1 = Arc::new(ms1);
+
+    let rms0 = LocalMeili::new(ms0.clone()).await;
+    let rms1 = LocalMeili::new(ms1.clone()).await;
+
+    let network = json!({"remotes": {
+        "ms0": {
+            "url": rms0.url()
+        },
+        "ms1": {
+            "url": rms1.url()
+        }
+    }});
+
+    let (_response, code) = ms0.set_network(network.clone()).await;
+    snapshot!(code, @"200 OK");
+    let (_response, code) = ms1.set_network(network).await;
+    snapshot!(code, @"200 OK");
+
+    let (response, code) = ms0
+        .index("test")
+        .search_post(json!({
+            "q": "Batman Returns",
+            "facets": ["color"],
+            "useNetwork": true
+        }))
+        .await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response, { ".processingTimeMs" => "[time]", ".requestUid" => "[uuid]" }), @r#"
+    {
+      "hits": [
+        {
+          "id": "remote-pinned",
+          "title": "The Matrix",
+          "color": "blue",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": 1.0,
+            "remote": "ms1"
+          }
+        },
+        {
+          "id": "remote-organic",
+          "title": "Batman Returns",
+          "color": "red",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": 1.0,
+            "remote": "ms1"
+          }
+        }
+      ],
+      "query": "Batman Returns",
+      "processingTimeMs": "[time]",
+      "limit": 20,
+      "offset": 0,
+      "estimatedTotalHits": 2,
+      "facetDistribution": {
+        "color": {
+          "blue": 1,
+          "red": 1
+        }
+      },
+      "facetStats": {},
+      "requestUid": "[uuid]",
+      "remoteErrors": {}
+    }
+    "#);
+}
+
+#[actix_rt::test]
 async fn remote_sharding_federated_auto_search() {
     let ms0 = Server::new().await;
     let ms1 = Server::new().await;
@@ -3746,7 +4535,6 @@ impl LocalMeili {
         std::thread::spawn(move || {
             let rt = tokio::runtime::Builder::new_current_thread().build().unwrap();
             while let Ok(req) = request_receiver.recv() {
-                let body = std::str::from_utf8(&req.body).unwrap();
                 let headers: Vec<(&str, &str)> = if params.gobble_headers {
                     vec![("Content-Type", "application/json")]
                 } else {
@@ -3757,9 +4545,11 @@ impl LocalMeili {
                 };
                 let (value, code) = rt.block_on(async {
                     match req.method.as_str() {
-                        "POST" => server.service.post_str(&req.url, body, headers.clone()).await,
-                        "PUT" => server.service.put_str(&req.url, body, headers.clone()).await,
-                        "PATCH" => server.service.patch_str(&req.url, body, headers).await,
+                        "POST" => {
+                            server.service.post_raw(&req.url, req.body, headers.clone()).await
+                        }
+                        "PUT" => server.service.put_raw(&req.url, req.body, headers.clone()).await,
+                        "PATCH" => server.service.patch_raw(&req.url, req.body, headers).await,
                         "GET" => server.service.get(&req.url).await,
                         "DELETE" => server.service.delete(&req.url).await,
                         _ => unimplemented!(),
@@ -4266,6 +5056,359 @@ async fn remote_auto_sharding() {
 
 #[cfg(feature = "enterprise")]
 #[actix_rt::test]
+async fn remote_auto_sharding_distinct() {
+    use crate::common::DOCUMENTS;
+
+    let ms0 = Server::new().await;
+    let ms1 = Server::new().await;
+    let ms2 = Server::new().await;
+
+    // enable feature
+
+    let (response, code) = ms0.set_features(json!({"network": true})).await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response["network"]), @"true");
+    let (response, code) = ms1.set_features(json!({"network": true})).await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response["network"]), @"true");
+    let (response, code) = ms2.set_features(json!({"network": true})).await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response["network"]), @"true");
+
+    {
+        let index0 = ms0.index("test");
+        let (value, _) =
+            index0.update_settings_filterable_attributes(json!(["color", "title"])).await;
+        ms0.wait_task(value.uid()).await.succeeded();
+    }
+
+    // wrap servers
+    let ms0 = Arc::new(ms0);
+    let ms1 = Arc::new(ms1);
+    let ms2 = Arc::new(ms2);
+
+    let rms0 = LocalMeili::new(ms0.clone()).await;
+    let rms1 = LocalMeili::new(ms1.clone()).await;
+    let rms2 = LocalMeili::new(ms2.clone()).await;
+
+    // set network
+    let network = json!(
+      {
+        "self": "ms0",
+        "leader": "ms0",
+        "remotes": {
+          "ms0": {
+              "url": rms0.url()
+          },
+          "ms1": {
+              "url": rms1.url()
+          },
+          "ms2": {
+              "url": rms2.url()
+          },
+        },
+        "shards": {
+          "ms0": {
+            "remotes": ["ms0"]
+          },
+          "ms1": {
+            "remotes": ["ms1"]
+          },
+          "ms2": {
+            "remotes": ["ms2"]
+          }
+        }
+      }
+    );
+
+    println!("{}", serde_json::to_string_pretty(&network).unwrap());
+
+    let (task, status_code) = ms0.set_network(network.clone()).await;
+    snapshot!(status_code, @"202 Accepted");
+
+    let t0 = task.uid();
+    let (t, _) = ms0.get_task(t0).await;
+
+    let t1 = t["network"]["remote_tasks"]["ms1"]["taskUid"].as_u64().unwrap();
+    let t2 = t["network"]["remote_tasks"]["ms2"]["taskUid"].as_u64().unwrap();
+
+    ms0.wait_task(t0).await.succeeded();
+    ms1.wait_task(t1).await.succeeded();
+    ms2.wait_task(t2).await.succeeded();
+
+    // add documents
+    let documents = DOCUMENTS.clone();
+    let documents = documents.as_array().unwrap();
+    let index0 = ms0.index("test");
+    let _index1 = ms1.index("test");
+    let _index2 = ms2.index("test");
+
+    let (task, _status_code) = index0.add_documents(json!(documents), None).await;
+
+    let t0 = task.uid();
+    let (t, _) = ms0.get_task(task.uid()).await;
+    let t1 = t["network"]["remote_tasks"]["ms1"]["taskUid"].as_u64().unwrap();
+    let t2 = t["network"]["remote_tasks"]["ms2"]["taskUid"].as_u64().unwrap();
+
+    ms0.wait_task(t0).await.succeeded();
+    ms1.wait_task(t1).await.succeeded();
+    ms2.wait_task(t2).await.succeeded();
+
+    // no distinct
+    let request = json!({
+        "federation": {
+          "facetsByIndex": {
+            "test":["title", "color"],
+          },
+          "mergeFacets": {}
+        },
+        "queries": [
+            {
+                "q": "",
+                "attributesToRetrieve": ["title"],
+                "indexUid": "test",
+                "federationOptions": {
+                    "remote": "ms0"
+                }
+            },
+            {
+                "q": "",
+                "attributesToRetrieve": ["title"],
+                "indexUid": "test",
+                "federationOptions": {
+                    "remote": "ms1"
+                }
+            },
+            {
+                "q": "",
+                "attributesToRetrieve": ["title"],
+                "indexUid": "test",
+                "federationOptions": {
+                    "remote": "ms2"
+                }
+            },
+        ]
+    });
+
+    let (response, _status_code) = ms0.multi_search(request.clone()).await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response, { ".processingTimeMs" => "[time]", ".requestUid" => "[uuid]" }), @r###"
+    {
+      "hits": [
+        {
+          "title": "Escape Room",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": 1.0,
+            "remote": "ms1"
+          }
+        },
+        {
+          "title": "Gläss",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": 1.0,
+            "remote": "ms1"
+          }
+        },
+        {
+          "title": "Shazam!",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 2,
+            "weightedRankingScore": 1.0,
+            "remote": "ms2"
+          }
+        },
+        {
+          "title": "Captain Marvel",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 2,
+            "weightedRankingScore": 1.0,
+            "remote": "ms2"
+          }
+        },
+        {
+          "title": "How to Train Your Dragon: The Hidden World",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 2,
+            "weightedRankingScore": 1.0,
+            "remote": "ms2"
+          }
+        }
+      ],
+      "processingTimeMs": "[time]",
+      "limit": 20,
+      "offset": 0,
+      "estimatedTotalHits": 5,
+      "facetDistribution": {
+        "color": {
+          "blue": 3,
+          "green": 2,
+          "red": 3,
+          "yellow": 2
+        },
+        "title": {
+          "Captain Marvel": 1,
+          "Escape Room": 1,
+          "Gläss": 1,
+          "How to Train Your Dragon: The Hidden World": 1,
+          "Shazam!": 1
+        }
+      },
+      "facetStats": {},
+      "requestUid": "[uuid]",
+      "remoteErrors": {}
+    }
+    "###);
+
+    // with distinct
+    let request = json!({
+        "federation": {
+          "distinct": "color",
+          "facetsByIndex": {
+            "test":["title", "color"],
+          },
+          "mergeFacets": {}
+        },
+        "queries": [
+            {
+                "q": "",
+                "attributesToRetrieve": ["title"],
+                "indexUid": "test",
+                "federationOptions": {
+                    "remote": "ms0"
+                }
+            },
+            {
+                "q": "",
+                "attributesToRetrieve": ["title"],
+                "indexUid": "test",
+                "federationOptions": {
+                    "remote": "ms1"
+                }
+            },
+            {
+                "q": "",
+                "attributesToRetrieve": ["title"],
+                "indexUid": "test",
+                "federationOptions": {
+                    "remote": "ms2"
+                }
+            },
+        ]
+    });
+
+    let (response, _status_code) = ms0.multi_search(request.clone()).await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response, { ".processingTimeMs" => "[time]", ".requestUid" => "[uuid]" }), @r###"
+    {
+      "hits": [
+        {
+          "title": "Escape Room",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": 1.0,
+            "remote": "ms1"
+          }
+        },
+        {
+          "title": "Shazam!",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 2,
+            "weightedRankingScore": 1.0,
+            "remote": "ms2"
+          }
+        }
+      ],
+      "processingTimeMs": "[time]",
+      "limit": 20,
+      "offset": 0,
+      "estimatedTotalHits": 2,
+      "facetDistribution": {
+        "color": {
+          "blue": 1,
+          "green": 1,
+          "red": 1,
+          "yellow": 1
+        },
+        "title": {
+          "Escape Room": 1,
+          "Shazam!": 1
+        }
+      },
+      "facetStats": {},
+      "requestUid": "[uuid]",
+      "remoteErrors": {}
+    }
+    "###);
+
+    // useNetwork
+    let request = json!(
+    {
+        "q": "",
+        "useNetwork": true,
+        "facets": ["title", "color"],
+        "attributesToRetrieve": ["title"],
+        "distinct": "color"
+    });
+
+    let (response, code) = index0.search_post(request.clone()).await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response, { ".processingTimeMs" => "[time]", ".requestUid" => "[uuid]" }), @r###"
+    {
+      "hits": [
+        {
+          "title": "Escape Room",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": 1.0,
+            "remote": "ms1"
+          }
+        },
+        {
+          "title": "Shazam!",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 2,
+            "weightedRankingScore": 1.0,
+            "remote": "ms2"
+          }
+        }
+      ],
+      "query": "",
+      "processingTimeMs": "[time]",
+      "limit": 20,
+      "offset": 0,
+      "estimatedTotalHits": 2,
+      "facetDistribution": {
+        "color": {
+          "blue": 1,
+          "green": 1,
+          "red": 1,
+          "yellow": 1
+        },
+        "title": {
+          "Escape Room": 1,
+          "Shazam!": 1
+        }
+      },
+      "facetStats": {},
+      "requestUid": "[uuid]",
+      "remoteErrors": {}
+    }
+    "###);
+}
+
+#[cfg(feature = "enterprise")]
+#[actix_rt::test]
 async fn remote_auto_sharding_auto_search() {
     let ms0 = Server::new().await;
     let ms1 = Server::new().await;
@@ -4688,6 +5831,107 @@ async fn remote_auto_sharding_auto_search() {
       "estimatedTotalHits": 5,
       "requestUid": "[uuid]",
       "remoteErrors": {}
+    }
+    "###);
+
+    // perform search with implicit network
+    let query = "badman returns";
+    let request = json!(
+    {
+        "q": query,
+        // default to useNetwork: true in sharding context
+    });
+
+    let (response, code) = index0.search_post(request.clone()).await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response, { ".processingTimeMs" => "[time]", ".requestUid" => "[uuid]" }), @r###"
+    {
+      "hits": [
+        {
+          "title": "Batman Returns",
+          "id": "C",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 2,
+            "weightedRankingScore": 0.8317901234567902,
+            "remote": "ms2"
+          }
+        },
+        {
+          "title": "Batman the dark knight returns: Part 1",
+          "id": "A",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": 0.7028218694885362,
+            "remote": "ms1"
+          }
+        },
+        {
+          "title": "Batman the dark knight returns: Part 2",
+          "id": "B",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 1,
+            "weightedRankingScore": 0.7028218694885362,
+            "remote": "ms1"
+          }
+        },
+        {
+          "title": "Badman",
+          "id": "E",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 2,
+            "weightedRankingScore": 0.5,
+            "remote": "ms2"
+          }
+        },
+        {
+          "title": "Batman",
+          "id": "D",
+          "_federation": {
+            "indexUid": "test",
+            "queriesPosition": 0,
+            "weightedRankingScore": 0.23106060606060605,
+            "remote": "ms0"
+          }
+        }
+      ],
+      "query": "badman returns",
+      "processingTimeMs": "[time]",
+      "limit": 20,
+      "offset": 0,
+      "estimatedTotalHits": 5,
+      "requestUid": "[uuid]",
+      "remoteErrors": {}
+    }
+    "###);
+
+    // perform search with explicitly disabled network
+    let query = "badman returns";
+    let request = json!(
+    {
+        "q": query,
+        "useNetwork": false,
+    });
+
+    let (response, code) = index0.search_post(request.clone()).await;
+    snapshot!(code, @"200 OK");
+    snapshot!(json_string!(response, { ".processingTimeMs" => "[time]", ".requestUid" => "[uuid]" }), @r###"
+    {
+      "hits": [
+        {
+          "title": "Batman",
+          "id": "D"
+        }
+      ],
+      "query": "badman returns",
+      "processingTimeMs": "[time]",
+      "limit": 20,
+      "offset": 0,
+      "estimatedTotalHits": 1,
+      "requestUid": "[uuid]"
     }
     "###);
 }

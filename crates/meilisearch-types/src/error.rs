@@ -271,6 +271,7 @@ InvalidMultiSearchFederationOptions            , InvalidRequest       , BAD_REQU
 InvalidMultiSearchMaxValuesPerFacet            , InvalidRequest       , BAD_REQUEST ;
 InvalidMultiSearchMergeFacets                  , InvalidRequest       , BAD_REQUEST ;
 InvalidMultiSearchQueryFacets                  , InvalidRequest       , BAD_REQUEST ;
+InvalidMultiSearchDistinct                     , InvalidRequest       , BAD_REQUEST ;
 InvalidMultiSearchQueryPagination              , InvalidRequest       , BAD_REQUEST ;
 InvalidMultiSearchQueryRankingRules            , InvalidRequest       , BAD_REQUEST ;
 InvalidMultiSearchQueryPosition                , InvalidRequest       , BAD_REQUEST ;
@@ -337,6 +338,7 @@ InvalidSettingsFacetSearch                     , InvalidRequest       , BAD_REQU
 InvalidSettingsPrefixSearch                    , InvalidRequest       , BAD_REQUEST ;
 InvalidSettingsFaceting                        , InvalidRequest       , BAD_REQUEST ;
 InvalidSettingsFilterableAttributes            , InvalidRequest       , BAD_REQUEST ;
+InvalidSettingsForeignKeys                     , InvalidRequest       , BAD_REQUEST ;
 InvalidSettingsPagination                      , InvalidRequest       , BAD_REQUEST ;
 InvalidSettingsSearchCutoffMs                  , InvalidRequest       , BAD_REQUEST ;
 InvalidSettingsEmbedders                       , InvalidRequest       , BAD_REQUEST ;
@@ -464,7 +466,18 @@ ImmutableWebhook                               , InvalidRequest       , BAD_REQU
 InvalidWebhookUuid                             , InvalidRequest       , BAD_REQUEST ;
 WebhookNotFound                                , InvalidRequest       , NOT_FOUND ;
 ImmutableWebhookUuid                           , InvalidRequest       , BAD_REQUEST ;
-ImmutableWebhookIsEditable                     , InvalidRequest       , BAD_REQUEST
+ImmutableWebhookIsEditable                     , InvalidRequest       , BAD_REQUEST ;
+InvalidDynamicSearchRuleOffset                 , InvalidRequest       , BAD_REQUEST ;
+InvalidDynamicSearchRuleLimit                  , InvalidRequest       , BAD_REQUEST ;
+InvalidDynamicSearchRuleFilter                 , InvalidRequest       , BAD_REQUEST ;
+InvalidDynamicSearchRuleDescription            , InvalidRequest       , BAD_REQUEST ;
+InvalidDynamicSearchRulePriority               , InvalidRequest       , BAD_REQUEST ;
+InvalidDynamicSearchRuleActive                 , InvalidRequest       , BAD_REQUEST ;
+InvalidDynamicSearchRuleConditions             , InvalidRequest       , BAD_REQUEST ;
+InvalidDynamicSearchRuleActions                , InvalidRequest       , BAD_REQUEST ;
+InvalidDynamicSearchRuleFilterAttributePatterns, InvalidRequest       , BAD_REQUEST ;
+InvalidDynamicSearchRuleFilterActive           , InvalidRequest       , BAD_REQUEST ;
+DynamicSearchRuleNotFound                      , InvalidRequest       , NOT_FOUND
 }
 
 impl ErrorCode for JoinError {

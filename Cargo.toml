@@ -21,12 +21,14 @@ members = [
     "crates/build-info",
     "crates/openapi-generator",
     "crates/http-client",
+    "crates/routes-macros",
+    "crates/routes",
     "external-crates/async-openai",
     "external-crates/async-openai-macros",
 ]
 
 [workspace.package]
-version = "1.37.0"
+version = "1.41.0"
 authors = [
     "Hanzo AI <dev@hanzo.ai>",
 ]
@@ -37,8 +39,15 @@ readme = "README.md"
 edition = "2021"
 license = "MIT"
 
+[workspace.dependencies]
+mimalloc = { version = "0.1.48", default-features = false, features = ["v3", "override"] }
+
 [profile.release]
 codegen-units = 1
+
+[profile.release-with-debug]
+inherits = "release"
+debug = true
 
 # We now compile heed without the NDEBUG define for better performance.
 # However, we still enable debug assertions for a better detection of

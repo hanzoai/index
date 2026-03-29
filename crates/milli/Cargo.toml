@@ -94,7 +94,7 @@ rhai = { version = "1.23.6", features = [
     "sync",
 ] }
 arroy = "0.6.4-nested-rtxns"
-hannoy = { version = "0.1.6-nested-rtxns", features = ["arroy"] }
+hannoy = { version = "0.1.7-nested-rtxns", features = ["arroy"] }
 rand = "0.8.5"
 tracing = "0.1.41"
 url = "2.5.7"
@@ -125,7 +125,7 @@ geo-types = "=0.7.17" # fixed version: see <https://github.com/meilisearch/meili
 zerometry = "0.3.0"
 
 [dev-dependencies]
-mimalloc = { version = "0.1.48", default-features = false }
+mimalloc = { workspace = true }
 # fixed version due to format breakages in v1.40
 insta = "=1.39.0"
 maplit = "1.0.2"

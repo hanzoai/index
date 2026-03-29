@@ -401,6 +401,24 @@ pub enum Action {
     #[serde(rename = "fields.post")]
     #[deserr(rename = "fields.post")]
     FieldsPost,
+    #[serde(rename = "tasks.compact")]
+    #[deserr(rename = "tasks.compact")]
+    TasksCompact,
+    #[serde(rename = "dynamicSearchRules.get")]
+    #[deserr(rename = "dynamicSearchRules.get")]
+    DynamicSearchRulesGet,
+    #[serde(rename = "dynamicSearchRules.create")]
+    #[deserr(rename = "dynamicSearchRules.create")]
+    DynamicSearchRulesCreate,
+    #[serde(rename = "dynamicSearchRules.update")]
+    #[deserr(rename = "dynamicSearchRules.update")]
+    DynamicSearchRulesUpdate,
+    #[serde(rename = "dynamicSearchRules.delete")]
+    #[deserr(rename = "dynamicSearchRules.delete")]
+    DynamicSearchRulesDelete,
+    #[serde(rename = "dynamicSearchRules.*")]
+    #[deserr(rename = "dynamicSearchRules.*")]
+    DynamicSearchRulesAll,
 }
 
 impl Action {
@@ -424,6 +442,7 @@ impl Action {
             TASKS_CANCEL => Some(Self::TasksCancel),
             TASKS_DELETE => Some(Self::TasksDelete),
             TASKS_GET => Some(Self::TasksGet),
+            TASKS_COMPACT => Some(Self::TasksCompact),
             SETTINGS_ALL => Some(Self::SettingsAll),
             SETTINGS_GET => Some(Self::SettingsGet),
             SETTINGS_UPDATE => Some(Self::SettingsUpdate),
@@ -459,6 +478,11 @@ impl Action {
             WEBHOOKS_CREATE => Some(Self::WebhooksCreate),
             WEBHOOKS_ALL => Some(Self::WebhooksAll),
             FIELDS_POST => Some(Self::FieldsPost),
+            DYNAMIC_SEARCH_RULES_GET => Some(Self::DynamicSearchRulesGet),
+            DYNAMIC_SEARCH_RULES_CREATE => Some(Self::DynamicSearchRulesCreate),
+            DYNAMIC_SEARCH_RULES_UPDATE => Some(Self::DynamicSearchRulesUpdate),
+            DYNAMIC_SEARCH_RULES_DELETE => Some(Self::DynamicSearchRulesDelete),
+            DYNAMIC_SEARCH_RULES_ALL => Some(Self::DynamicSearchRulesAll),
             _otherwise => None,
         }
     }
@@ -470,10 +494,20 @@ impl Action {
         // It's using an exhaustive match to force the addition of new actions.
         match self {
             // Any action that expands to others must return false, as it wouldn't be able to expand recursively.
-            All | AllGet | DocumentsAll | IndexesAll | ChatsAll | TasksAll | SettingsAll
-            | StatsAll | MetricsAll | DumpsAll | SnapshotsAll | ChatsSettingsAll | WebhooksAll => {
-                false
-            }
+            All
+            | AllGet
+            | DocumentsAll
+            | IndexesAll
+            | ChatsAll
+            | TasksAll
+            | SettingsAll
+            | StatsAll
+            | MetricsAll
+            | DumpsAll
+            | SnapshotsAll
+            | ChatsSettingsAll
+            | WebhooksAll
+            | DynamicSearchRulesAll => false,
 
             Search => true,
             DocumentsAdd => false,
@@ -514,6 +548,11 @@ impl Action {
             WebhooksDelete => false,
             WebhooksCreate => false,
             FieldsPost => true,
+            TasksCompact => false,
+            DynamicSearchRulesGet => true,
+            DynamicSearchRulesCreate => false,
+            DynamicSearchRulesUpdate => false,
+            DynamicSearchRulesDelete => false,
         }
     }
 
@@ -543,6 +582,7 @@ pub mod actions {
     pub const TASKS_CANCEL: u8 = TasksCancel.repr();
     pub const TASKS_DELETE: u8 = TasksDelete.repr();
     pub const TASKS_GET: u8 = TasksGet.repr();
+    pub const TASKS_COMPACT: u8 = TasksCompact.repr();
     pub const SETTINGS_ALL: u8 = SettingsAll.repr();
     pub const SETTINGS_GET: u8 = SettingsGet.repr();
     pub const SETTINGS_UPDATE: u8 = SettingsUpdate.repr();
@@ -581,6 +621,12 @@ pub mod actions {
     pub const WEBHOOKS_DELETE: u8 = WebhooksDelete.repr();
     pub const WEBHOOKS_CREATE: u8 = WebhooksCreate.repr();
     pub const WEBHOOKS_ALL: u8 = WebhooksAll.repr();
+
+    pub const DYNAMIC_SEARCH_RULES_GET: u8 = DynamicSearchRulesGet.repr();
+    pub const DYNAMIC_SEARCH_RULES_CREATE: u8 = DynamicSearchRulesCreate.repr();
+    pub const DYNAMIC_SEARCH_RULES_UPDATE: u8 = DynamicSearchRulesUpdate.repr();
+    pub const DYNAMIC_SEARCH_RULES_DELETE: u8 = DynamicSearchRulesDelete.repr();
+    pub const DYNAMIC_SEARCH_RULES_ALL: u8 = DynamicSearchRulesAll.repr();
 }
 
 #[cfg(test)]
@@ -642,6 +688,13 @@ pub(crate) mod test {
         assert!(WebhooksCreate.repr() == 48 && WEBHOOKS_CREATE == 48);
         assert!(WebhooksAll.repr() == 49 && WEBHOOKS_ALL == 49);
         assert!(IndexesCompact.repr() == 50 && INDEXES_COMPACT == 50);
+        assert!(FieldsPost.repr() == 51 && FIELDS_POST == 51);
+        assert!(TasksCompact.repr() == 52 && TASKS_COMPACT == 52);
+        assert!(DynamicSearchRulesGet.repr() == 53 && DYNAMIC_SEARCH_RULES_GET == 53);
+        assert!(DynamicSearchRulesCreate.repr() == 54 && DYNAMIC_SEARCH_RULES_CREATE == 54);
+        assert!(DynamicSearchRulesUpdate.repr() == 55 && DYNAMIC_SEARCH_RULES_UPDATE == 55);
+        assert!(DynamicSearchRulesDelete.repr() == 56 && DYNAMIC_SEARCH_RULES_DELETE == 56);
+        assert!(DynamicSearchRulesAll.repr() == 57 && DYNAMIC_SEARCH_RULES_ALL == 57);
     }
 
     #[test]

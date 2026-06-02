@@ -1,136 +1,153 @@
 <p align="center">
-  <a href="https://hanzo.ai" target="_blank">
-    <img src="https://github.com/hanzoai/.github/raw/main/profile/logo-light.png" alt="Hanzo AI" width="300">
+  <a href="https://www.meilisearch.com/?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=logo#gh-light-mode-only" target="_blank">
+    <img src="assets/meilisearch-logo-light.svg?sanitize=true#gh-light-mode-only">
+  </a>
+  <a href="https://www.meilisearch.com/?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=logo#gh-dark-mode-only" target="_blank">
+    <img src="assets/meilisearch-logo-dark.svg?sanitize=true#gh-dark-mode-only">
   </a>
 </p>
 
-<h1 align="center">Hanzo Search</h1>
-
-<p align="center">
-  A lightning-fast search engine built on Meilisearch, optimized for AI workloads and seamless integration with the Hanzo ecosystem.
-</p>
-
 <h4 align="center">
-  <a href="https://hanzo.ai">Website</a> |
-  <a href="https://docs.hanzo.ai/search">Documentation</a> |
-  <a href="https://github.com/hanzoai/search">GitHub</a>
+  <a href="https://www.meilisearch.com/?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=nav">Website</a> |
+  <a href="https://roadmap.meilisearch.com/tabs/1-under-consideration">Roadmap</a> |
+  <a href="https://www.meilisearch.com/pricing?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=nav">Meilisearch Cloud</a> |
+  <a href="https://blog.meilisearch.com/?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=nav">Blog</a> |
+  <a href="https://www.meilisearch.com/docs?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=nav">Documentation</a> |
+  <a href="https://www.meilisearch.com/docs/faq?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=nav">FAQ</a> |
+  <a href="https://discord.meilisearch.com/?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=nav">Discord</a>
 </h4>
 
 <p align="center">
-  <a href="https://github.com/hanzoai/search/actions"><img src="https://img.shields.io/github/actions/workflow/status/hanzoai/search/ci.yml?branch=main&label=CI" alt="CI Status"></a>
-  <a href="https://github.com/hanzoai/search/releases"><img src="https://img.shields.io/github/v/release/hanzoai/search" alt="Latest Release"></a>
-  <a href="https://github.com/hanzoai/search/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-informational" alt="License"></a>
-  <a href="https://deps.rs/repo/github/hanzoai/search"><img src="https://deps.rs/repo/github/hanzoai/search/status.svg" alt="Dependency Status"></a>
+  <a href="https://deps.rs/repo/github/meilisearch/meilisearch"><img src="https://deps.rs/repo/github/meilisearch/meilisearch/status.svg" alt="Dependency status"></a>
+  <a href="https://github.com/meilisearch/meilisearch/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-informational" alt="License"></a>
+  <a href="https://github.com/meilisearch/meilisearch/queue"><img alt="Merge Queues enabled" src="https://img.shields.io/badge/Merge_Queues-enabled-%2357cf60?logo=github"></a>
 </p>
 
----
+<p align="center">⚡ A lightning-fast search engine that fits effortlessly into your apps, websites, and workflow 🔍</p>
 
-## Features
+[Meilisearch](https://www.meilisearch.com?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=intro) helps you shape a delightful search experience in a snap, offering features that work out of the box to speed up your workflow.
 
-- **Hybrid Search** -- Combine semantic and full-text search for maximum relevance across structured and unstructured data
-- **Search-as-you-type** -- Sub-50ms query responses for instant, interactive search experiences
-- **Typo Tolerance** -- Return relevant results even when queries contain typos and misspellings
-- **Filtering and Faceted Search** -- Build rich, filterable search interfaces with custom facets in a few lines of code
-- **Sorting** -- Sort results by price, date, relevance score, or any custom attribute
-- **Synonym Support** -- Configure synonym mappings to broaden search coverage without duplicating data
-- **Geosearch** -- Filter and sort documents by geographic coordinates and distance
-- **Multi-Language** -- Search datasets in any language, with optimized tokenization for Chinese, Japanese, Hebrew, and Latin-alphabet languages
-- **Security and Multi-Tenancy** -- Fine-grained API key permissions and tenant token isolation for SaaS applications
-- **AI-Ready** -- First-class integration with the Model Context Protocol (MCP) and LangChain for retrieval-augmented generation (RAG) and agent workflows
-- **RESTful API** -- Clean, well-documented HTTP API for indexing, searching, and managing configuration
-
-## Quick Start
-
-### Docker
-
-```bash
-docker run -d \
-  --name hanzo-search \
-  -p 7700:7700 \
-  -v hanzo_search_data:/meili_data \
-  hanzoai/search:latest \
-  hanzo-search --master-key="YOUR_MASTER_KEY"
-```
-
-### From Source
-
-```bash
-git clone https://github.com/hanzoai/search.git
-cd search
-cargo build --release
-./target/release/hanzo-search --master-key="YOUR_MASTER_KEY"
-```
-
-### Add Documents
-
-```bash
-curl -X POST 'http://localhost:7700/indexes/products/documents' \
-  -H 'Content-Type: application/json' \
-  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
-  --data-binary '[
-    { "id": 1, "title": "Hanzo Agent SDK", "category": "AI" },
-    { "id": 2, "title": "Hanzo MCP Server", "category": "Infrastructure" },
-    { "id": 3, "title": "Hanzo LLM Gateway", "category": "AI" }
-  ]'
-```
-
-### Search
-
-```bash
-curl 'http://localhost:7700/indexes/products/search' \
-  -H 'Authorization: Bearer YOUR_MASTER_KEY' \
-  --data-binary '{ "q": "agent" }'
-```
-
-## SDKs
-
-Hanzo Search provides official SDKs for seamless integration:
-
-| Language | Package | Repository |
-|----------|---------|------------|
-| Go | `github.com/hanzoai/search-go` | [hanzoai/search-go](https://github.com/hanzoai/search-go) |
-| JavaScript / TypeScript | `@hanzo/search` | [hanzoai/search-js](https://github.com/hanzoai/search-js) |
-| Python | `hanzo-search` | [hanzoai/search-python](https://github.com/hanzoai/search-python) |
-| Rust | `hanzo-search` | [hanzoai/search-rust](https://github.com/hanzoai/search-rust) |
-
-## Documentation
-
-Full documentation is available at [docs.hanzo.ai](https://docs.hanzo.ai).
-
-- [Getting Started](https://docs.hanzo.ai/search/getting-started)
-- [API Reference](https://docs.hanzo.ai/search/api-reference)
-- [Configuration](https://docs.hanzo.ai/search/configuration)
-- [Hybrid Search Guide](https://docs.hanzo.ai/search/hybrid-search)
-- [Security and API Keys](https://docs.hanzo.ai/search/security)
-- [MCP Integration](https://docs.hanzo.ai/search/mcp)
-
-## Editions and Licensing
-
-### Community Edition
-
-- Open source under the [MIT License](./LICENSE)
-- Full search engine with hybrid, semantic, and full-text search
-- Free for any use, including commercial
-
-### Enterprise Edition
-
-- Advanced features: sharding, S3-streaming snapshots, dedicated support
-- Governed by the [Business Source License 1.1](./LICENSE-EE)
-- Contact [sales@hanzo.ai](mailto:sales@hanzo.ai) for production use
-
-## Contributing
-
-Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a pull request.
-
-- [Open an issue](https://github.com/hanzoai/search/issues) to report bugs
-- [Start a discussion](https://github.com/hanzoai/search/discussions) for feature requests
-
----
-
-<p align="center">
-  Based on <a href="https://github.com/meilisearch/meilisearch">Meilisearch</a>. See upstream <a href="https://github.com/meilisearch/meilisearch/blob/main/LICENSE">LICENSE</a> for attribution.
+<p align="center" name="demo">
+  <a href="https://where2watch.meilisearch.com/?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=demo-gif#gh-light-mode-only" target="_blank">
+    <img src="assets/demo-light.gif#gh-light-mode-only" alt="A bright colored application for finding movies screening near the user">
+  </a>
+  <a href="https://where2watch.meilisearch.com/?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=demo-gif#gh-dark-mode-only" target="_blank">
+    <img src="assets/demo-dark.gif#gh-dark-mode-only" alt="A dark colored application for finding movies screening near the user">
+  </a>
 </p>
 
-<p align="center">
-  Copyright 2025 Hanzo AI Inc. All rights reserved.
-</p>
+## 🖥 Examples
+
+- [**Movies**](https://where2watch.meilisearch.com/?utm_campaign=oss&utm_source=github&utm_medium=organization) — An application to help you find streaming platforms to watch movies using [hybrid search](https://www.meilisearch.com/solutions/hybrid-search?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=demos).
+- [**Flickr**](https://flickr.meilisearch.com/?utm_campaign=oss&utm_source=github&utm_medium=organization) — Search and explore one hundred million Flickr images with semantic search.
+- [**Ecommerce**](https://ecommerce.meilisearch.com/?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=demos) — Ecommerce website using disjunctive [facets](https://www.meilisearch.com/docs/learn/fine_tuning_results/faceted_search?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=demos), range and rating filtering, and pagination.
+- [**Songs**](https://music.meilisearch.com/?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=demos) — Search through 47 million of songs.
+- [**SaaS**](https://saas.meilisearch.com/?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=demos) — Search for contacts, deals, and companies in this [multi-tenant](https://www.meilisearch.com/docs/learn/security/multitenancy_tenant_tokens?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=demos) CRM application.
+
+See the list of all our example apps in our [demos repository](https://github.com/meilisearch/demos).
+
+## ✨ Features
+- **Hybrid search:** Combine the best of both [semantic](https://www.meilisearch.com/docs/learn/experimental/vector_search?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=features) & full-text search to get the most relevant results
+- **Search-as-you-type:** Find & display results in less than 50 milliseconds to provide an intuitive experience
+- **[Typo tolerance](https://www.meilisearch.com/docs/learn/relevancy/typo_tolerance_settings?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=features):** get relevant matches even when queries contain typos and misspellings
+- **[Filtering](https://www.meilisearch.com/docs/learn/fine_tuning_results/filtering?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=features) and [faceted search](https://www.meilisearch.com/docs/learn/fine_tuning_results/faceted_search?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=features):** enhance your users' search experience with custom filters and build a faceted search interface in a few lines of code
+- **[Sorting](https://www.meilisearch.com/docs/learn/fine_tuning_results/sorting?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=features):** sort results based on price, date, or pretty much anything else your users need
+- **[Synonym support](https://www.meilisearch.com/docs/learn/relevancy/synonyms?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=features):** configure synonyms to include more relevant content in your search results
+- **[Geosearch](https://www.meilisearch.com/docs/learn/fine_tuning_results/geosearch?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=features):** filter and sort documents based on geographic data
+- **[Extensive language support](https://www.meilisearch.com/docs/learn/what_is_meilisearch/language?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=features):** search datasets in any language, with optimized support for Chinese, Japanese, Hebrew, and languages using the Latin alphabet
+- **[Security management](https://www.meilisearch.com/docs/learn/security/master_api_keys?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=features):** control which users can access what data with API keys that allow fine-grained permissions handling
+- **[Multi-Tenancy](https://www.meilisearch.com/docs/learn/security/multitenancy_tenant_tokens?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=features):** personalize search results for any number of application tenants
+- **Highly Customizable:** customize Meilisearch to your specific needs or use our out-of-the-box and hassle-free presets
+- **[RESTful API](https://www.meilisearch.com/docs/reference/api/overview?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=features):** integrate Meilisearch in your technical stack with our plugins and SDKs
+- **AI-ready:** works out of the box with [LangChain](https://www.meilisearch.com/with/LangChain) and the [Model Context Protocol (MCP)](https://github.com/meilisearch/meilisearch-mcp)
+- **Easy to install, deploy, and maintain**
+
+## 📖 Documentation
+
+You can consult Meilisearch's documentation at [meilisearch.com/docs](https://www.meilisearch.com/docs/?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=docs).
+
+## 🚀 Getting started
+
+For basic instructions on how to set up Meilisearch, add documents to an index, and search for documents, take a look at our [documentation](https://www.meilisearch.com/docs?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=get-started) guide.
+
+## 🌍 Supercharge your Meilisearch experience
+
+Say goodbye to server deployment and manual updates with [Meilisearch Cloud](https://www.meilisearch.com/cloud?utm_campaign=oss&utm_source=github&utm_medium=meilisearch). Additional features include analytics & monitoring in many regions around the world. No credit card is required.
+
+## 🧰 SDKs & integration tools
+
+Install one of our SDKs in your project for seamless integration between Meilisearch and your favorite language or framework!
+
+Take a look at the complete [Meilisearch integration list](https://www.meilisearch.com/docs/learn/what_is_meilisearch/sdks?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=sdks-link).
+
+[![Logos belonging to different languages and frameworks supported by Meilisearch, including React, Ruby on Rails, Go, Rust, and PHP](assets/integrations.png)](https://www.meilisearch.com/docs/learn/what_is_meilisearch/sdks?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=sdks-logos)
+
+## ⚙️ Advanced usage
+
+Experienced users will want to keep our [API Reference](https://www.meilisearch.com/docs/reference/api/overview?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=advanced) close at hand.
+
+We also offer a wide range of dedicated guides to all Meilisearch features, such as [filtering](https://www.meilisearch.com/docs/learn/fine_tuning_results/filtering?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=advanced), [sorting](https://www.meilisearch.com/docs/learn/fine_tuning_results/sorting?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=advanced), [geosearch](https://www.meilisearch.com/docs/learn/fine_tuning_results/geosearch?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=advanced), [API keys](https://www.meilisearch.com/docs/learn/security/master_api_keys?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=advanced), and [tenant tokens](https://www.meilisearch.com/docs/learn/security/tenant_tokens?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=advanced).
+
+Finally, for more in-depth information, refer to our articles explaining fundamental Meilisearch concepts such as [documents](https://www.meilisearch.com/docs/learn/core_concepts/documents?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=advanced) and [indexes](https://www.meilisearch.com/docs/learn/core_concepts/indexes?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=advanced).
+
+## 🧾 Editions & Licensing
+
+Meilisearch is available in two editions:
+
+### 🧪 Community Edition (CE)
+
+- Fully open source under the [MIT license](./LICENSE)
+- Core search engine with fast and relevant full-text, semantic or hybrid search
+- Free to use for anyone, including commercial usage
+
+### 🏢 Enterprise Edition (EE)
+
+- Includes advanced features such as:
+  - Sharding
+  - S3-streaming snapshots
+- Governed by a [commercial license](./LICENSE-EE) or the [Business Source License 1.1](https://mariadb.com/bsl11)
+- Not allowed in production without a commercial agreement with Meilisearch.
+  - You may use, modify, and distribute the Licensed Work for non-production purposes only, such as testing, development, or evaluation.
+
+Want access to Enterprise features? → Contact us at [sales@meilisearch.com](maito:sales@meilisearch.com).
+
+### 📦 External crates
+
+Meilisearch vendors the following MIT-licensed external crates with code modifications to use the HTTP client located in `crates/http-clients`:
+
+- `external-crates/async-openai` and `external-crates/async-openai-macros` from <https://github.com/64bit/async-openai>
+- `external-crates/reqwest-eventsource` from <https://github.com/jpopesculian/reqwest-eventsource>
+
+## 📊 Telemetry
+
+Meilisearch collects **anonymized** user data to help us improve our product. You can [deactivate this](https://www.meilisearch.com/docs/learn/what_is_meilisearch/telemetry?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=telemetry#how-to-disable-data-collection) whenever you want.
+
+To request deletion of collected data, please write to us at [privacy@meilisearch.com](mailto:privacy@meilisearch.com). Remember to include your `Instance UID` in the message, as this helps us quickly find and delete your data.
+
+If you want to know more about the kind of data we collect and what we use it for, check the [telemetry section](https://www.meilisearch.com/docs/learn/what_is_meilisearch/telemetry?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=telemetry#how-to-disable-data-collection) of our documentation.
+
+## 📫 Get in touch!
+
+Meilisearch is a search engine created by [Meili](https://www.meilisearch.com/careers), a software development company headquartered in France and with team members all over the world. Want to know more about us? [Check out our blog!](https://blog.meilisearch.com/?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=contact)
+
+🗞 [Subscribe to our newsletter](https://share-eu1.hsforms.com/1LN5N0x_GQgq7ss7tXmSykwfg3aq) if you don't want to miss any updates! We promise we won't clutter your mailbox: we only send one edition every two months.
+
+💌 Want to make a suggestion or give feedback? Here are some of the channels where you can reach us:
+
+- For feature requests, please visit our [product repository](https://github.com/meilisearch/product/discussions)
+- Found a bug? Open an [issue](https://github.com/meilisearch/meilisearch/issues)!
+- Want to be part of our Discord community? [Join us!](https://discord.meilisearch.com/?utm_campaign=oss&utm_source=github&utm_medium=meilisearch&utm_content=contact)
+
+Thank you for your support!
+
+## 👩‍💻 Contributing
+
+Meilisearch is, and will always be, open-source! If you want to contribute to the project, please look at [our contribution guidelines](CONTRIBUTING.md).
+
+## 📦 Versioning
+
+Meilisearch releases and their associated binaries are available on the project's [releases page](https://github.com/meilisearch/meilisearch/releases).
+
+The binaries are versioned following [SemVer conventions](https://semver.org/). To know more, read our [versioning policy](./documentation/versioning-policy.md).
+
+Differently from the binaries, crates in this repository are not currently available on [crates.io](https://crates.io/) and do not follow [SemVer conventions](https://semver.org).

@@ -12,7 +12,6 @@ use crate::fields_ids_map::metadata::Metadata;
 use crate::update::new::document::DocumentContext;
 use crate::update::new::extract::cache::BalancedCaches;
 use crate::update::new::extract::perm_json_p::contained_in;
-use crate::update::new::extract::searchable::has_searchable_children;
 use crate::update::new::indexer::document_changes::{
     extract, DocumentChanges, Extractor, IndexingContext,
 };
@@ -363,7 +362,7 @@ impl WordDocidsExtractors {
                 return Err(UserError::AttributeLimitReached.into());
             };
 
-            let pattern_match = if meta.is_searchable() {
+            let pattern_match = if meta.is_searchable() == PatternMatch::Match {
                 PatternMatch::Match
             } else {
                 // TODO: should be a match on the field_name using `match_field_legacy` function,
@@ -463,50 +462,8 @@ impl WordDocidsExtractors {
         let mut buffer = BumpVec::with_capacity_in(buffer_size, &context.doc_alloc);
         cached_sorter.flush_fid_word_count(&mut buffer)
     }
-}
 
-pub struct WordDocidsSettingsExtractorsData<'a, SD> {
-    tokenizer: DocumentTokenizer<'a>,
-    max_memory_by_thread: Option<usize>,
-    buckets: usize,
-    settings_delta: &'a SD,
-}
-
-impl<'extractor, SD: SettingsDelta + Sync> SettingsChangeExtractor<'extractor>
-    for WordDocidsSettingsExtractorsData<'_, SD>
-{
-    type Data = RefCell<Option<WordDocidsBalancedCaches<'extractor>>>;
-
-    fn init_data<'doc>(&'doc self, extractor_alloc: &'extractor Bump) -> crate::Result<Self::Data> {
-        Ok(RefCell::new(Some(WordDocidsBalancedCaches::new_in(
-            self.buckets,
-            self.max_memory_by_thread,
-            extractor_alloc,
-        ))))
-    }
-
-    fn process<'doc>(
-        &'doc self,
-        documents: impl Iterator<Item = crate::Result<DocumentIdentifiers<'doc>>>,
-        context: &'doc DocumentContext<Self::Data>,
-    ) -> crate::Result<()> {
-        for document in documents {
-            let document = document?;
-            SettingsChangeWordDocidsExtractors::extract_document_from_settings_change(
-                document,
-                context,
-                &self.tokenizer,
-                self.settings_delta,
-            )?;
-        }
-        Ok(())
-    }
-}
-
-pub struct SettingsChangeWordDocidsExtractors;
-
-impl SettingsChangeWordDocidsExtractors {
-    pub fn run_extraction<'fid, 'indexer, 'index, 'extractor, SD, MSP>(
+    pub fn run_extraction_from_settings<'fid, 'indexer, 'index, 'extractor, SD, MSP>(
         settings_delta: &SD,
         documents: &'indexer DocumentsIndentifiers<'indexer>,
         indexing_context: IndexingContext<'fid, 'indexer, 'index, MSP>,
@@ -582,8 +539,6 @@ impl SettingsChangeWordDocidsExtractors {
 
         let new_fields_ids_map = settings_delta.new_fields_ids_map();
         let old_fields_ids_map = context.index.fields_ids_map_with_metadata(&context.rtxn)?;
-        let old_searchable = settings_delta.old_searchable_attributes().as_ref();
-        let new_searchable = settings_delta.new_searchable_attributes().as_ref();
 
         let current_document = document.current(
             &context.rtxn,
@@ -627,11 +582,23 @@ impl SettingsChangeWordDocidsExtractors {
                         ActionToOperate::ReindexAllFields
                     }
                     // At least one field is removed from the searchable fields => ReindexAllFields
-                    (Metadata { searchable: Some(_), .. }, Metadata { searchable: None, .. }) => {
-                        ActionToOperate::ReindexAllFields
-                    }
+                    (
+                        Metadata { searchable: (PatternMatch::Match, _), .. },
+                        Metadata { searchable: (PatternMatch::NoMatch, _), .. },
+                    )
+                    | (
+                        Metadata { searchable: (PatternMatch::Match, _), .. },
+                        Metadata { searchable: (PatternMatch::Parent, _), .. },
+                    ) => ActionToOperate::ReindexAllFields,
                     // At least one field is added in the searchable fields => IndexAddedFields
-                    (Metadata { searchable: None, .. }, Metadata { searchable: Some(_), .. }) => {
+                    (
+                        Metadata { searchable: (PatternMatch::NoMatch, _), .. },
+                        Metadata { searchable: (PatternMatch::Match, _), .. },
+                    )
+                    | (
+                        Metadata { searchable: (PatternMatch::Parent, _), .. },
+                        Metadata { searchable: (PatternMatch::Match, _), .. },
+                    ) => {
                         // We can safely overwrite the action, because we early return when action is ReindexAllFields.
                         ActionToOperate::IndexAddedFields
                     }
@@ -656,30 +623,29 @@ impl SettingsChangeWordDocidsExtractors {
             let old_field_metadata = old_fields_ids_map.metadata(field_id).unwrap();
             let new_field_metadata = new_fields_ids_map.metadata(field_id).unwrap();
 
+            let was_matching_searchable = old_field_metadata.is_searchable();
+            let is_matching_searchable = new_field_metadata.is_searchable();
+
             let pattern_match = match action {
                 ActionToOperate::ReindexAllFields => {
-                    if old_field_metadata.is_searchable() || new_field_metadata.is_searchable() {
-                        PatternMatch::Match
-                    // If any old or new field is searchable then we need to iterate over all fields
-                    // else if any field matches we need to iterate over all fields
-                    } else if has_searchable_children(
-                        field_name,
-                        old_searchable.zip(new_searchable).map(|(old, new)| old.iter().chain(new)),
-                    ) {
-                        PatternMatch::Parent
-                    } else {
-                        PatternMatch::NoMatch
+                    match (was_matching_searchable, is_matching_searchable) {
+                        // If any old or new field is searchable then we need to iterate over all fields
+                        (PatternMatch::Match, _) | (_, PatternMatch::Match) => PatternMatch::Match,
+                        // else if any child matches we need to iterate over all fields
+                        (PatternMatch::Parent, _) | (_, PatternMatch::Parent) => {
+                            PatternMatch::Parent
+                        }
+                        _ => PatternMatch::NoMatch,
                     }
                 }
                 ActionToOperate::IndexAddedFields => {
-                    // Was not searchable but now is
-                    if !old_field_metadata.is_searchable() && new_field_metadata.is_searchable() {
-                        PatternMatch::Match
-                    // If the field is now a parent of a searchable field
-                    } else if has_searchable_children(field_name, new_searchable) {
-                        PatternMatch::Parent
-                    } else {
-                        PatternMatch::NoMatch
+                    match (was_matching_searchable, is_matching_searchable) {
+                        // Was not searchable but now is
+                        (PatternMatch::NoMatch, PatternMatch::Match)
+                        | (PatternMatch::Parent, PatternMatch::Match) => PatternMatch::Match,
+                        // If the field is now a parent of a searchable field
+                        (_, PatternMatch::Parent) => PatternMatch::Parent,
+                        _ => PatternMatch::NoMatch,
                     }
                 }
                 ActionToOperate::SkipDocument => unreachable!(),
@@ -696,31 +662,42 @@ impl SettingsChangeWordDocidsExtractors {
 
             match (old_field_metadata, new_field_metadata) {
                 (
-                    Metadata { searchable: Some(_), exact: old_exact, .. },
-                    Metadata { searchable: None, .. },
+                    Metadata { searchable: (PatternMatch::Match, _), exact: old_exact, .. },
+                    Metadata { searchable: (PatternMatch::NoMatch, _), .. },
+                )
+                | (
+                    Metadata { searchable: (PatternMatch::Match, _), exact: old_exact, .. },
+                    Metadata { searchable: (PatternMatch::Parent, _), .. },
                 ) => cached_sorter.insert_del_u32(
                     field_id,
                     pos,
                     word,
-                    old_exact || old_disabled_typos_terms.is_exact(word),
+                    old_exact == PatternMatch::Match || old_disabled_typos_terms.is_exact(word),
                     // We deleted the field globally
                     FieldDbExtraction::Skip,
                     document.docid(),
                     doc_alloc,
                 ),
                 (
-                    Metadata { searchable: None, .. },
-                    Metadata { searchable: Some(_), exact: new_exact, .. },
+                    Metadata { searchable: (PatternMatch::NoMatch, _), .. },
+                    Metadata { searchable: (PatternMatch::Match, _), exact: new_exact, .. },
+                )
+                | (
+                    Metadata { searchable: (PatternMatch::Parent, _), .. },
+                    Metadata { searchable: (PatternMatch::Match, _), exact: new_exact, .. },
                 ) => cached_sorter.insert_add_u32(
                     field_id,
                     pos,
                     word,
-                    new_exact || new_disabled_typos_terms.is_exact(word),
+                    new_exact == PatternMatch::Match || new_disabled_typos_terms.is_exact(word),
                     FieldDbExtraction::Extract,
                     document.docid(),
                     doc_alloc,
                 ),
-                (Metadata { searchable: None, .. }, Metadata { searchable: None, .. }) => {
+                (
+                    Metadata { searchable: (PatternMatch::NoMatch, _), .. },
+                    Metadata { searchable: (PatternMatch::NoMatch, _), .. },
+                ) => {
                     unreachable!()
                 }
                 (Metadata { exact: old_exact, .. }, Metadata { exact: new_exact, .. }) => {
@@ -728,7 +705,7 @@ impl SettingsChangeWordDocidsExtractors {
                         field_id,
                         pos,
                         word,
-                        old_exact || old_disabled_typos_terms.is_exact(word),
+                        old_exact == PatternMatch::Match || old_disabled_typos_terms.is_exact(word),
                         // The field has already been extracted
                         FieldDbExtraction::Skip,
                         document.docid(),
@@ -738,7 +715,7 @@ impl SettingsChangeWordDocidsExtractors {
                         field_id,
                         pos,
                         word,
-                        new_exact || new_disabled_typos_terms.is_exact(word),
+                        new_exact == PatternMatch::Match || new_disabled_typos_terms.is_exact(word),
                         // The field has already been extracted
                         FieldDbExtraction::Skip,
                         document.docid(),
@@ -756,6 +733,44 @@ impl SettingsChangeWordDocidsExtractors {
             &mut token_fn,
         )?;
 
+        Ok(())
+    }
+}
+
+pub struct WordDocidsSettingsExtractorsData<'a, SD> {
+    tokenizer: DocumentTokenizer<'a>,
+    max_memory_by_thread: Option<usize>,
+    buckets: usize,
+    settings_delta: &'a SD,
+}
+
+impl<'extractor, SD: SettingsDelta + Sync> SettingsChangeExtractor<'extractor>
+    for WordDocidsSettingsExtractorsData<'_, SD>
+{
+    type Data = RefCell<Option<WordDocidsBalancedCaches<'extractor>>>;
+
+    fn init_data<'doc>(&'doc self, extractor_alloc: &'extractor Bump) -> crate::Result<Self::Data> {
+        Ok(RefCell::new(Some(WordDocidsBalancedCaches::new_in(
+            self.buckets,
+            self.max_memory_by_thread,
+            extractor_alloc,
+        ))))
+    }
+
+    fn process<'doc>(
+        &'doc self,
+        documents: impl Iterator<Item = crate::Result<DocumentIdentifiers<'doc>>>,
+        context: &'doc DocumentContext<Self::Data>,
+    ) -> crate::Result<()> {
+        for document in documents {
+            let document = document?;
+            WordDocidsExtractors::extract_document_from_settings_change(
+                document,
+                context,
+                &self.tokenizer,
+                self.settings_delta,
+            )?;
+        }
         Ok(())
     }
 }

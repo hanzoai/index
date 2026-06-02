@@ -163,6 +163,52 @@ npx mint dev
 
 The local docs site will be available (the URL is shown in the terminal).
 
+#### Test troubleshooting
+
+If you get a "Too many open files" error you might want to increase the open file limit using this command:
+
+```bash
+ulimit -Sn 3000
+```
+
+### Build tools
+
+Meilisearch follows the [cargo xtask](https://github.com/matklad/cargo-xtask) workflow to provide some build tools.
+
+Run `cargo xtask --help` from the root of the repository to find out what is available.
+
+### Update the openAPI file if the API changed
+
+To update the openAPI file in the code, see [sprint_issue.md](https://github.com/meilisearch/meilisearch/blob/main/.github/ISSUE_TEMPLATE/sprint_issue.md#reminders-when-modifying-the-api).
+
+If you want to generate OpenAPI file manually:
+
+With swagger:
+- Starts Meilisearch with the `swagger` feature flag: `cargo run --features swagger`
+- On a browser, open the following URL: http://localhost:7700/scalar
+- Click the « Download openAPI file »
+
+With the internal crate:
+```bash
+cd crates/openapi-generator
+cargo run --release -- --pretty
+```
+
+### Update the mini-dashboard (local interface)
+
+To update the [mini-dashboard](https://github.com/meilisearch/mini-dashboard) (the local web interface served by Meilisearch):
+
+1. Download the `build.zip` of the mini-dashboard attached to the [release](https://github.com/meilisearch/mini-dashboard/releases) you want to use.
+
+2. Compute the SHA-1 checksum of the downloaded file:
+```bash
+shasum -a 1 ~/Downloads/build.zip
+```
+
+3. In `crates/meilisearch/Cargo.toml`, update the `[package.metadata.mini-dashboard]` section with the new `assets-url` (pointing to the mini-dashboard release URL) and the `sha1` checksum.
+
+See [this example PR](https://github.com/meilisearch/meilisearch/pull/6091/changes) for a concrete example of the changes to apply.
+
 ### Logging
 
 Hanzo Search uses [`tracing`](https://lib.rs/crates/tracing) for logging purposes. Tracing logs are structured and can be displayed as JSON to the end user, so prefer passing arguments as fields rather than interpolating them in the message.

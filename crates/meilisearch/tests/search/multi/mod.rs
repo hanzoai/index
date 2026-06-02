@@ -10,6 +10,7 @@ use crate::common::{
 use crate::json;
 use crate::search::{SCORE_DOCUMENTS, VECTOR_DOCUMENTS};
 
+mod metadata;
 mod proxy;
 
 pub async fn shared_movies_index() -> &'static Index<'static, Shared> {
@@ -940,7 +941,7 @@ async fn federation_one_query_error() {
     snapshot!(code, @"400 Bad Request");
     snapshot!(json_string!(response), @r###"
     {
-      "message": "Inside `.queries[1]`: Index `SHARED_NESTED_DOCUMENTS`: Attribute `title` is not filterable. Available filterable attribute patterns are: `cattos`, `doggos`, `father`.\n1:6 title = toto",
+      "message": "Inside `.queries[1]`: Index `SHARED_NESTED_DOCUMENTS`: Attribute `title` is not filterable. Available filterable attribute patterns are: `cattos`, `doggos`, `father`.\ntitle = toto",
       "code": "invalid_search_filter",
       "type": "invalid_request",
       "link": "https://docs.meilisearch.com/errors#invalid_search_filter"

@@ -19,9 +19,10 @@ use crate::error::MeilisearchHttpError;
 use crate::extractors::authentication::policies::ActionPolicy;
 use crate::extractors::authentication::{AuthenticationError, GuardedData};
 use crate::routes::parse_include_metadata_header;
+use crate::search::proxy::{PROXY_SEARCH_HEADER, PROXY_SEARCH_HEADER_VALUE};
 use crate::search::{
     add_search_rules, perform_federated_search, FederatedSearch, FederatedSearchResult,
-    SearchQueryWithIndex, SearchResultWithIndex, PROXY_SEARCH_HEADER, PROXY_SEARCH_HEADER_VALUE,
+    SearchQueryWithIndex, SearchResultWithIndex,
 };
 use crate::search_queue::SearchQueue;
 
@@ -151,7 +152,7 @@ pub async fn multi_search_with_post(
     // Since we don't want to process half of the search requests and then get a permit refused
     // we're going to get one permit for the whole duration of the multi-search request.
     let progress = Progress::default();
-    progress.update_progress(TotalProcessingTimeStep::WaitForPermit);
+    progress.update_progress(TotalProcessingTimeStep::WaitInQueue);
     let permit = search_queue.try_get_search_permit().await?;
     progress.update_progress(TotalProcessingTimeStep::Search);
     let request_uid = Uuid::now_v7();

@@ -353,6 +353,8 @@ InvalidSettingsSynonyms                        , InvalidRequest       , BAD_REQU
 InvalidSettingsTypoTolerance                   , InvalidRequest       , BAD_REQUEST ;
 InvalidSettingsLocalizedAttributes             , InvalidRequest       , BAD_REQUEST ;
 InvalidState                                   , Internal             , INTERNAL_SERVER_ERROR ;
+InvalidStatsShowInternalDatabaseSizes          , InvalidRequest       , BAD_REQUEST ;
+InvalidStatsSizeFormat                         , InvalidRequest       , BAD_REQUEST ;
 InvalidStoreFile                               , Internal             , INTERNAL_SERVER_ERROR ;
 InvalidSwapDuplicateIndexFound                 , InvalidRequest       , BAD_REQUEST ;
 InvalidSwapIndexes                             , InvalidRequest       , BAD_REQUEST ;
@@ -395,6 +397,7 @@ NotLeader                                      , InvalidRequest       , BAD_REQU
 PayloadTooLarge                                , InvalidRequest       , PAYLOAD_TOO_LARGE ;
 RemoteBadResponse                              , System               , BAD_GATEWAY ;
 RemoteBadRequest                               , InvalidRequest       , BAD_REQUEST ;
+UnknownRemote                                  , InvalidRequest       , BAD_REQUEST ;
 RemoteCouldNotSendRequest                      , System               , BAD_GATEWAY ;
 RemoteInvalidApiKey                            , Auth                 , FORBIDDEN ;
 RemoteRemoteError                              , System               , BAD_GATEWAY ;
@@ -529,6 +532,9 @@ impl ErrorCode for milli::Error {
                 | UserError::TooManyEmbedders(_)
                 | UserError::TooManyFragments(_)
                 | UserError::InvalidPromptForEmbeddings(..) => Code::InvalidSettingsEmbedders,
+                UserError::InvalidChatSettingsDocumentTemplate(_) => {
+                    Code::InvalidChatSettingDocumentTemplate
+                }
                 UserError::NoPrimaryKeyCandidateFound => Code::IndexPrimaryKeyNoCandidateFound,
                 UserError::MultiplePrimaryKeyCandidatesFound { .. } => {
                     Code::IndexPrimaryKeyMultipleCandidatesFound

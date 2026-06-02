@@ -263,6 +263,7 @@ impl Remote {
                 })?,
             search_api_key: self.search_api_key.set(),
             write_api_key: self.write_api_key.set(),
+            status: route::Status::default(),
         })
     }
 }
@@ -379,10 +380,13 @@ fn merge_networks(
         previous_shards: _,
     } = new_network;
 
-    let merged_self = match new_local {
-        Setting::Set(new_self) => Some(new_self),
-        Setting::Reset => None,
-        Setting::NotSet => old_local,
+    let (renamed_from_to, merged_self) = match (new_local, old_local) {
+        (Setting::Set(new_self), Some(old_local)) => {
+            ((new_self != old_local).then_some((old_local, new_self.clone())), Some(new_self))
+        }
+        (Setting::Set(new_self), None) => (None, Some(new_self)),
+        (Setting::Reset, _) => (None, None),
+        (Setting::NotSet, old_local) => (None, old_local),
     };
     let merged_leader = match new_leader {
         Setting::Set(new_leader) => Some(new_leader),
@@ -393,7 +397,12 @@ fn merge_networks(
         // 1. Always allowed if there is no leader
         (None, _) => (),
         // 2. Allowed if the leader is self
-        (Some(leader), Some(this)) if leader == this => (),
+        (Some(leader), Some(this)) if leader == this => {
+            // renaming is forbidden when there is a leader
+            if let Some((old_self, new_self)) = renamed_from_to {
+                return Err(MeilisearchHttpError::RenamedSelf { old_self, new_self }.into());
+            }
+        }
         // 3. Any other change is disallowed
         (Some(leader), _) => {
             return Err(MeilisearchHttpError::NotLeader { leader: leader.to_string() }.into())
@@ -440,6 +449,7 @@ fn merge_networks(
                             url: old_url,
                             search_api_key: old_search_api_key,
                             write_api_key: old_write_api_key,
+                            status: _,
                         } = old;
 
                         let Remote {
@@ -479,6 +489,7 @@ fn merge_networks(
                                 Setting::Reset => None,
                                 Setting::NotSet => old_write_api_key,
                             },
+                            status: Default::default(),
                         };
                         merged_remotes.insert(key, merged);
                     }

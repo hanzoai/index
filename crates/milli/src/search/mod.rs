@@ -6,7 +6,10 @@ use levenshtein_automata::{LevenshteinAutomatonBuilder as LevBuilder, DFA};
 use once_cell::sync::Lazy;
 use roaring::bitmap::RoaringBitmap;
 
-pub use self::facet::{FacetDistribution, Filter, OrderBy, DEFAULT_VALUES_PER_FACET};
+pub use self::facet::{
+    serialize_index_filter_to_filter_string, FacetDistribution, Filter, IndexFilter, OrderBy,
+    DEFAULT_VALUES_PER_FACET,
+};
 pub use self::new::matches::{FormatOptions, MatchBounds, MatcherBuilder, MatchingWords};
 use self::new::{execute_vector_search, PartialSearchResult, VectorStoreStats};
 use crate::documents::GeoSortParameter;
@@ -50,7 +53,7 @@ pub struct PinDoc {
 pub struct Search<'a> {
     query: Option<String>,
     // this should be linked to the String in the query
-    filter: Option<Filter<'a>>,
+    filter: Option<IndexFilter<'a>>,
     offset: usize,
     limit: usize,
     sort_criteria: Option<Vec<AscDesc>>,
@@ -158,8 +161,8 @@ impl<'a> Search<'a> {
         self
     }
 
-    pub fn filter(&mut self, condition: Filter<'a>) -> &mut Search<'a> {
-        self.filter = Some(condition);
+    pub fn filter(&mut self, condition: Option<IndexFilter<'a>>) -> &mut Search<'a> {
+        self.filter = condition;
         self
     }
 
@@ -212,8 +215,12 @@ impl<'a> Search<'a> {
         self
     }
 
-    pub fn execute_for_candidates(&self, has_vector_search: bool) -> Result<RoaringBitmap> {
-        if has_vector_search {
+    pub fn execute_for_candidates(&self, is_hybrid_kind: bool) -> Result<RoaringBitmap> {
+        let has_vector = is_hybrid_kind || {
+            self.semantic.as_ref().and_then(|semantic| semantic.vector.as_ref()).is_some()
+        };
+
+        if has_vector {
             let ctx = SearchContext::new(self.index, self.rtxn)?;
             filtered_universe(ctx.index, ctx.txn, &self.filter, self.progress)
         } else {

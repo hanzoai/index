@@ -26,7 +26,7 @@ pub fn write_to_db(
     wtxn: &mut RwTxn<'_>,
     vector_stores: &HashMap<u8, (&str, &Embedder, VectorStore, usize)>,
 ) -> Result<ChannelCongestion> {
-    // Used by by the HannoySetVector to copy the embedding into an
+    // Used by the HannoySetVector to copy the embedding into an
     // aligned memory area, required by arroy to accept a new vector.
     let mut aligned_embedding = Vec::new();
     let span = tracing::trace_span!(target: "indexing::write_db", "all");
@@ -83,7 +83,7 @@ pub fn write_to_db(
             }
         }
 
-        // Every time the is a message in the channel we search
+        // Every time there is a message in the channel we search
         // for new entries in the BBQueue buffers.
         write_from_bbqueue(
             &mut writer_receiver,

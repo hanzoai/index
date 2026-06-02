@@ -483,7 +483,7 @@ pub fn fix_sort_query_parameters(sort_query: &str) -> Vec<String> {
 ///
 /// Search for documents matching a query in the given index.
 ///
-/// > Equivalent to the [search with POST route](/reference/api/search/search-with-post) in the Meilisearch API.
+/// > Equivalent to the [search with POST route](/docs/reference/api/search/search-with-post) in the Meilisearch API.
 #[routes::path(
     security(("Bearer" = ["search", "*"])),
     params(
@@ -546,7 +546,7 @@ pub async fn search_with_url_query(
     let request_uid = Uuid::now_v7();
     debug!(request_uid = ?request_uid, parameters = ?params, "Search get");
     let progress = Progress::default();
-    progress.update_progress(TotalProcessingTimeStep::WaitForPermit);
+    progress.update_progress(TotalProcessingTimeStep::WaitInQueue);
     let permit = search_queue.try_get_search_permit().await?;
     progress.update_progress(TotalProcessingTimeStep::Search);
     let index_uid = IndexUid::try_from(index_uid.into_inner())?;
@@ -606,10 +606,11 @@ pub(crate) async fn search(
 
     let features = index_scheduler.features();
     let network = index_scheduler.network();
+    let remote_availability = index_scheduler.remote_availability();
 
     let (mut search_result, deadline) = if query.must_use_network(&network, &features)? {
         let mut federation = Federation::default();
-        let queries = Partition::new(network)
+        let queries = Partition::new(network, remote_availability)
             .into_query_partition(&mut federation, &query, None, &index_uid)?
             .collect();
 
@@ -685,7 +686,7 @@ pub(crate) async fn search(
 ///
 /// Search for documents matching a query in the given index.
 ///
-/// > Equivalent to the [search with GET route](/reference/api/search/search-with-get) in the Meilisearch API.
+/// > Equivalent to the [search with GET route](/docs/reference/api/search/search-with-get) in the Meilisearch API.
 #[routes::path(
     security(("Bearer" = ["search", "*"])),
     params(
@@ -749,7 +750,7 @@ pub async fn search_with_post(
     let request_uid = Uuid::now_v7();
 
     let progress = Progress::default();
-    progress.update_progress(TotalProcessingTimeStep::WaitForPermit);
+    progress.update_progress(TotalProcessingTimeStep::WaitInQueue);
     let permit = search_queue.try_get_search_permit().await?;
     progress.update_progress(TotalProcessingTimeStep::Search);
 

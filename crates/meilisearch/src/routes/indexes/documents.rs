@@ -10,7 +10,8 @@ use bstr::ByteSlice as _;
 use deserr::actix_web::{AwebJson, AwebQueryParameter};
 use deserr::Deserr;
 use futures::StreamExt;
-use index_scheduler::{IndexScheduler, RoFeatures, TaskId};
+use index_scheduler::filter::filter_into_index_filter;
+use index_scheduler::{IndexScheduler, TaskId};
 use meilisearch_types::deserr::query_params::Param;
 use meilisearch_types::deserr::{DeserrJsonError, DeserrQueryParamError};
 use meilisearch_types::document_formats::{read_csv, read_json, read_ndjson, PayloadType};
@@ -20,9 +21,10 @@ use meilisearch_types::heed::RoTxn;
 use meilisearch_types::index_uid::IndexUid;
 use meilisearch_types::milli::documents::sort::recursive_sort;
 use meilisearch_types::milli::index::EmbeddingsWithMetadata;
+use meilisearch_types::milli::progress::Progress;
 use meilisearch_types::milli::update::{IndexDocumentsMethod, MissingDocumentPolicy};
 use meilisearch_types::milli::vector::parsed_vectors::ExplicitVectors;
-use meilisearch_types::milli::{AscDesc, DocumentId};
+use meilisearch_types::milli::{AscDesc, DocumentId, IndexFilter};
 use meilisearch_types::serde_cs::vec::CS;
 use meilisearch_types::star_or::OptionStarOrList;
 use meilisearch_types::tasks::KindWithContent;
@@ -566,7 +568,7 @@ pub async fn documents_by_query_post(
         &req,
     );
 
-    documents_by_query(&index_scheduler, index_uid, body)
+    documents_by_query(index_scheduler.clone(), index_uid, body).await
 }
 
 /// List documents with GET
@@ -668,11 +670,11 @@ pub async fn get_documents(
         &req,
     );
 
-    documents_by_query(&index_scheduler, index_uid, query)
+    documents_by_query(index_scheduler.clone(), index_uid, query).await
 }
 
-fn documents_by_query(
-    index_scheduler: &IndexScheduler,
+async fn documents_by_query(
+    index_scheduler: Data<IndexScheduler>,
     index_uid: web::Path<String>,
     query: BrowseQuery,
 ) -> Result<HttpResponse, ResponseError> {
@@ -681,46 +683,71 @@ fn documents_by_query(
 
     let retrieve_vectors = RetrieveVectors::new(retrieve_vectors);
 
-    let ids = if let Some(ids) = ids {
-        let mut parsed_ids = Vec::with_capacity(ids.len());
-        for (index, id) in ids.into_iter().enumerate() {
-            let id = id.try_into().map_err(|error| {
-                let msg = format!("In `.ids[{index}]`: {error}");
-                ResponseError::from_msg(msg, Code::InvalidDocumentIds)
-            })?;
-            parsed_ids.push(id)
-        }
-        Some(parsed_ids)
-    } else {
-        None
-    };
-
-    let sort_criteria = if let Some(sort) = &sort {
-        let sorts: Vec<_> = match sort.iter().map(|s| milli::AscDesc::from_str(s)).collect() {
-            Ok(sorts) => sorts,
-            Err(asc_desc_error) => {
-                return Err(milli::SortError::from(asc_desc_error).into_document_error().into())
+    let ret = tokio::task::spawn_blocking(move || -> Result<_, ResponseError> {
+        let ids = if let Some(ids) = ids {
+            let mut parsed_ids = Vec::with_capacity(ids.len());
+            for (index, id) in ids.into_iter().enumerate() {
+                let id = id.try_into().map_err(|error| {
+                    let msg = format!("In `.ids[{index}]`: {error}");
+                    ResponseError::from_msg(msg, Code::InvalidDocumentIds)
+                })?;
+                parsed_ids.push(id)
             }
+            Some(parsed_ids)
+        } else {
+            None
         };
-        Some(sorts)
-    } else {
-        None
-    };
 
-    let index = index_scheduler.index(&index_uid)?;
-    let (total, documents) = retrieve_documents(
-        &index,
-        offset,
-        limit,
-        ids,
-        filter,
-        fields,
-        retrieve_vectors,
-        index_scheduler.features(),
-        sort_criteria,
-    )?;
+        let sort_criteria = if let Some(sort) = &sort {
+            let sorts: Vec<_> = match sort.iter().map(|s| milli::AscDesc::from_str(s)).collect() {
+                Ok(sorts) => sorts,
+                Err(asc_desc_error) => {
+                    return Err(milli::SortError::from(asc_desc_error).into_document_error().into())
+                }
+            };
+            Some(sorts)
+        } else {
+            None
+        };
 
-    let ret = PaginationView::new(offset, limit, total as usize, documents);
+        let index = index_scheduler.index(&index_uid)?;
+        let rtxn = index.read_txn()?;
+        let progress = Progress::default();
+
+        let filter = &filter;
+        let filter = if let Some(filter) = filter {
+            let filter =
+                parse_filter(filter, Code::InvalidDocumentFilter, index_scheduler.features())?;
+            filter
+                .map(|f| {
+                    filter_into_index_filter(
+                        f,
+                        &index,
+                        &rtxn,
+                        &index_scheduler,
+                        &progress,
+                        &index_uid,
+                    )
+                })
+                .transpose()?
+        } else {
+            None
+        };
+        let (total, documents) = retrieve_documents(
+            &index,
+            &rtxn,
+            offset,
+            limit,
+            ids,
+            filter,
+            fields,
+            retrieve_vectors,
+            sort_criteria,
+        )?;
+        Ok(PaginationView::new(offset, limit, total as usize, documents))
+    })
+    .await
+    .unwrap()?;
 
     Ok(HttpResponse::Ok().json(ret))
 }
@@ -843,7 +870,7 @@ impl<Method: AggregateMethod> Aggregate for DocumentsAggregator<Method> {
 ///
 /// If the provided index does not exist, it will be created.
 ///
-/// For a partial update of the document see [add or update documents route](/reference/api/documents/add-or-update-documents).
+/// For a partial update of the document see [add or update documents route](/docs/reference/api/documents/add-or-update-documents).
 ///
 /// > Use the reserved `_geo` object to add geo coordinates to a document.
 /// > `_geo` is an object made of `lat` and `lng` field.
@@ -955,7 +982,7 @@ pub async fn replace_documents(
 ///
 /// If the provided index does not exist, it will be created.
 ///
-/// To completely overwrite a document, see [add or replace documents route](/reference/api/documents/add-or-replace-documents).
+/// To completely overwrite a document, see [add or replace documents route](/docs/reference/api/documents/add-or-replace-documents).
 ///
 /// > Use the reserved `_geo` object to add geo coordinates to a document.
 /// > `_geo` is an object made of `lat` and `lng` field.
@@ -1808,39 +1835,31 @@ fn some_documents<'a, 't: 'a>(
 #[allow(clippy::too_many_arguments)]
 fn retrieve_documents<S: AsRef<str>>(
     index: &Index,
+    rtxn: &RoTxn,
     offset: usize,
     limit: usize,
     ids: Option<Vec<ExternalDocumentId>>,
-    filter: Option<Value>,
+    filter: Option<IndexFilter>,
     attributes_to_retrieve: Option<Vec<S>>,
     retrieve_vectors: RetrieveVectors,
-    features: RoFeatures,
     sort_criteria: Option<Vec<AscDesc>>,
 ) -> Result<(u64, Vec<Document>), ResponseError> {
-    let rtxn = index.read_txn()?;
-    let filter = &filter;
-    let filter = if let Some(filter) = filter {
-        parse_filter(filter, Code::InvalidDocumentFilter, features)?
-    } else {
-        None
-    };
-
     let mut candidates = if let Some(ids) = ids {
         let external_document_ids = index.external_documents_ids();
         let mut candidates = RoaringBitmap::new();
         for id in ids.iter() {
-            let Some(docid) = external_document_ids.get(&rtxn, id)? else {
+            let Some(docid) = external_document_ids.get(rtxn, id)? else {
                 continue;
             };
             candidates.insert(docid);
         }
         candidates
     } else {
-        index.documents_ids(&rtxn)?
+        index.documents_ids(rtxn)?
     };
 
     if let Some(filter) = filter {
-        candidates &= filter.evaluate(&rtxn, index).map_err(|err| match err {
+        candidates &= filter.evaluate(rtxn, index).map_err(|err| match err {
             milli::Error::UserError(milli::UserError::InvalidFilter(_)) => {
                 ResponseError::from_msg(err.to_string(), Code::InvalidDocumentFilter)
             }
@@ -1850,7 +1869,7 @@ fn retrieve_documents<S: AsRef<str>>(
 
     let (it, number_of_documents) = if let Some(sort) = sort_criteria {
         let number_of_documents = candidates.len();
-        let facet_sort = recursive_sort(index, &rtxn, sort, &candidates)?;
+        let facet_sort = recursive_sort(index, rtxn, sort, &candidates)?;
         let iter = facet_sort.iter()?;
         let mut documents = Vec::with_capacity(limit);
         for result in iter.skip(offset).take(limit) {
@@ -1859,7 +1878,7 @@ fn retrieve_documents<S: AsRef<str>>(
         (
             itertools::Either::Left(some_documents(
                 index,
-                &rtxn,
+                rtxn,
                 documents.into_iter(),
                 retrieve_vectors,
             )?),
@@ -1870,7 +1889,7 @@ fn retrieve_documents<S: AsRef<str>>(
         (
             itertools::Either::Right(some_documents(
                 index,
-                &rtxn,
+                rtxn,
                 candidates.into_iter().skip(offset).take(limit),
                 retrieve_vectors,
             )?),

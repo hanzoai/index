@@ -304,7 +304,7 @@ impl Search<'_> {
             Some(vector_query) => vector_query,
             None => {
                 // attempt to embed the vector
-                self.progress.update_progress(SearchStep::Embed);
+                self.progress.update_progress(SearchStep::EmbedQuery);
                 let span = tracing::trace_span!(target: "search::hybrid", "embed_one");
                 let _entered = span.enter();
 
@@ -316,9 +316,7 @@ impl Search<'_> {
                     (q, media) => SearchQuery::Media { q, media },
                 };
 
-                let deadline = std::time::Instant::now() + std::time::Duration::from_secs(3);
-
-                match embedder.embed_search(query, Some(deadline)) {
+                match embedder.embed_search(query, self.deadline.to_instant()) {
                     Ok(embedding) => embedding,
                     Err(error) => {
                         tracing::error!(error=%error, "Embedding failed");

@@ -8,6 +8,7 @@ use std::time::Instant;
 
 use deserr::Deserr;
 use either::Either;
+use index_scheduler::filter::filter_into_index_filter;
 use index_scheduler::{IndexScheduler, RoFeatures};
 use indexmap::IndexMap;
 use meilisearch_auth::IndexSearchRules;
@@ -23,7 +24,7 @@ use meilisearch_types::milli::score_details::{ScoreDetails, ScoringStrategy};
 use meilisearch_types::milli::vector::parsed_vectors::ExplicitVectors;
 use meilisearch_types::milli::vector::Embedder;
 use meilisearch_types::milli::{
-    AttributeState, Deadline, FacetValueHit, InternalError, OrderBy, PatternMatch,
+    AttributeState, Deadline, FacetValueHit, IndexFilter, InternalError, OrderBy, PatternMatch,
     SearchForFacetValues, SearchStep,
 };
 use meilisearch_types::network::Network;
@@ -49,8 +50,8 @@ use crate::search::value_paths_visitor::ValuePathsVisitor;
 
 mod federated;
 pub use federated::{
-    perform_federated_search, FederatedSearch, FederatedSearchResult, Federation,
-    FederationOptions, MergeFacets, Partition, PROXY_SEARCH_HEADER, PROXY_SEARCH_HEADER_VALUE,
+    perform_federated_search, proxy, FederatedSearch, FederatedSearchResult, Federation,
+    FederationOptions, MergeFacets, Partition,
 };
 
 mod dynamic_rules;
@@ -1377,6 +1378,17 @@ impl FacetValue {
 #[serde(rename_all = "camelCase")]
 #[schema(rename_all = "camelCase")]
 pub struct SearchMetadata {
+    /// Query string set for the query, if not already present in the response.
+    ///
+    /// Only set if:
+    ///
+    /// 1. the metadata corresponds to a query in a federated search request, **and**
+    /// 2. that federated search request query is not a placeholder search (empty or missing `q`)
+    ///
+    /// Never set for regular search and non-federated multi-search because
+    /// the query(ies) are already present in the response.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub query: Option<String>,
     /// Unique identifier for the query.
     pub query_uid: Uuid,
     /// UID of the index that was searched.
@@ -1590,12 +1602,15 @@ pub struct FacetStats {
     pub max: f64,
 }
 
-#[derive(Serialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct FacetSearchResult {
     pub facet_hits: Vec<FacetValueHit>,
     pub facet_query: Option<String>,
     pub processing_time_ms: u128,
+    /// Errors from remote shards. Federated search only.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub remote_errors: Option<BTreeMap<String, ResponseError>>,
 }
 
 /// Incorporate search rules in search query
@@ -1622,10 +1637,12 @@ pub fn fuse_filters(left: Option<Value>, right: Option<Value>) -> Option<Value> 
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn prepare_search<'t>(
     index: &'t Index,
     rtxn: &'t RoTxn,
     query: &'t SearchQuery,
+    filter: Option<IndexFilter<'t>>,
     search_kind: &SearchKind,
     deadline: Deadline,
     features: RoFeatures,
@@ -1635,7 +1652,7 @@ pub fn prepare_search<'t>(
         features.check_multimodal("passing `media` in a search query")?;
     }
     let mut search = index.search(rtxn, progress);
-    search.deadline(deadline);
+    search.deadline(deadline.clone());
     if let Some(ranking_score_threshold) = query.ranking_score_threshold {
         search.ranking_score_threshold(ranking_score_threshold.0);
     }
@@ -1654,11 +1671,9 @@ pub fn prepare_search<'t>(
             let vector = match query.vector.clone() {
                 Some(vector) => vector,
                 None => {
-                    let _step = progress.update_progress_scoped(SearchStep::Embed);
+                    let _step = progress.update_progress_scoped(SearchStep::EmbedQuery);
                     let span = tracing::trace_span!(target: "search::vector", "embed_one");
                     let _entered = span.enter();
-
-                    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
 
                     let q = query.q.as_deref();
                     let media = query.media.as_ref();
@@ -1669,7 +1684,7 @@ pub fn prepare_search<'t>(
                     };
 
                     embedder
-                        .embed_search(search_query, Some(deadline))
+                        .embed_search(search_query, deadline.to_instant())
                         .map_err(milli::vector::Error::from)
                         .map_err(milli::Error::from)?
                 }
@@ -1743,11 +1758,7 @@ pub fn prepare_search<'t>(
     search.offset(offset);
     search.limit(limit);
 
-    if let Some(ref filter) = query.filter {
-        if let Some(facets) = parse_filter(filter, Code::InvalidSearchFilter, features)? {
-            search.filter(facets);
-        }
-    }
+    search.filter(filter);
 
     if let Some(ref sort) = query.sort {
         let sort = match sort.iter().map(|s| AscDesc::from_str(s)).collect() {
@@ -1797,8 +1808,28 @@ pub fn perform_search(
     let rtxn = index.read_txn()?;
     let deadline = index.search_deadline(&rtxn)?;
 
-    let (mut search, is_finite_pagination, max_total_hits, offset) =
-        prepare_search(index, &rtxn, &query, &search_kind, deadline.clone(), features, progress)?;
+    let filter = match &query.filter {
+        Some(filter) => {
+            let filter = parse_filter(filter, Code::InvalidSearchFilter, features)?;
+            filter
+                .map(|f| {
+                    filter_into_index_filter(f, index, &rtxn, index_scheduler, progress, &index_uid)
+                })
+                .transpose()?
+        }
+        None => None,
+    };
+
+    let (mut search, is_finite_pagination, max_total_hits, offset) = prepare_search(
+        index,
+        &rtxn,
+        &query,
+        filter,
+        &search_kind,
+        deadline.clone(),
+        features,
+        progress,
+    )?;
 
     let pins = if features.runtime_features().dynamic_search_rules {
         let rules = index_scheduler.dynamic_search_rules();
@@ -1828,6 +1859,7 @@ pub fn perform_search(
         let query_uid = Uuid::now_v7();
         let primary_key = index.primary_key(&rtxn)?.map(|pk| pk.to_string());
         Some(SearchMetadata {
+            query: None,
             query_uid,
             index_uid: index_uid_for_metadata,
             primary_key,
@@ -2450,21 +2482,18 @@ fn make_hits<'a>(
     Ok(documents)
 }
 
-pub fn perform_facet_search(
+pub fn perform_facet_search<'a>(
     index: &Index,
-    search_query: SearchQuery,
+    rtxn: &RoTxn,
+    search: milli::Search<'a>,
     facet_query: Option<String>,
     facet_name: String,
     search_kind: SearchKind,
-    features: RoFeatures,
     locales: Option<Vec<Language>>,
-) -> Result<FacetSearchResult, ResponseError> {
+) -> Result<(FacetSearchResult, OrderBy), ResponseError> {
     let before_search = Instant::now();
-    let progress = Progress::default();
-    let rtxn = index.read_txn()?;
-    let deadline = index.search_deadline(&rtxn)?;
 
-    if !index.facet_search(&rtxn)? {
+    if !index.facet_search(rtxn)? {
         return Err(ResponseError::from_msg(
             "The facet search is disabled for this index".to_string(),
             Code::FacetSearchDisabled,
@@ -2475,7 +2504,7 @@ pub fn perform_facet_search(
     // and the locales of the facet string.
     // If the facet string is not localized, we **ignore** the locales provided by the user because the facet data has no locale.
     // If the user does not provide locales, we use the locales of the facet string.
-    let localized_attributes = index.localized_attributes_rules(&rtxn)?.unwrap_or_default();
+    let localized_attributes = index.localized_attributes_rules(rtxn)?.unwrap_or_default();
     let localized_attributes_locales = localized_attributes
         .into_iter()
         .find(|attr| attr.match_str(&facet_name) == PatternMatch::Match);
@@ -2486,17 +2515,14 @@ pub fn perform_facet_search(
             .collect()
     });
 
-    let (search, _, _, _) =
-        prepare_search(index, &rtxn, &search_query, &search_kind, deadline, features, &progress)?;
-    let mut facet_search = SearchForFacetValues::new(
-        facet_name,
-        search,
-        matches!(search_kind, SearchKind::Hybrid { .. }),
-    );
+    let candidates =
+        search.execute_for_candidates(matches!(search_kind, SearchKind::Hybrid { .. }))?;
+
+    let mut facet_search = SearchForFacetValues::new(facet_name, index, rtxn);
     if let Some(facet_query) = &facet_query {
         facet_search.query(facet_query);
     }
-    if let Some(max_facets) = index.max_values_per_facet(&rtxn)? {
+    if let Some(max_facets) = index.max_values_per_facet(rtxn)? {
         facet_search.max_values(max_facets as usize);
     }
 
@@ -2504,40 +2530,55 @@ pub fn perform_facet_search(
         facet_search.locales(locales);
     }
 
-    Ok(FacetSearchResult {
-        facet_hits: facet_search.execute()?,
-        facet_query,
-        processing_time_ms: before_search.elapsed().as_millis(),
-    })
+    let (facet_hits, order) = facet_search.execute(&candidates)?;
+
+    Ok((
+        FacetSearchResult {
+            facet_hits,
+            facet_query,
+            remote_errors: None,
+            processing_time_ms: before_search.elapsed().as_millis(),
+        },
+        order,
+    ))
 }
 
 #[allow(clippy::too_many_arguments)]
 pub fn perform_similar(
-    index: &Index,
+    index_scheduler: &IndexScheduler,
+    index_uid: IndexUid,
     query: SimilarQuery,
-    embedder_name: String,
-    embedder: Arc<Embedder>,
-    quantized: bool,
-    retrieve_vectors: RetrieveVectors,
-    features: RoFeatures,
     progress: &Progress,
 ) -> Result<SimilarResult, ResponseError> {
     let before_search = Instant::now();
+    let features = index_scheduler.features();
+    let index = index_scheduler.index(&index_uid)?;
     let rtxn = index.read_txn()?;
 
     let SimilarQuery {
         id,
         offset,
         limit,
-        filter: _,
-        embedder: _,
+        filter,
+        embedder,
         attributes_to_retrieve,
-        retrieve_vectors: _,
+        retrieve_vectors,
         show_ranking_score,
         show_ranking_score_details,
         show_performance_details,
         ranking_score_threshold,
     } = query;
+
+    let retrieve_vectors = RetrieveVectors::new(retrieve_vectors);
+
+    let (embedder_name, embedder, quantized) = SearchKind::embedder(
+        index_scheduler,
+        index_uid.to_string(),
+        &index,
+        &embedder,
+        None,
+        Route::Similar,
+    )?;
 
     let id: ExternalDocumentId = id.try_into().map_err(|error| {
         let msg = format!("Invalid value at `.id`: {error}");
@@ -2557,7 +2598,7 @@ pub fn perform_similar(
         internal_id,
         offset,
         limit,
-        index,
+        &index,
         &rtxn,
         embedder_name,
         embedder,
@@ -2565,9 +2606,17 @@ pub fn perform_similar(
         progress,
     );
 
-    if let Some(ref filter) = query.filter {
-        if let Some(facets) = parse_filter(filter, Code::InvalidSimilarFilter, features)? {
-            similar.filter(facets);
+    if let Some(ref filter) = filter {
+        if let Some(filter) = parse_filter(filter, Code::InvalidSimilarFilter, features)? {
+            let filter = filter_into_index_filter(
+                filter,
+                &index,
+                &rtxn,
+                index_scheduler,
+                progress,
+                &index_uid,
+            )?;
+            similar.filter(filter);
         }
     }
 
@@ -2608,7 +2657,7 @@ pub fn perform_similar(
     };
 
     let hits = make_hits(
-        index,
+        &index,
         &rtxn,
         format,
         Default::default(),
@@ -2934,36 +2983,51 @@ pub(crate) fn parse_filter(
         ResponseError::from_msg(err.to_string(), filter_parsing_error_code)
     })?;
 
+    check_filter_experimental_features(filter, features)
+}
+
+fn check_filter_experimental_features(
+    filter: Option<Filter<'_>>,
+    features: RoFeatures,
+) -> Result<Option<Filter<'_>>, ResponseError> {
     if let Some(ref filter) = filter {
         // If the contains operator is used while the contains filter feature is not enabled, errors out
         if let Some((token, error)) =
             filter.use_contains_operator().zip(features.check_contains_filter().err())
         {
             return Err(ResponseError::from_msg(
-                token.as_external_error(error).to_string(),
+                token.to_external_error(error).to_string(),
                 Code::FeatureNotEnabled,
             ));
         }
-    }
 
-    if let Some(ref filter) = filter {
+        // If a foreign filter is used while the foreign keys feature is not enabled, errors out
+        if let Some((token, error)) = filter
+            .use_foreign_filter()
+            .zip(features.check_foreign_keys_setting("using a foreign filter").err())
+        {
+            return Err(ResponseError::from_msg(
+                token.to_external_error(error).to_string(),
+                Code::FeatureNotEnabled,
+            ));
+        }
+
+        // If a shard filter is used while the network feature is not enabled, errors out
         if let Some((token, error)) =
             filter.use_shard_filter().zip(features.check_network("using a shard filter").err())
         {
             return Err(ResponseError::from_msg(
-                token.as_external_error(error).to_string(),
+                token.to_external_error(error).to_string(),
                 Code::FeatureNotEnabled,
             ));
         }
-    }
 
-    if let Some(ref filter) = filter {
         // If a vector filter is used while the multi modal feature is not enabled, errors out
         if let Some((token, error)) =
             filter.use_vector_filter().zip(features.check_multimodal("using a vector filter").err())
         {
             return Err(ResponseError::from_msg(
-                token.as_external_error(error).to_string(),
+                token.to_external_error(error).to_string(),
                 Code::FeatureNotEnabled,
             ));
         }

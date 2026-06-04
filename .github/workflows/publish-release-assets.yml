@@ -85,7 +85,7 @@ jobs:
     needs: check-version
     steps:
       - uses: actions/checkout@v6
-      - uses: dtolnay/rust-toolchain@1.91.1
+      - uses: dtolnay/rust-toolchain@1.100.0
       - name: Install cross
         if: matrix.use_cross
         run: cargo install cross --locked

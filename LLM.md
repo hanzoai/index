@@ -1,4 +1,4 @@
-# LLM.md - Hanzo Search
+# Hanzo Search
 
 ## Overview
 A lightning-fast search engine optimized for AI workloads and seamless integration with the Hanzo ecosystem.

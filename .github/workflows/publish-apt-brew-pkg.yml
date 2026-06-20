@@ -7,7 +7,7 @@ on:
 jobs:
   check-version:
     name: Check the version validity
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     steps:
       - uses: actions/checkout@v6
       - name: Check release validity
@@ -15,7 +15,7 @@ jobs:
 
   debian:
     name: Publish debian packagge
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     needs: check-version
     container:
       # Use ubuntu-22.04 to compile with glibc 2.35
@@ -49,7 +49,7 @@ jobs:
 
   homebrew:
     name: Bump Homebrew formula
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     needs: check-version
     steps:
       - name: Create PR to Homebrew

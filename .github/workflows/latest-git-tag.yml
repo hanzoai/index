@@ -8,7 +8,7 @@ on:
 jobs:
   check-version:
     name: Check the version validity
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     steps:
       - uses: actions/checkout@v6
       - name: Check release validity
@@ -16,7 +16,7 @@ jobs:
         run: bash .github/scripts/check-release.sh
 
   update-latest-tag:
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     needs: check-version
     steps:
       - uses: actions/checkout@v6

@@ -15,7 +15,7 @@ env:
 jobs:
   update-version-cargo-toml:
     name: Update version in Cargo.toml
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     steps:
       - uses: actions/checkout@v6
       - name: Clean space as per https://github.com/actions/virtual-environments/issues/709

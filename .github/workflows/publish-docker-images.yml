@@ -23,7 +23,7 @@ jobs:
         edition: [community, enterprise]
         include:
           - platform: amd64
-            runner: ubuntu-24.04
+            runner: hanzo-build-linux-amd64
           - platform: arm64
             runner: ubuntu-24.04-arm
           - edition: community
@@ -97,7 +97,7 @@ jobs:
           retention-days: 1
 
   merge:
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     strategy:
       matrix:
         edition: [community, enterprise]

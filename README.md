@@ -1,3 +1,5 @@
+<p align="center"><img src=".github/hero.svg" alt="search" width="880"></p>
+
 <h1 align="center">Hanzo Search</h1>
 
 <h4 align="center">

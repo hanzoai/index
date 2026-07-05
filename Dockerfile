@@ -18,7 +18,7 @@ RUN     set -eux; \
         cargo build --release -p meilisearch -p meilitool ${EXTRA_ARGS}
 
 # Run
-FROM    alpine:3.22
+FROM    ghcr.io/hanzoai/alpine:3.22
 LABEL   org.opencontainers.image.source="https://github.com/hanzoai/search"
 LABEL   org.opencontainers.image.title="Hanzo Search"
 LABEL   org.opencontainers.image.description="AI-powered search engine built on Meilisearch"

@@ -1,0 +1,21 @@
+Hanzo Search
+Copyright (c) 2025 Hanzo AI, Inc.
+
+This product is a fork of Meilisearch and includes software developed by
+Meili SAS.
+
+    Project:    Meilisearch
+    Source:     https://github.com/meilisearch/meilisearch
+    License:    MIT AND BUSL-1.1
+    Copyright:  Copyright (c) 2019-2025 Meili SAS
+
+Meilisearch is dual-licensed:
+
+  - The core is licensed under the MIT License; see LICENSE-MIT.
+  - Files marked "Enterprise Edition (EE)" are licensed under the Business
+    Source License 1.1; see LICENSE-EE. BUSL-1.1 is a source-available,
+    non-open-source license. Production use of that Licensed Work requires a
+    commercial license from Meili SAS; its Change License is MIT.
+
+Upstream copyright notices and license terms are retained in LICENSE,
+LICENSE-MIT, and LICENSE-EE.

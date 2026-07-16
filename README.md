@@ -16,6 +16,8 @@
 
 Hanzo Search helps you shape a delightful search experience in a snap, offering features that work out of the box to speed up your workflow.
 
+Forked from [meilisearch/meilisearch](https://github.com/meilisearch/meilisearch) (MIT AND BUSL-1.1).
+
 > **License:** Hanzo Search is distributed under the MIT License (see [`LICENSE-MIT`](./LICENSE-MIT)). This distribution uses **only** the MIT-licensed core; it does **not** include or use the Business Source License 1.1 (BUSL-1.1) Enterprise Edition code ([`LICENSE-EE`](./LICENSE-EE)). See [License](#-license) below.
 
 ## ✨ Features

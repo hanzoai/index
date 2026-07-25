@@ -250,7 +250,7 @@ async fn snapshotception_issue_4653() {
       "message": "Task `0` not found.",
       "code": "task_not_found",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#task_not_found"
+      "link": "https://docs.hanzo.ai/errors#task_not_found"
     }
     "#);
 
@@ -262,7 +262,7 @@ async fn snapshotception_issue_4653() {
       "message": "Batch `0` not found.",
       "code": "batch_not_found",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#batch_not_found"
+      "link": "https://docs.hanzo.ai/errors#batch_not_found"
     }
     "#);
 }

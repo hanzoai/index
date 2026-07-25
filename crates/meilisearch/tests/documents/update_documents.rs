@@ -16,7 +16,7 @@ async fn error_document_update_create_index_bad_uid() {
       "message": "`883  fj!-[uuid]` is not a valid index uid. Index uid can be an integer or a string containing only alphanumeric characters, hyphens (-) and underscores (_), and can not be more than 512 bytes.",
       "code": "invalid_index_uid",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_index_uid"
+      "link": "https://docs.hanzo.ai/errors#invalid_index_uid"
     }"###);
 }
 
@@ -178,7 +178,7 @@ async fn error_update_documents_bad_document_id() {
     assert_eq!(response["error"]["type"], json!("invalid_request"));
     assert_eq!(
         response["error"]["link"],
-        json!("https://docs.meilisearch.com/errors#invalid_document_id")
+        json!("https://docs.hanzo.ai/errors#invalid_document_id")
     );
 }
 
@@ -204,7 +204,7 @@ async fn error_update_documents_missing_document_id() {
     assert_eq!(response["error"]["type"], "invalid_request");
     assert_eq!(
         response["error"]["link"],
-        "https://docs.meilisearch.com/errors#missing_document_id"
+        "https://docs.hanzo.ai/errors#missing_document_id"
     );
 }
 

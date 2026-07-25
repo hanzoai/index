@@ -117,7 +117,7 @@ async fn search_json_object() {
       "message": "Missing field `queries`",
       "code": "bad_request",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#bad_request"
+      "link": "https://docs.hanzo.ai/errors#bad_request"
     }
     "###);
 }
@@ -133,7 +133,7 @@ async fn federation_no_queries() {
       "message": "Missing field `queries`",
       "code": "bad_request",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#bad_request"
+      "link": "https://docs.hanzo.ai/errors#bad_request"
     }
     "###);
 }
@@ -149,7 +149,7 @@ async fn search_json_array() {
       "message": "Invalid value type: expected an object, but found an array: `[]`",
       "code": "bad_request",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#bad_request"
+      "link": "https://docs.hanzo.ai/errors#bad_request"
     }
     "###);
 }
@@ -385,7 +385,7 @@ async fn simple_search_missing_index_uid() {
       "message": "Missing field `indexUid` inside `.queries[0]`",
       "code": "missing_index_uid",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#missing_index_uid"
+      "link": "https://docs.hanzo.ai/errors#missing_index_uid"
     }
     "###);
 }
@@ -405,7 +405,7 @@ async fn federation_simple_search_missing_index_uid() {
       "message": "Missing field `indexUid` inside `.queries[0]`",
       "code": "missing_index_uid",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#missing_index_uid"
+      "link": "https://docs.hanzo.ai/errors#missing_index_uid"
     }
     "###);
 }
@@ -425,7 +425,7 @@ async fn simple_search_illegal_index_uid() {
       "message": "Invalid value at `.queries[0].indexUid`: `hé` is not a valid index uid. Index uid can be an integer or a string containing only alphanumeric characters, hyphens (-) and underscores (_), and can not be more than 512 bytes.",
       "code": "invalid_index_uid",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_index_uid"
+      "link": "https://docs.hanzo.ai/errors#invalid_index_uid"
     }
     "###);
 }
@@ -445,7 +445,7 @@ async fn federation_search_illegal_index_uid() {
       "message": "Invalid value at `.queries[0].indexUid`: `hé` is not a valid index uid. Index uid can be an integer or a string containing only alphanumeric characters, hyphens (-) and underscores (_), and can not be more than 512 bytes.",
       "code": "invalid_index_uid",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_index_uid"
+      "link": "https://docs.hanzo.ai/errors#invalid_index_uid"
     }
     "###);
 }
@@ -828,7 +828,7 @@ async fn search_one_index_doesnt_exist() {
       "message": "Inside `.queries[1]`: Index `nested` not found.",
       "code": "index_not_found",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#index_not_found"
+      "link": "https://docs.hanzo.ai/errors#index_not_found"
     }
     "###);
 }
@@ -850,7 +850,7 @@ async fn federation_one_index_doesnt_exist() {
       "message": "Inside `.queries[1]`: Index `nested` not found.",
       "code": "index_not_found",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#index_not_found"
+      "link": "https://docs.hanzo.ai/errors#index_not_found"
     }
     "###);
 }
@@ -871,7 +871,7 @@ async fn search_multiple_indexes_dont_exist() {
       "message": "Inside `.queries[0]`: Index `test` not found.",
       "code": "index_not_found",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#index_not_found"
+      "link": "https://docs.hanzo.ai/errors#index_not_found"
     }
     "###);
 }
@@ -897,7 +897,7 @@ async fn federation_multiple_indexes_dont_exist() {
       "message": "Inside `.queries[0]`: Index `index_1-[uuid]` not found.",
       "code": "index_not_found",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#index_not_found"
+      "link": "https://docs.hanzo.ai/errors#index_not_found"
     }
     "###);
 }
@@ -920,7 +920,7 @@ async fn search_one_query_error() {
       "message": "Inside `.queries[0]`: Invalid facet distribution: Attribute `color` is not filterable. Available filterable attributes patterns are: `id, title`.",
       "code": "invalid_search_facets",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_search_facets"
+      "link": "https://docs.hanzo.ai/errors#invalid_search_facets"
     }
     "###);
 }
@@ -944,7 +944,7 @@ async fn federation_one_query_error() {
       "message": "Inside `.queries[1]`: Index `SHARED_NESTED_DOCUMENTS`: Attribute `title` is not filterable. Available filterable attribute patterns are: `cattos`, `doggos`, `father`.\ntitle = toto",
       "code": "invalid_search_filter",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_search_filter"
+      "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
     }
     "###);
 }
@@ -967,7 +967,7 @@ async fn federation_one_query_sort_error() {
       "message": "Inside `.queries[1]`: Index `SHARED_NESTED_DOCUMENTS`: Attribute `mother` is not sortable. Available sortable attributes are: `doggos`.",
       "code": "invalid_search_sort",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_search_sort"
+      "link": "https://docs.hanzo.ai/errors#invalid_search_sort"
     }
     "###);
 }
@@ -990,7 +990,7 @@ async fn search_multiple_query_errors() {
       "message": "Inside `.queries[0]`: Invalid facet distribution: Attribute `color` is not filterable. Available filterable attributes patterns are: `id, title`.",
       "code": "invalid_search_facets",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_search_facets"
+      "link": "https://docs.hanzo.ai/errors#invalid_search_facets"
     }
     "###);
 }
@@ -1013,7 +1013,7 @@ async fn federation_multiple_query_errors() {
       "message": "Inside `.queries[0]`: Index `SHARED_DOCUMENTS`: Attribute `color` is not filterable. Available filterable attribute patterns are: `id`, `title`.\n1:6 color = toto",
       "code": "invalid_search_filter",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_search_filter"
+      "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
     }
     "###);
 }
@@ -1036,7 +1036,7 @@ async fn federation_multiple_query_sort_errors() {
       "message": "Inside `.queries[0]`: Index `SHARED_DOCUMENTS`: Attribute `color` is not sortable. Available sortable attributes are: `id, title`.",
       "code": "invalid_search_sort",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_search_sort"
+      "link": "https://docs.hanzo.ai/errors#invalid_search_sort"
     }
     "###);
 }
@@ -1060,7 +1060,7 @@ async fn federation_multiple_query_errors_interleaved() {
       "message": "Inside `.queries[1]`: Index `SHARED_NESTED_DOCUMENTS`: Attribute `mother` is not filterable. Available filterable attribute patterns are: `cattos`, `doggos`, `father`.\n1:7 mother IN [intel, kefir]",
       "code": "invalid_search_filter",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_search_filter"
+      "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
     }
     "###);
 }
@@ -1084,7 +1084,7 @@ async fn federation_multiple_query_sort_errors_interleaved() {
       "message": "Inside `.queries[1]`: Index `SHARED_NESTED_DOCUMENTS`: Attribute `mother` is not sortable. Available sortable attributes are: `doggos`.",
       "code": "invalid_search_sort",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_search_sort"
+      "link": "https://docs.hanzo.ai/errors#invalid_search_sort"
     }
     "###);
 }
@@ -1409,7 +1409,7 @@ async fn federation_sort_same_indexes_same_criterion_opposite_direction() {
       "message": "Inside `.queries[1]`: The results of queries #0 and #1 are incompatible: \n  1. `queries[0].sort[0]`, `[uuid].rankingRules[0]`: ascending sort rule(s) on field `mother`\n  2. `queries[1].sort[0]`, `[uuid].rankingRules[0]`: descending sort rule(s) on field `mother`\n  - cannot compare two sort rules in opposite directions\n  - note: The ranking rules of query #0 were modified during canonicalization:\n    1. Removed relevancy rule `words` at position #1 in ranking rules because the query is a placeholder search (`q`: \"\")\n    2. Removed relevancy rule `typo` at position #2 in ranking rules because the query is a placeholder search (`q`: \"\")\n    3. Removed relevancy rule `proximity` at position #3 in ranking rules because the query is a placeholder search (`q`: \"\")\n    4. Removed relevancy rule `attribute` at position #4 in ranking rules because the query is a placeholder search (`q`: \"\")\n    5. Removed relevancy rule `exactness` at position #5 in ranking rules because the query is a placeholder search (`q`: \"\")\n  - note: The ranking rules of query #1 were modified during canonicalization:\n    1. Removed relevancy rule `words` at position #1 in ranking rules because the query is a placeholder search (`q`: \"\")\n    2. Removed relevancy rule `typo` at position #2 in ranking rules because the query is a placeholder search (`q`: \"\")\n    3. Removed relevancy rule `proximity` at position #3 in ranking rules because the query is a placeholder search (`q`: \"\")\n    4. Removed relevancy rule `attribute` at position #4 in ranking rules because the query is a placeholder search (`q`: \"\")\n    5. Removed relevancy rule `exactness` at position #5 in ranking rules because the query is a placeholder search (`q`: \"\")\n",
       "code": "invalid_multi_search_query_ranking_rules",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_query_ranking_rules"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_ranking_rules"
     }
     "###);
 
@@ -1426,7 +1426,7 @@ async fn federation_sort_same_indexes_same_criterion_opposite_direction() {
       "message": "Inside `.queries[1]`: The results of queries #0 and #1 are incompatible: \n  1. `queries[0].sort[0]`, `[uuid].rankingRules[0]`: ascending sort rule(s) on field `mother`\n  2. `queries[1].sort[0]`, `[uuid].rankingRules[0]`: descending sort rule(s) on field `mother`\n  - cannot compare two sort rules in opposite directions\n",
       "code": "invalid_multi_search_query_ranking_rules",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_query_ranking_rules"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_ranking_rules"
     }
     "###);
 }
@@ -1684,7 +1684,7 @@ async fn federation_sort_same_indexes_different_criterion_opposite_direction() {
       "message": "Inside `.queries[1]`: The results of queries #0 and #1 are incompatible: \n  1. `queries[0].sort[0]`, `nested-[uuid].rankingRules[0]`: ascending sort rule(s) on field `mother`\n  2. `queries[1].sort[0]`, `nested-[uuid].rankingRules[0]`: descending sort rule(s) on field `father`\n  - cannot compare two sort rules in opposite directions\n  - note: The ranking rules of query #0 were modified during canonicalization:\n    1. Removed relevancy rule `words` at position #1 in ranking rules because the query is a placeholder search (`q`: \"\")\n    2. Removed relevancy rule `typo` at position #2 in ranking rules because the query is a placeholder search (`q`: \"\")\n    3. Removed relevancy rule `proximity` at position #3 in ranking rules because the query is a placeholder search (`q`: \"\")\n    4. Removed relevancy rule `attribute` at position #4 in ranking rules because the query is a placeholder search (`q`: \"\")\n    5. Removed relevancy rule `exactness` at position #5 in ranking rules because the query is a placeholder search (`q`: \"\")\n  - note: The ranking rules of query #1 were modified during canonicalization:\n    1. Removed relevancy rule `words` at position #1 in ranking rules because the query is a placeholder search (`q`: \"\")\n    2. Removed relevancy rule `typo` at position #2 in ranking rules because the query is a placeholder search (`q`: \"\")\n    3. Removed relevancy rule `proximity` at position #3 in ranking rules because the query is a placeholder search (`q`: \"\")\n    4. Removed relevancy rule `attribute` at position #4 in ranking rules because the query is a placeholder search (`q`: \"\")\n    5. Removed relevancy rule `exactness` at position #5 in ranking rules because the query is a placeholder search (`q`: \"\")\n",
       "code": "invalid_multi_search_query_ranking_rules",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_query_ranking_rules"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_ranking_rules"
     }
     "###);
 
@@ -1701,7 +1701,7 @@ async fn federation_sort_same_indexes_different_criterion_opposite_direction() {
       "message": "Inside `.queries[1]`: The results of queries #0 and #1 are incompatible: \n  1. `queries[0].sort[0]`, `nested-[uuid].rankingRules[0]`: ascending sort rule(s) on field `mother`\n  2. `queries[1].sort[0]`, `nested-[uuid].rankingRules[0]`: descending sort rule(s) on field `father`\n  - cannot compare two sort rules in opposite directions\n",
       "code": "invalid_multi_search_query_ranking_rules",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_query_ranking_rules"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_ranking_rules"
     }
     "###);
 }
@@ -2100,7 +2100,7 @@ async fn federation_sort_different_ranking_rules() {
       "message": "Inside `.queries[1]`: The results of queries #2 and #1 are incompatible: \n  1. `queries[2]`, `SHARED_SCORE_DOCUMENTS.rankingRules[0..=3]`: relevancy rule(s) words, typo, proximity, attributeRank\n  2. `queries[1].sort[0]`, `movies-[uuid].rankingRules[0]`: descending sort rule(s) on field `title`\n  - cannot compare a relevancy rule with a sort rule\n",
       "code": "invalid_multi_search_query_ranking_rules",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_query_ranking_rules"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_ranking_rules"
     }
     "###);
 }
@@ -2124,7 +2124,7 @@ async fn federation_sort_different_indexes_same_criterion_opposite_direction() {
       "message": "Inside `.queries[0]`: The results of queries #1 and #0 are incompatible: \n  1. `queries[1].sort[0]`, `batman-[uuid].rankingRules[0]`: descending sort rule(s) on field `title`\n  2. `queries[0].sort[0]`, `movies-[uuid].rankingRules[0]`: ascending sort rule(s) on field `title`\n  - cannot compare two sort rules in opposite directions\n  - note: The ranking rules of query #1 were modified during canonicalization:\n    1. Removed relevancy rule `words` at position #1 in ranking rules because the query is a placeholder search (`q`: \"\")\n    2. Removed relevancy rule `typo` at position #2 in ranking rules because the query is a placeholder search (`q`: \"\")\n    3. Removed relevancy rule `proximity` at position #3 in ranking rules because the query is a placeholder search (`q`: \"\")\n    4. Removed relevancy rule `attribute` at position #4 in ranking rules because the query is a placeholder search (`q`: \"\")\n    5. Removed relevancy rule `exactness` at position #5 in ranking rules because the query is a placeholder search (`q`: \"\")\n  - note: The ranking rules of query #0 were modified during canonicalization:\n    1. Removed relevancy rule `words` at position #1 in ranking rules because the query is a placeholder search (`q`: \"\")\n    2. Removed relevancy rule `typo` at position #2 in ranking rules because the query is a placeholder search (`q`: \"\")\n    3. Removed relevancy rule `proximity` at position #3 in ranking rules because the query is a placeholder search (`q`: \"\")\n    4. Removed relevancy rule `attribute` at position #4 in ranking rules because the query is a placeholder search (`q`: \"\")\n    5. Removed relevancy rule `exactness` at position #5 in ranking rules because the query is a placeholder search (`q`: \"\")\n",
       "code": "invalid_multi_search_query_ranking_rules",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_query_ranking_rules"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_ranking_rules"
     }
     "###);
 
@@ -2142,7 +2142,7 @@ async fn federation_sort_different_indexes_same_criterion_opposite_direction() {
       "message": "Inside `.queries[1]`: The results of queries #2 and #1 are incompatible: \n  1. `queries[2].sort[0]`, `batman-[uuid].rankingRules[0]`: ascending sort rule(s) on field `title`\n  2. `queries[1].sort[0]`, `movies-[uuid].rankingRules[0]`: descending sort rule(s) on field `title`\n  - cannot compare two sort rules in opposite directions\n",
       "code": "invalid_multi_search_query_ranking_rules",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_query_ranking_rules"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_ranking_rules"
     }
     "###);
 }
@@ -2398,7 +2398,7 @@ async fn federation_sort_different_indexes_different_criterion_opposite_directio
       "message": "Inside `.queries[0]`: The results of queries #1 and #0 are incompatible: \n  1. `queries[1].sort[0]`, `batman-[uuid].rankingRules[0]`: descending sort rule(s) on field `id`\n  2. `queries[0].sort[0]`, `movies-[uuid].rankingRules[0]`: ascending sort rule(s) on field `title`\n  - cannot compare two sort rules in opposite directions\n  - note: The ranking rules of query #1 were modified during canonicalization:\n    1. Removed relevancy rule `words` at position #1 in ranking rules because the query is a placeholder search (`q`: \"\")\n    2. Removed relevancy rule `typo` at position #2 in ranking rules because the query is a placeholder search (`q`: \"\")\n    3. Removed relevancy rule `proximity` at position #3 in ranking rules because the query is a placeholder search (`q`: \"\")\n    4. Removed relevancy rule `attribute` at position #4 in ranking rules because the query is a placeholder search (`q`: \"\")\n    5. Removed relevancy rule `exactness` at position #5 in ranking rules because the query is a placeholder search (`q`: \"\")\n  - note: The ranking rules of query #0 were modified during canonicalization:\n    1. Removed relevancy rule `words` at position #1 in ranking rules because the query is a placeholder search (`q`: \"\")\n    2. Removed relevancy rule `typo` at position #2 in ranking rules because the query is a placeholder search (`q`: \"\")\n    3. Removed relevancy rule `proximity` at position #3 in ranking rules because the query is a placeholder search (`q`: \"\")\n    4. Removed relevancy rule `attribute` at position #4 in ranking rules because the query is a placeholder search (`q`: \"\")\n    5. Removed relevancy rule `exactness` at position #5 in ranking rules because the query is a placeholder search (`q`: \"\")\n",
       "code": "invalid_multi_search_query_ranking_rules",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_query_ranking_rules"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_ranking_rules"
     }
     "###);
 
@@ -2416,7 +2416,7 @@ async fn federation_sort_different_indexes_different_criterion_opposite_directio
       "message": "Inside `.queries[1]`: The results of queries #2 and #1 are incompatible: \n  1. `queries[2].sort[0]`, `batman-[uuid].rankingRules[0]`: descending sort rule(s) on field `id`\n  2. `queries[1].sort[0]`, `movies-[uuid].rankingRules[0]`: ascending sort rule(s) on field `title`\n  - cannot compare two sort rules in opposite directions\n",
       "code": "invalid_multi_search_query_ranking_rules",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_query_ranking_rules"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_ranking_rules"
     }
     "###);
 }
@@ -3458,7 +3458,7 @@ async fn federation_invalid_weight() {
       "message": "Invalid value at `.queries[1].federationOptions.weight`: the value of `weight` is invalid, expected a positive float (>= 0.0).",
       "code": "invalid_multi_search_weight",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_weight"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_weight"
     }
     "###);
 }
@@ -3555,7 +3555,7 @@ async fn federation_federated_contains_pagination() {
       "message": "Inside `.queries[1]`: Using pagination options is not allowed in federated queries.\n - Hint: remove `limit` from query #1 or remove `federation` from the request\n - Hint: pass `federation.limit` and `federation.offset` for pagination in federated search",
       "code": "invalid_multi_search_query_pagination",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_query_pagination"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_pagination"
     }
     "###);
     // fail when a federated query contains "offset"
@@ -3571,7 +3571,7 @@ async fn federation_federated_contains_pagination() {
       "message": "Inside `.queries[1]`: Using pagination options is not allowed in federated queries.\n - Hint: remove `offset` from query #1 or remove `federation` from the request\n - Hint: pass `federation.limit` and `federation.offset` for pagination in federated search",
       "code": "invalid_multi_search_query_pagination",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_query_pagination"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_pagination"
     }
     "###);
     // fail when a federated query contains "page"
@@ -3587,7 +3587,7 @@ async fn federation_federated_contains_pagination() {
       "message": "Inside `.queries[1]`: Using pagination options is not allowed in federated queries.\n - Hint: remove `page` from query #1 or remove `federation` from the request\n - Hint: pass `federation.limit` and `federation.offset` for pagination in federated search",
       "code": "invalid_multi_search_query_pagination",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_query_pagination"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_pagination"
     }
     "###);
     // fail when a federated query contains "hitsPerPage"
@@ -3603,7 +3603,7 @@ async fn federation_federated_contains_pagination() {
       "message": "Inside `.queries[1]`: Using pagination options is not allowed in federated queries.\n - Hint: remove `hitsPerPage` from query #1 or remove `federation` from the request\n - Hint: pass `federation.limit` and `federation.offset` for pagination in federated search",
       "code": "invalid_multi_search_query_pagination",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_query_pagination"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_pagination"
     }
     "###);
 }
@@ -3688,7 +3688,7 @@ async fn federation_federated_contains_facets() {
       "message": "Inside `.queries[1]`: Using facet options is not allowed in federated queries.\n - Hint: remove `facets` from query #1 or remove `federation` from the request\n - Hint: pass `federation.facetsByIndex.fruits-[uuid]: [\"BOOSTED\"]` for facets in federated search",
       "code": "invalid_multi_search_query_facets",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_query_facets"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_facets"
     }
     "###);
 }
@@ -3724,7 +3724,7 @@ async fn federation_contains_two_distincts() {
       "message": "Inside `.queries[1]`: Using `distinct` options is not allowed in federated queries when it also appears in `.federation.distinct`.\n - Hint: remove `distinct` from query #1 or remove `federation` from the request\n  - Note: `distinct` at the query level is discouraged in federated search.",
       "code": "invalid_multi_search_distinct",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_distinct"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_distinct"
     }
     "###);
 }
@@ -3765,7 +3765,7 @@ async fn federation_distinct_not_filterable() {
       "message": "Inside `.queries[1]`: Index `fruits-no-filterable-[uuid]`: Attribute `BOOST` is not filterable and thus, cannot be used as distinct attribute. This index does not have configured filterable attributes.",
       "code": "invalid_search_distinct",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_search_distinct"
+      "link": "https://docs.hanzo.ai/errors#invalid_search_distinct"
     }
     "###);
 }
@@ -3823,7 +3823,7 @@ async fn federation_non_faceted_for_an_index() {
       "message": "Inside `.federation.facetsByIndex.fruits-no-name-[uuid]`: Invalid facet distribution: Attribute `name` is not filterable. Available filterable attributes patterns are: `BOOST, id`.\n - Note: index `fruits-no-name-[uuid]` used in `.queries[1]`",
       "code": "invalid_multi_search_facets",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_facets"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_facets"
     }
     "###);
 
@@ -3845,7 +3845,7 @@ async fn federation_non_faceted_for_an_index() {
       "message": "Inside `.federation.facetsByIndex.fruits-no-name-[uuid]`: Invalid facet distribution: Attribute `name` is not filterable. Available filterable attributes patterns are: `BOOST, id`.\n - Note: index `fruits-no-name-[uuid]` is not used in queries",
       "code": "invalid_multi_search_facets",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_facets"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_facets"
     }
     "###);
 
@@ -3868,7 +3868,7 @@ async fn federation_non_faceted_for_an_index() {
       "message": "Inside `.federation.facetsByIndex.fruits-no-facets-[uuid]`: Invalid facet distribution: Attributes `BOOST, id` are not filterable. This index does not have configured filterable attributes.\n - Note: index `fruits-no-facets-[uuid]` is not used in queries",
       "code": "invalid_multi_search_facets",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_facets"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_facets"
     }
     "#);
 
@@ -3890,7 +3890,7 @@ async fn federation_non_faceted_for_an_index() {
       "message": "Inside `.federation.facetsByIndex.zorglub`: Index `zorglub` not found.\n - Note: index `zorglub` is not used in queries",
       "code": "index_not_found",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#index_not_found"
+      "link": "https://docs.hanzo.ai/errors#index_not_found"
     }
     "###);
 }
@@ -3918,7 +3918,7 @@ async fn federation_non_federated_contains_federation_option() {
       "message": "Inside `.queries[1]`: Using `federationOptions` is not allowed in a non-federated search.\n - Hint: remove `federationOptions` from query #1 or add `federation` to the request.",
       "code": "invalid_multi_search_federation_options",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_federation_options"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_federation_options"
     }
     "###);
 }
@@ -6012,7 +6012,7 @@ async fn federation_inconsistent_merge_order() {
       "message": "Inside `.federation.facetsByIndex.movies_2-[uuid]`: Inconsistent order for values in facet `color`: index `movies-[uuid]` orders alphabetically, but index `movies_2-[uuid]` orders by count.\n - Hint: Remove `federation.mergeFacets` or change `faceting.sortFacetValuesBy` to be consistent in settings.\n - Note: index `movies_2-[uuid]` used in `.queries[2]`",
       "code": "invalid_multi_search_facet_order",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_facet_order"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_facet_order"
     }
     "###);
 

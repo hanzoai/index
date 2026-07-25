@@ -19,7 +19,7 @@ async fn error_get_unexisting_task_status() {
         "message": "Task `4294967295` not found.",
         "code": "task_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#task_not_found"
+        "link": "https://docs.hanzo.ai/errors#task_not_found"
     });
 
     assert_eq!(response, expected_response);
@@ -366,7 +366,7 @@ async fn test_summarized_delete_documents_by_batch() {
         "message": "Index `[uuid]` not found.",
         "code": "index_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_not_found"
+        "link": "https://docs.hanzo.ai/errors#index_not_found"
       },
       "duration": "[duration]",
       "enqueuedAt": "[date]",
@@ -429,7 +429,7 @@ async fn test_summarized_delete_documents_by_filter() {
         "message": "Index `[uuid]` not found.",
         "code": "index_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_not_found"
+        "link": "https://docs.hanzo.ai/errors#index_not_found"
       },
       "duration": "[duration]",
       "enqueuedAt": "[date]",
@@ -461,7 +461,7 @@ async fn test_summarized_delete_documents_by_filter() {
         "message": "Index `[uuid]`: Attribute `doggo` is not filterable. This index does not have configured filterable attributes.\n1:6 doggo = bernese",
         "code": "invalid_document_filter",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#invalid_document_filter"
+        "link": "https://docs.hanzo.ai/errors#invalid_document_filter"
       },
       "duration": "[duration]",
       "enqueuedAt": "[date]",
@@ -523,7 +523,7 @@ async fn test_summarized_delete_document_by_id() {
         "message": "Index `[uuid]` not found.",
         "code": "index_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_not_found"
+        "link": "https://docs.hanzo.ai/errors#index_not_found"
       },
       "duration": "[duration]",
       "enqueuedAt": "[date]",
@@ -571,7 +571,7 @@ async fn test_summarized_settings_update() {
       "message": "Invalid value at `.rankingRules[0]`: `custom` ranking rule is invalid. Valid ranking rules are words, typo, sort, proximity, attribute, exactness and custom ranking rules.",
       "code": "invalid_settings_ranking_rules",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_settings_ranking_rules"
+      "link": "https://docs.hanzo.ai/errors#invalid_settings_ranking_rules"
     }
     "###);
 
@@ -655,7 +655,7 @@ async fn test_summarized_index_creation() {
         "message": "Index `[uuid]` already exists.",
         "code": "index_already_exists",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_already_exists"
+        "link": "https://docs.hanzo.ai/errors#index_already_exists"
       },
       "duration": "[duration]",
       "enqueuedAt": "[date]",
@@ -687,7 +687,7 @@ async fn test_summarized_index_deletion() {
         "message": "Index `[uuid]` not found.",
         "code": "index_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_not_found"
+        "link": "https://docs.hanzo.ai/errors#index_not_found"
       },
       "duration": "[duration]",
       "enqueuedAt": "[date]",
@@ -764,7 +764,7 @@ async fn test_summarized_index_deletion() {
         "message": "Index `[uuid]` not found.",
         "code": "index_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_not_found"
+        "link": "https://docs.hanzo.ai/errors#index_not_found"
       },
       "duration": "[duration]",
       "enqueuedAt": "[date]",
@@ -798,7 +798,7 @@ async fn test_summarized_index_update() {
         "message": "Index `[uuid]` not found.",
         "code": "index_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_not_found"
+        "link": "https://docs.hanzo.ai/errors#index_not_found"
       },
       "duration": "[duration]",
       "enqueuedAt": "[date]",
@@ -826,7 +826,7 @@ async fn test_summarized_index_update() {
         "message": "Index `[uuid]` not found.",
         "code": "index_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_not_found"
+        "link": "https://docs.hanzo.ai/errors#index_not_found"
       },
       "duration": "[duration]",
       "enqueuedAt": "[date]",
@@ -919,7 +919,7 @@ async fn test_summarized_index_swap() {
         "message": "Indexes `cattos`, `doggos` not found.",
         "code": "index_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_not_found"
+        "link": "https://docs.hanzo.ai/errors#index_not_found"
       },
       "duration": "[duration]",
       "enqueuedAt": "[date]",

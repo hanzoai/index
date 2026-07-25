@@ -17,7 +17,7 @@ async fn swap_indexes_bad_format() {
       "message": "Invalid value type: expected an array, but found a string: `\"doggo\"`",
       "code": "bad_request",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#bad_request"
+      "link": "https://docs.hanzo.ai/errors#bad_request"
     }
     "###);
 
@@ -28,7 +28,7 @@ async fn swap_indexes_bad_format() {
       "message": "Invalid value type at `[0]`: expected an object, but found a string: `\"doggo\"`",
       "code": "bad_request",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#bad_request"
+      "link": "https://docs.hanzo.ai/errors#bad_request"
     }
     "###);
 }
@@ -44,7 +44,7 @@ async fn swap_indexes_bad_indexes() {
       "message": "Invalid value type at `[0].indexes`: expected an array, but found a string: `\"doggo\"`",
       "code": "invalid_swap_indexes",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_swap_indexes"
+      "link": "https://docs.hanzo.ai/errors#invalid_swap_indexes"
     }
     "###);
 
@@ -55,7 +55,7 @@ async fn swap_indexes_bad_indexes() {
       "message": "Two indexes must be given for each swap. The list `[\"doggo\"]` contains 1 indexes.",
       "code": "invalid_swap_indexes",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_swap_indexes"
+      "link": "https://docs.hanzo.ai/errors#invalid_swap_indexes"
     }
     "###);
 
@@ -67,7 +67,7 @@ async fn swap_indexes_bad_indexes() {
       "message": "Two indexes must be given for each swap. The list `[\"doggo\", \"crabo\", \"croco\"]` contains 3 indexes.",
       "code": "invalid_swap_indexes",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_swap_indexes"
+      "link": "https://docs.hanzo.ai/errors#invalid_swap_indexes"
     }
     "###);
 
@@ -78,7 +78,7 @@ async fn swap_indexes_bad_indexes() {
       "message": "Indexes must be declared only once during a swap. `doggo` was specified several times.",
       "code": "invalid_swap_duplicate_index_found",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_swap_duplicate_index_found"
+      "link": "https://docs.hanzo.ai/errors#invalid_swap_duplicate_index_found"
     }
     "###);
 
@@ -91,7 +91,7 @@ async fn swap_indexes_bad_indexes() {
       "message": "Indexes must be declared only once during a swap. `doggo` was specified several times.",
       "code": "invalid_swap_duplicate_index_found",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_swap_duplicate_index_found"
+      "link": "https://docs.hanzo.ai/errors#invalid_swap_duplicate_index_found"
     }
     "###);
 }
@@ -108,7 +108,7 @@ async fn swap_indexes_bad_rename() {
       "message": "Invalid value type at `[0].rename`: expected a boolean, but found a string: `\"hello\"`",
       "code": "invalid_swap_rename",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_swap_rename"
+      "link": "https://docs.hanzo.ai/errors#invalid_swap_rename"
     }
     "#);
 }
@@ -148,7 +148,7 @@ async fn swap_indexes_rename_to_already_existing_index() {
         "message": "Cannot rename `SHARED_DOCUMENTS` to `EMPTY_INDEX` as the index already exists. Hint: You can remove `EMPTY_INDEX` first and then do your remove.",
         "code": "index_already_exists",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_already_exists"
+        "link": "https://docs.hanzo.ai/errors#index_already_exists"
       },
       "duration": "[duration]",
       "enqueuedAt": "[date]",
@@ -195,7 +195,7 @@ async fn swap_indexes_rename_to_already_existing_index() {
         "message": "The following indexes are being renamed but cannot because their new name conflicts with an already existing index: `EMPTY_INDEX`, `SHARED_NESTED_DOCUMENTS`. Renaming doesn't overwrite the other index name.",
         "code": "index_already_exists",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_already_exists"
+        "link": "https://docs.hanzo.ai/errors#index_already_exists"
       },
       "duration": "[duration]",
       "enqueuedAt": "[date]",

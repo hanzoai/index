@@ -80,7 +80,7 @@ pub struct SimilarApi;
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.meilisearch.com/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/errors#index_not_found"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -88,7 +88,7 @@ pub struct SimilarApi;
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
     )
@@ -161,7 +161,7 @@ pub async fn similar_get(
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.meilisearch.com/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/errors#index_not_found"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -169,7 +169,7 @@ pub async fn similar_get(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
     )

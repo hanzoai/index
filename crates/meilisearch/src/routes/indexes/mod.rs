@@ -145,7 +145,7 @@ impl ListIndexes {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
     )
@@ -231,7 +231,7 @@ impl Aggregate for IndexCreatedAggregate {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
     )
@@ -327,7 +327,7 @@ fn deny_immutable_fields_index(
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.meilisearch.com/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/errors#index_not_found"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -335,7 +335,7 @@ fn deny_immutable_fields_index(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
     )
@@ -413,7 +413,7 @@ pub struct UpdateIndexRequest {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -421,7 +421,7 @@ pub struct UpdateIndexRequest {
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.meilisearch.com/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/errors#index_not_found"
             }
         )),
     )
@@ -506,7 +506,7 @@ pub async fn update_index(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -514,7 +514,7 @@ pub async fn update_index(
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.meilisearch.com/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/errors#index_not_found"
             }
         )),
     )
@@ -699,7 +699,7 @@ impl IndexStats {
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.meilisearch.com/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/errors#index_not_found"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -707,7 +707,7 @@ impl IndexStats {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
     )

@@ -225,7 +225,7 @@ impl Aggregate for DeleteDynamicSearchRuleAnalytics {
             "message": "The Authorization header is missing. It must use the bearer authorization method.",
             "code": "missing_authorization_header",
             "type": "auth",
-            "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+            "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
         })),
     ),
 )]
@@ -275,13 +275,13 @@ async fn list_rules(
             "message": "The Authorization header is missing. It must use the bearer authorization method.",
             "code": "missing_authorization_header",
             "type": "auth",
-            "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+            "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
         })),
         (status = 404, description = "Dynamic search rule not found.", body = ResponseError, content_type = "application/json", example = json!({
             "message": "Dynamic search rule `black-friday` not found.",
             "code": "dynamic_search_rule_not_found",
             "type": "invalid_request",
-            "link": "https://docs.meilisearch.com/errors#dynamic_search_rule_not_found"
+            "link": "https://docs.hanzo.ai/errors#dynamic_search_rule_not_found"
         })),
     ),
 )]
@@ -330,13 +330,13 @@ async fn get_rule(
             "message": "The Authorization header is missing. It must use the bearer authorization method.",
             "code": "missing_authorization_header",
             "type": "auth",
-            "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+            "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
         })),
         (status = 404, description = "Dynamic search rule not found.", body = ResponseError, content_type = "application/json", example = json!({
             "message": "Dynamic search rule `black-friday` not found.",
             "code": "dynamic_search_rule_not_found",
             "type": "invalid_request",
-            "link": "https://docs.meilisearch.com/errors#dynamic_search_rule_not_found"
+            "link": "https://docs.hanzo.ai/errors#dynamic_search_rule_not_found"
         })),
     ),
 )]
@@ -430,13 +430,13 @@ async fn update_or_create_rule(
             "message": "The Authorization header is missing. It must use the bearer authorization method.",
             "code": "missing_authorization_header",
             "type": "auth",
-            "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+            "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
         })),
         (status = 404, description = "Dynamic search rule not found.", body = ResponseError, content_type = "application/json", example = json!({
             "message": "Dynamic search rule `black-friday` not found.",
             "code": "dynamic_search_rule_not_found",
             "type": "invalid_request",
-            "link": "https://docs.meilisearch.com/errors#dynamic_search_rule_not_found"
+            "link": "https://docs.hanzo.ai/errors#dynamic_search_rule_not_found"
         })),
     ),
 )]

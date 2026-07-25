@@ -65,7 +65,7 @@ pub struct ApiKeyApi;
                 "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
                 "code": "missing_master_key",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_master_key"
+                "link": "https://docs.hanzo.ai/errors#missing_master_key"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -73,7 +73,7 @@ pub struct ApiKeyApi;
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
     )
@@ -150,7 +150,7 @@ impl ListApiKeys {
                 "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
                 "code": "missing_master_key",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_master_key"
+                "link": "https://docs.hanzo.ai/errors#missing_master_key"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -158,7 +158,7 @@ impl ListApiKeys {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
     )
@@ -210,7 +210,7 @@ pub async fn list_api_keys(
                 "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
                 "code": "missing_master_key",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_master_key"
+                "link": "https://docs.hanzo.ai/errors#missing_master_key"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -218,7 +218,7 @@ pub async fn list_api_keys(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "API key not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -226,7 +226,7 @@ pub async fn list_api_keys(
                 "message": "The API key was not found.",
                 "code": "api_key_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.meilisearch.com/errors#api_key_not_found"
+                "link": "https://docs.hanzo.ai/errors#api_key_not_found"
             }
         )),
     )
@@ -282,7 +282,7 @@ pub async fn get_api_key(
                 "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
                 "code": "missing_master_key",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_master_key"
+                "link": "https://docs.hanzo.ai/errors#missing_master_key"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -290,7 +290,7 @@ pub async fn get_api_key(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "API key not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -298,7 +298,7 @@ pub async fn get_api_key(
                 "message": "The API key was not found.",
                 "code": "api_key_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.meilisearch.com/errors#api_key_not_found"
+                "link": "https://docs.hanzo.ai/errors#api_key_not_found"
             }
         )),
     )
@@ -336,7 +336,7 @@ pub async fn patch_api_key(
                 "message": "The API key was not found.",
                 "code": "api_key_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.meilisearch.com/errors#api_key_not_found"
+                "link": "https://docs.hanzo.ai/errors#api_key_not_found"
             }
         )),
         (status = 401, description = "The route has been hit on an unprotected instance.", body = ResponseError, content_type = "application/json", example = json!(
@@ -344,7 +344,7 @@ pub async fn patch_api_key(
                 "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
                 "code": "missing_master_key",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_master_key"
+                "link": "https://docs.hanzo.ai/errors#missing_master_key"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -352,7 +352,7 @@ pub async fn patch_api_key(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
     )

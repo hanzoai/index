@@ -35,7 +35,7 @@ async fn error_delete_unexisting_index() {
         "message": "Index `DOES_NOT_EXISTS` not found.",
         "code": "index_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_not_found"
+        "link": "https://docs.hanzo.ai/errors#index_not_found"
     });
 
     let response = server.wait_task(task.uid()).await;

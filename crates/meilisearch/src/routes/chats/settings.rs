@@ -32,7 +32,7 @@ use crate::extractors::authentication::GuardedData;
               "message": "Chat :workspaceUid not found.",
               "code": "chat_not_found",
               "type": "invalid_request",
-              "link": "https://docs.meilisearch.com/errors#chat_not_found"
+              "link": "https://docs.hanzo.ai/errors#chat_not_found"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -40,7 +40,7 @@ use crate::extractors::authentication::GuardedData;
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
         (status = 200, description = "Chat settings retrieved.", content_type = "application/json", example = json!(
@@ -94,7 +94,7 @@ pub async fn get_settings(
               "message": "Chat :workspaceUid not found.",
               "code": "chat_not_found",
               "type": "invalid_request",
-              "link": "https://docs.meilisearch.com/errors#chat_not_found"
+              "link": "https://docs.hanzo.ai/errors#chat_not_found"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -102,7 +102,7 @@ pub async fn get_settings(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
         (status = 200, description = "Chat settings retrieved.", content_type = "application/json", example = json!(
@@ -233,7 +233,7 @@ pub async fn patch_settings(
               "message": "Chat :workspaceUid not found.",
               "code": "chat_not_found",
               "type": "invalid_request",
-              "link": "https://docs.meilisearch.com/errors#chat_not_found"
+              "link": "https://docs.hanzo.ai/errors#chat_not_found"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -241,7 +241,7 @@ pub async fn patch_settings(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
         (status = 200, description = "Chat settings retrieved.", content_type = "application/json", example = json!(

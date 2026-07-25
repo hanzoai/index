@@ -6,5 +6,5 @@ assertion_line: 290
   "message": "Unknown field `unknownField`: expected one of `description`, `priority`, `active`, `conditions`, `actions`",
   "code": "bad_request",
   "type": "invalid_request",
-  "link": "https://docs.meilisearch.com/errors#bad_request"
+  "link": "https://docs.hanzo.ai/errors#bad_request"
 }

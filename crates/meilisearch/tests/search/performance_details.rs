@@ -107,7 +107,7 @@ async fn invalid_federated_search() {
       "message": "Inside `.queries[0]`: Using `.showPerformanceDetails` is not allowed in federated queries.\n - Hint: remove `showPerformanceDetails` from query #0 or remove `federation` from the request",
       "code": "invalid_multi_search_query_show_performance_details",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_multi_search_query_show_performance_details"
+      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_show_performance_details"
     }
     "###);
 
@@ -127,7 +127,7 @@ async fn invalid_federated_search() {
       "message": "Invalid value type at `.federation.showPerformanceDetails`: expected a boolean, but found a string: `\"true\"`",
       "code": "invalid_search_show_performance_details",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_search_show_performance_details"
+      "link": "https://docs.hanzo.ai/errors#invalid_search_show_performance_details"
     }
     "###);
 }

@@ -35,7 +35,7 @@ source: crates/index-scheduler/src/queue/test.rs
       "message": "Index `doggo` already exists.",
       "code": "index_already_exists",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#index_already_exists"
+      "link": "https://docs.hanzo.ai/errors#index_already_exists"
     },
     "canceledBy": null,
     "details": {

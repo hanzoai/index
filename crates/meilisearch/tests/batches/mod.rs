@@ -34,7 +34,7 @@ async fn error_get_unexisting_batch_status() {
         "message": format!("Batch `{}` not found.", u32::MAX),
         "code": "batch_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#batch_not_found"
+        "link": "https://docs.hanzo.ai/errors#batch_not_found"
     });
 
     assert_eq!(response, expected_response);
@@ -244,7 +244,7 @@ async fn list_batch_filter_error() {
       "message": "Unknown parameter `lol`: expected one of `limit`, `from`, `reverse`, `batchUids`, `uids`, `canceledBy`, `types`, `statuses`, `indexUids`, `afterEnqueuedAt`, `beforeEnqueuedAt`, `afterStartedAt`, `beforeStartedAt`, `afterFinishedAt`, `beforeFinishedAt`",
       "code": "bad_request",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#bad_request"
+      "link": "https://docs.hanzo.ai/errors#bad_request"
     }
     "#);
 
@@ -255,7 +255,7 @@ async fn list_batch_filter_error() {
       "message": "Invalid value in parameter `uids`: could not parse `pied` as a positive integer",
       "code": "invalid_task_uids",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_task_uids"
+      "link": "https://docs.hanzo.ai/errors#invalid_task_uids"
     }
     "#);
 
@@ -266,7 +266,7 @@ async fn list_batch_filter_error() {
       "message": "Invalid value in parameter `from`: could not parse `pied` as a positive integer",
       "code": "invalid_task_from",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_task_from"
+      "link": "https://docs.hanzo.ai/errors#invalid_task_from"
     }
     "#);
 
@@ -277,7 +277,7 @@ async fn list_batch_filter_error() {
       "message": "Invalid value in parameter `beforeStartedAt`: `pied` is an invalid date-time. It should follow the YYYY-MM-DD or RFC 3339 date-time format.",
       "code": "invalid_task_before_started_at",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_task_before_started_at"
+      "link": "https://docs.hanzo.ai/errors#invalid_task_before_started_at"
     }
     "#);
 }
@@ -708,7 +708,7 @@ async fn test_summarized_settings_update() {
       "message": "Invalid value at `.rankingRules[0]`: `custom` ranking rule is invalid. Valid ranking rules are words, typo, sort, proximity, attribute, exactness and custom ranking rules.",
       "code": "invalid_settings_ranking_rules",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_settings_ranking_rules"
+      "link": "https://docs.hanzo.ai/errors#invalid_settings_ranking_rules"
     }
     "###);
 
@@ -869,7 +869,7 @@ async fn test_summarized_index_deletion() {
         "message": "Index `[uuid]` not found.",
         "code": "index_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_not_found"
+        "link": "https://docs.hanzo.ai/errors#index_not_found"
       },
       "duration": "[duration]",
       "enqueuedAt": "[date]",
@@ -946,7 +946,7 @@ async fn test_summarized_index_deletion() {
         "message": "Index `[uuid]` not found.",
         "code": "index_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_not_found"
+        "link": "https://docs.hanzo.ai/errors#index_not_found"
       },
       "duration": "[duration]",
       "enqueuedAt": "[date]",

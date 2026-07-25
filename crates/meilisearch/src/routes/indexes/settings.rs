@@ -100,7 +100,7 @@ macro_rules! make_setting_route {
                             "message": "The Authorization header is missing. It must use the bearer authorization method.",
                             "code": "missing_authorization_header",
                             "type": "auth",
-                            "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                            "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
                         }
                     )),
                     (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -108,7 +108,7 @@ macro_rules! make_setting_route {
                             "message": "Index `movies` not found.",
                             "code": "index_not_found",
                             "type": "invalid_request",
-                            "link": "https://docs.meilisearch.com/errors#index_not_found"
+                            "link": "https://docs.hanzo.ai/errors#index_not_found"
                         }
                     )),
                 )
@@ -155,7 +155,7 @@ macro_rules! make_setting_route {
                             "message": "The Authorization header is missing. It must use the bearer authorization method.",
                             "code": "missing_authorization_header",
                             "type": "auth",
-                            "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                            "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
                         }
                     )),
                     (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -163,7 +163,7 @@ macro_rules! make_setting_route {
                             "message": "Index `movies` not found.",
                             "code": "index_not_found",
                             "type": "invalid_request",
-                            "link": "https://docs.meilisearch.com/errors#index_not_found"
+                            "link": "https://docs.hanzo.ai/errors#index_not_found"
                         }
                     )),
                 )
@@ -220,7 +220,7 @@ macro_rules! make_setting_route {
                             "message": "The Authorization header is missing. It must use the bearer authorization method.",
                             "code": "missing_authorization_header",
                             "type": "auth",
-                            "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                            "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
                         }
                     )),
                     (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -228,7 +228,7 @@ macro_rules! make_setting_route {
                             "message": "Index `movies` not found.",
                             "code": "index_not_found",
                             "type": "invalid_request",
-                            "link": "https://docs.meilisearch.com/errors#index_not_found"
+                            "link": "https://docs.hanzo.ai/errors#index_not_found"
                         }
                     )),
                 )
@@ -527,7 +527,7 @@ make_setting_routes!(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -535,7 +535,7 @@ make_setting_routes!(
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.meilisearch.com/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/errors#index_not_found"
             }
         )),
     )
@@ -714,7 +714,7 @@ async fn register_new_settings(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -722,7 +722,7 @@ async fn register_new_settings(
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.meilisearch.com/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/errors#index_not_found"
             }
         )),
     )
@@ -774,7 +774,7 @@ pub async fn get_all(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -782,7 +782,7 @@ pub async fn get_all(
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.meilisearch.com/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/errors#index_not_found"
             }
         )),
     )

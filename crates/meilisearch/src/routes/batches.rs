@@ -69,7 +69,7 @@ pub struct BatchesApi;
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Batch not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -77,7 +77,7 @@ pub struct BatchesApi;
                 "message": "Batch not found.",
                 "code": "batch_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.meilisearch.com/errors#batch_not_found"
+                "link": "https://docs.hanzo.ai/errors#batch_not_found"
             }
         )),
     )
@@ -175,7 +175,7 @@ pub struct AllBatches {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.meilisearch.com/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
             }
         )),
     )

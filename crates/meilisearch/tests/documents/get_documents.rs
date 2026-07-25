@@ -31,7 +31,7 @@ async fn error_get_unexisting_document() {
         "message": "Document `1` not found.",
         "code": "document_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#document_not_found"
+        "link": "https://docs.hanzo.ai/errors#document_not_found"
     });
 
     assert_eq!(response, expected_response);
@@ -337,7 +337,7 @@ async fn get_document_sort_the_unsortable() {
       "message": "Attribute `name` is not sortable. This index does not have configured sortable attributes.",
       "code": "invalid_document_sort",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_document_sort"
+      "link": "https://docs.hanzo.ai/errors#invalid_document_sort"
     }
     "#);
 }
@@ -351,7 +351,7 @@ async fn error_get_unexisting_index_all_documents() {
         "message": "Index `DOES_NOT_EXISTS` not found.",
         "code": "index_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_not_found"
+        "link": "https://docs.hanzo.ai/errors#index_not_found"
     });
 
     assert_eq!(response, expected_response);
@@ -920,7 +920,7 @@ async fn get_document_invalid_ids() {
       "message": "In `.ids[1]`: Document identifier `\"illegal/docid\"` is invalid. A document identifier can be of type integer or string, only composed of alphanumeric characters (a-z A-Z 0-9), hyphens (-) and underscores (_), and can not be more than 511 bytes.",
       "code": "invalid_document_ids",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_document_ids"
+      "link": "https://docs.hanzo.ai/errors#invalid_document_ids"
     }
     "###);
     assert_eq!(code, code2);

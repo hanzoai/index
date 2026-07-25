@@ -37,7 +37,7 @@ async fn experimental_feature_not_enabled() {
       "message": "setting `indexingFragments` requires enabling the `multimodal` experimental feature. See https://github.com/orgs/meilisearch/discussions/846",
       "code": "feature_not_enabled",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#feature_not_enabled"
+      "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
     }
     "#);
 }
@@ -328,7 +328,7 @@ async fn search_with_media_and_vector() {
       "message": "Invalid request: both `media` and `vector` parameters are present.",
       "code": "invalid_search_media_and_vector",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#invalid_search_media_and_vector"
+      "link": "https://docs.hanzo.ai/errors#invalid_search_media_and_vector"
     }
     "#);
 }
@@ -351,7 +351,7 @@ async fn search_with_media_matching_multiple_fragments() {
       "message": "Error while generating embeddings: user error: Query matches multiple search fragments.\n  - Note: First matched fragment `justBreed`.\n  - Note: Second matched fragment `justName`.\n  - Note: {\"q\":null,\"media\":{\"name\":\"dustin\",\"breed\":\"labrador\"}}",
       "code": "vector_embedding_error",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#vector_embedding_error"
+      "link": "https://docs.hanzo.ai/errors#vector_embedding_error"
     }
     "#);
 }
@@ -374,7 +374,7 @@ async fn search_with_media_matching_no_fragment() {
       "message": "Error while generating embeddings: user error: Query matches no search fragment.\n  - Note: {\"q\":null,\"media\":{\"ticker\":\"GME\",\"section\":\"portfolio\"}}",
       "code": "vector_embedding_error",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#vector_embedding_error"
+      "link": "https://docs.hanzo.ai/errors#vector_embedding_error"
     }
     "#);
 }
@@ -2032,7 +2032,7 @@ async fn both_fragments_and_document_template() {
       "message": "Error while generating embeddings: user error: cannot pass both fragments and a document template.\n  - Note: 1 fragments declared in `indexingFragments` and 1 fragments declared in `search_fragments_len`.\n  - Hint: remove the declared fragments or remove the `documentTemplate`",
       "code": "vector_embedding_error",
       "type": "invalid_request",
-      "link": "https://docs.meilisearch.com/errors#vector_embedding_error"
+      "link": "https://docs.hanzo.ai/errors#vector_embedding_error"
     }
     "#);
 }

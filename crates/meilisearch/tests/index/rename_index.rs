@@ -60,7 +60,7 @@ async fn rename_to_existing_index_via_patch() {
         "message": format!("Index `{}` already exists.", index2.uid),
         "code": "index_already_exists",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_already_exists"
+        "link": "https://docs.hanzo.ai/errors#index_already_exists"
     });
 
     assert_eq!(response["error"], expected_response);
@@ -82,7 +82,7 @@ async fn rename_non_existent_index_via_patch() {
         "message": format!("Index `{}` not found.", index.uid),
         "code": "index_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_not_found"
+        "link": "https://docs.hanzo.ai/errors#index_not_found"
     });
 
     assert_eq!(response["error"], expected_response);

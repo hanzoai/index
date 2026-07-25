@@ -84,7 +84,7 @@ async fn error_update_existing_primary_key() {
         "message": format!("Index `{}`: Index already has a primary key: `id`.", index.uid),
         "code": "index_primary_key_already_exists",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_primary_key_already_exists"
+        "link": "https://docs.hanzo.ai/errors#index_primary_key_already_exists"
     });
 
     assert_eq!(response["error"], expected_response);
@@ -104,7 +104,7 @@ async fn error_update_unexisting_index() {
         "message": format!("Index `{}` not found.", index.uid),
         "code": "index_not_found",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_not_found"
+        "link": "https://docs.hanzo.ai/errors#index_not_found"
     });
 
     assert_eq!(response["error"], expected_response);
@@ -182,7 +182,7 @@ async fn error_update_index_name_to_already_existing_index() {
         "message": "Index `EMPTY_INDEX` already exists.",
         "code": "index_already_exists",
         "type": "invalid_request",
-        "link": "https://docs.meilisearch.com/errors#index_already_exists"
+        "link": "https://docs.hanzo.ai/errors#index_already_exists"
       },
       "duration": "[duration]",
       "enqueuedAt": "[date]",

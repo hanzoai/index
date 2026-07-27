@@ -1,5 +1,5 @@
 ---
-source: meilisearch/tests/search/errors.rs
+source: indexsearch/tests/search/errors.rs
 ---
 {
   "uid": "[uid]",

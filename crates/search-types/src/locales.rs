@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
 /// Defines a rule for associating specific locales (languages) with
-/// attributes. This allows Meilisearch to use language-specific tokenization
+/// attributes. This allows Hanzo Index to use language-specific tokenization
 /// and processing for matched attributes, improving search quality for
 /// multilingual content.
 #[derive(Debug, Clone, PartialEq, Eq, Deserr, Serialize, Deserialize, ToSchema)]
@@ -17,7 +17,7 @@ pub struct LocalizedAttributesRuleView {
     #[schema(value_type = Vec<String>, example = json!(["*_ja"]))]
     pub attribute_patterns: AttributePatterns,
     /// The list of locales (languages) to apply to matching attributes. When
-    /// these attributes are indexed, Meilisearch will use language-specific
+    /// these attributes are indexed, Hanzo Index will use language-specific
     /// tokenization rules. Examples: `["en", "fr"]` or `["jpn", "zho"]`.
     pub locales: Vec<Locale>,
 }

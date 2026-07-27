@@ -98,7 +98,7 @@ mod rest {
     }
 }
 
-/// A datetime from Meilisearch v1.9 with an unspecified format.
+/// A datetime from Hanzo Index v1.9 with an unspecified format.
 #[derive(Debug)]
 pub struct LegacyDateTime(pub OffsetDateTime);
 

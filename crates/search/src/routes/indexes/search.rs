@@ -18,7 +18,7 @@ use utoipa::IntoParams;
 use uuid::Uuid;
 
 use crate::analytics::Analytics;
-use crate::error::MeilisearchHttpError;
+use crate::error::Hanzo IndexHttpError;
 use crate::extractors::authentication::policies::*;
 use crate::extractors::authentication::GuardedData;
 use crate::personalization::PersonalizationService;
@@ -39,7 +39,7 @@ use crate::search_queue::SearchQueue;
     tags(
         (
             name = "Search",
-            description = "Meilisearch exposes two routes to perform searches:
+            description = "Hanzo Index exposes two routes to perform searches:
 
 - A POST route: this is the preferred route when using API authentication, as it allows [preflight request](https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request) caching and better performance.
 - A GET route: the usage of this route is discouraged, unless you have good reason to do otherwise (specific caching abilities for example)",
@@ -58,13 +58,13 @@ pub struct SearchApi;
 pub struct SearchQueryGet {
     /// Sets the search terms.
     ///
-    /// Meilisearch returns documents that match this query.
+    /// Hanzo Index returns documents that match this query.
     ///
     /// The query supports [prefix search](https://docs.hanzo.ai/index/learn/engine/prefix) and [typo tolerance](https://docs.hanzo.ai/index/learn/relevancy/typo_tolerance_settings).
     ///
-    /// Meilisearch only considers the first ten words; terms are normalized (lowercase, accents ignored).
+    /// Hanzo Index only considers the first ten words; terms are normalized (lowercase, accents ignored).
     ///
-    /// Omit or leave empty for a placeholder search: no query terms are applied, so Meilisearch returns all searchable documents in the index, ordered by [ranking rules](https://docs.hanzo.ai/index/learn/relevancy/ranking_rules).
+    /// Omit or leave empty for a placeholder search: no query terms are applied, so Hanzo Index returns all searchable documents in the index, ordered by [ranking rules](https://docs.hanzo.ai/index/learn/relevancy/ranking_rules).
     ///
     /// Enclose terms in double quotes (`"`) for phrase search: only documents containing that exact sequence of words are returned (e.g. `"Winter Feast"`).
     ///
@@ -230,9 +230,9 @@ pub struct SearchQueryGet {
     facets: Option<CS<String>>,
     /// How to match query terms when there are not enough results to satisfy `limit`.
     ///
-    /// **`last`**: Returns documents containing all query terms first. If there are not enough such results, Meilisearch removes one query term at a time, starting from the end of the query (e.g. for "big fat cat", then "big fat", then "big").
+    /// **`last`**: Returns documents containing all query terms first. If there are not enough such results, Hanzo Index removes one query term at a time, starting from the end of the query (e.g. for "big fat cat", then "big fat", then "big").
     ///
-    /// **`all`**: Only returns documents that contain all query terms. Meilisearch does not relax the query even if fewer than `limit` documents match.
+    /// **`all`**: Only returns documents that contain all query terms. Hanzo Index does not relax the query even if fewer than `limit` documents match.
     ///
     /// **`frequency`**: Returns documents containing all query terms first. If there are not enough, removes one term at a time starting with the word that is most frequent in the dataset, giving more weight to rarer terms (e.g. in "white cotton shirt", prioritizes documents containing "white" if "shirt" is very common).
     ///
@@ -252,7 +252,7 @@ pub struct SearchQueryGet {
     ///
     /// Excluded hits do not count toward `estimatedTotalHits`, `totalHits`, or facet distribution.
     ///
-    /// When used together with `page` and `hitsPerPage`, this parameter may reduce performance because Meilisearch must score all matching documents.
+    /// When used together with `page` and `hitsPerPage`, this parameter may reduce performance because Hanzo Index must score all matching documents.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchRankingScoreThreshold>)]
     #[param(required = false, value_type = f32)]
     pub ranking_score_threshold: Option<RankingScoreThresholdGet>,
@@ -276,7 +276,7 @@ pub struct SearchQueryGet {
     pub hybrid_embedder: Option<String>,
     /// Balance between keyword and semantic search: 0.0 means keyword-only results, 1.0 means semantic-only.
     ///
-    /// When `q` is empty and this value is greater than 0, Meilisearch performs a pure semantic search.
+    /// When `q` is empty and this value is greater than 0, Hanzo Index performs a pure semantic search.
     ///
     /// Requires `hybridEmbedder` when set.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchSemanticRatio>)]
@@ -483,7 +483,7 @@ pub fn fix_sort_query_parameters(sort_query: &str) -> Vec<String> {
 ///
 /// Search for documents matching a query in the given index.
 ///
-/// > Equivalent to the [search with POST route](/docs/reference/api/search/search-with-post) in the Meilisearch API.
+/// > Equivalent to the [search with POST route](/docs/reference/api/search/search-with-post) in the Hanzo Index API.
 #[routes::path(
     security(("Bearer" = ["search", "*"])),
     params(
@@ -686,7 +686,7 @@ pub(crate) async fn search(
 ///
 /// Search for documents matching a query in the given index.
 ///
-/// > Equivalent to the [search with GET route](/docs/reference/api/search/search-with-get) in the Meilisearch API.
+/// > Equivalent to the [search with GET route](/docs/reference/api/search/search-with-get) in the Hanzo Index API.
 #[routes::path(
     security(("Bearer" = ["search", "*"])),
     params(
@@ -805,11 +805,11 @@ pub fn search_kind(
     // handle with care, the order of cases matters, the semantics is subtle
     match (is_media, non_placeholder_query, &query.hybrid, query.vector.as_deref()) {
         // media + vector => error
-        (true, _, _, Some(_)) => Err(MeilisearchHttpError::MediaAndVector.into()),
+        (true, _, _, Some(_)) => Err(Hanzo IndexHttpError::MediaAndVector.into()),
         // media + !hybrid => error
-        (true, _, None, _) => Err(MeilisearchHttpError::MissingSearchHybrid.into()),
+        (true, _, None, _) => Err(Hanzo IndexHttpError::MissingSearchHybrid.into()),
         // vector + !hybrid => error
-        (_, _, None, Some(_)) => Err(MeilisearchHttpError::MissingSearchHybrid.into()),
+        (_, _, None, Some(_)) => Err(Hanzo IndexHttpError::MissingSearchHybrid.into()),
         // hybrid S0 => keyword
         (_, _, Some(HybridQuery { semantic_ratio, embedder: _ }), _) if **semantic_ratio == 0.0 => {
             Ok(SearchKind::KeywordOnly)

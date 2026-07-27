@@ -1,6 +1,6 @@
 [package]
 name = "searchtool"
-description = "A CLI to edit a Meilisearch database from the command line"
+description = "A CLI to edit a index database from the command line"
 version.workspace = true
 authors.workspace = true
 homepage.workspace = true

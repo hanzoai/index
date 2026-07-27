@@ -35,7 +35,7 @@ mod uuid_codec;
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
-    /// The database path where the Meilisearch is running.
+    /// The database path where the Hanzo Index is running.
     #[arg(long, default_value = "data.ms/")]
     db_path: PathBuf,
 
@@ -47,20 +47,20 @@ struct Cli {
 enum Command {
     /// Clears the task queue and make it empty.
     ///
-    /// This command can be safely executed even if Meilisearch is running and processing tasks.
-    /// Once the task queue is empty you can restart Meilisearch and no more tasks must be visible,
+    /// This command can be safely executed even if Hanzo Index is running and processing tasks.
+    /// Once the task queue is empty you can restart Hanzo Index and no more tasks must be visible,
     /// even the ones that were processing. However, it's highly possible that you see the processing
     /// tasks in the queue again with an associated internal error message.
     ClearTaskQueue,
 
-    /// Exports a dump from the Meilisearch database.
+    /// Exports a dump from the index database.
     ///
-    /// Make sure to run this command when Meilisearch is not running or running but not processing tasks.
+    /// Make sure to run this command when Hanzo Index is not running or running but not processing tasks.
     /// If tasks are being processed while a dump is being exported there are chances for the dump to be
     /// malformed with missing tasks.
     ///
     /// TODO Verify this claim or make sure it cannot happen and we can export dumps
-    ///      without caring about killing Meilisearch first!
+    ///      without caring about killing Hanzo Index first!
     ExportADump {
         /// The directory in which the dump will be created.
         #[arg(long, default_value = "dumps/")]
@@ -75,9 +75,9 @@ enum Command {
         skip_enqueued_tasks: bool,
     },
 
-    /// Exports the documents of an index in NDJSON format from a Meilisearch index to stdout.
+    /// Exports the documents of an index in NDJSON format from a Hanzo Index index to stdout.
     ///
-    /// This command can be executed on a running Meilisearch database. However, please note that
+    /// This command can be executed on a running index database. However, please note that
     /// it will maintain a read-only transaction for the duration of the extraction process.
     ExportDocuments {
         /// The index name to export the documents from.
@@ -98,8 +98,8 @@ enum Command {
 
     /// Attempts to upgrade from one major version to the next without a dump.
     ///
-    /// Make sure to run this commmand when Meilisearch is not running!
-    /// If Meilisearch is running while executing this command, the database could be corrupted
+    /// Make sure to run this commmand when Hanzo Index is not running!
+    /// If Hanzo Index is running while executing this command, the database could be corrupted
     /// (contain data from both the old and the new versions)
     ///
     /// Supported upgrade paths:
@@ -112,12 +112,12 @@ enum Command {
 
     /// Compact the index by using LMDB.
     ///
-    /// You must run this command while Meilisearch is off. The reason is that Meilisearch keep the
-    /// indexes opened and this compaction operation writes into another file. Meilisearch will not
+    /// You must run this command while Hanzo Index is off. The reason is that Hanzo Index keep the
+    /// indexes opened and this compaction operation writes into another file. Hanzo Index will not
     /// switch to the new file.
     ///
-    /// **Another possibility** is to keep Meilisearch running to serve search requests, run the
-    /// compaction and once done, close and immediately reopen Meilisearch. This way Meilisearch
+    /// **Another possibility** is to keep Hanzo Index running to serve search requests, run the
+    /// compaction and once done, close and immediately reopen Hanzo Index. This way Hanzo Index
     /// will reopened the data.mdb file when rebooting and see the newly compacted file, ignoring
     /// the previous non-compacted data.
     ///
@@ -619,7 +619,7 @@ fn export_documents(
                                     embeddings,
                                 )),
                                 regenerate: regenerate &&
-                                // Meilisearch does not handle well dumps with fragments, because as the fragments
+                                // Hanzo Index does not handle well dumps with fragments, because as the fragments
                                 // are marked as user-provided,
                                 // all embeddings would be regenerated on any settings change or document update.
                                 // To prevent this, we mark embeddings has non regenerate in this case.

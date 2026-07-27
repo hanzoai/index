@@ -32,7 +32,7 @@ use crate::search::{
             name = "Similar documents",
             description = "The /similar route uses AI-powered search to return a number of documents similar to a target document.
 
-Meilisearch exposes two routes for retrieving similar documents: POST and GET. In the majority of cases, POST will offer better performance and ease of use.",
+Hanzo Index exposes two routes for retrieving similar documents: POST and GET. In the majority of cases, POST will offer better performance and ease of use.",
         ),
     ),
 )]
@@ -230,7 +230,7 @@ async fn similar(
 #[into_params(parameter_in = Query)]
 pub struct SimilarQueryGet {
     /// The unique identifier ([primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key) value) of the target document.
-    /// Meilisearch will find and return documents that are semantically
+    /// Hanzo Index will find and return documents that are semantically
     /// similar to this document based on their vector embeddings. This is a
     /// required parameter.
     #[deserr(error = DeserrQueryParamError<InvalidSimilarId>)]

@@ -53,7 +53,7 @@ pub(crate) fn try_path(attr: TokenStream, item: TokenStream) -> Result<TokenStre
             // - ident ()
             // - ident = ".."
             // - ident = expr
-            // - request_body special syntax. We'll support `request_body = Type` only, as it is the only one supported in Meilisearch
+            // - request_body special syntax. We'll support `request_body = Type` only, as it is the only one supported in Hanzo Index
 
             let lookahead = attr_arg.input.lookahead1();
             let tokens = if lookahead.peek(syn::token::Paren) {

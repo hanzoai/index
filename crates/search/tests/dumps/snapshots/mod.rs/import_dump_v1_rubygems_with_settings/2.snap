@@ -1,5 +1,5 @@
 ---
-source: crates/meilisearch/tests/dumps/mod.rs
+source: crates/indexsearch/tests/dumps/mod.rs
 ---
 {
   "results": [

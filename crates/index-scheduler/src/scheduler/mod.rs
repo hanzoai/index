@@ -65,7 +65,7 @@ pub struct Scheduler {
     /// The path to the folder containing the auth LMDB env.
     pub(crate) auth_env: Env<WithoutTls>,
 
-    /// The path to the version file of Meilisearch.
+    /// The path to the version file of Hanzo Index.
     pub(crate) version_file_path: PathBuf,
 
     /// The maximal number of entries in the search query cache of an embedder.

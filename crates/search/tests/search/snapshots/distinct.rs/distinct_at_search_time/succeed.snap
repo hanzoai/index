@@ -1,5 +1,5 @@
 ---
-source: crates/meilisearch/tests/search/distinct.rs
+source: crates/indexsearch/tests/search/distinct.rs
 ---
 {
   "uid": "[uid]",

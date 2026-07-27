@@ -3,7 +3,7 @@
 ## Overview
 A lightning-fast search engine optimized for AI workloads and seamless integration with the Hanzo ecosystem.
 
-**Upstream**: [Meilisearch](https://github.com/meilisearch/meilisearch) (MIT + commercial EE). LICENSE retains the Meili SAS copyright; LICENSE-MIT + LICENSE-EE both shipped.
+**Upstream**: [Hanzo Index](https://github.com/hanzoai/index) (MIT + commercial EE). LICENSE retains the Index SAS copyright; LICENSE-MIT + LICENSE-EE both shipped.
 
 ## Tech Stack
 - **Language**: Rust

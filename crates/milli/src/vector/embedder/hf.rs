@@ -3,7 +3,7 @@ use candle_nn::VarBuilder;
 use candle_transformers::models::bert::{BertModel, Config as BertConfig, DTYPE};
 use candle_transformers::models::modernbert::{Config as ModernConfig, ModernBert};
 use candle_transformers::models::xlm_roberta::{Config as XlmRobertaConfig, XLMRobertaModel};
-// FIXME: currently we'll be using the hub to retrieve model, in the future we might want to embed it into Meilisearch itself
+// FIXME: currently we'll be using the hub to retrieve model, in the future we might want to embed it into Hanzo Index itself
 use hf_hub::api::sync::Api;
 use hf_hub::{Repo, RepoType};
 use safetensors::SafeTensors;

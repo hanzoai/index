@@ -56,7 +56,7 @@ pub fn upgrade_index_scheduler(
 
     if initial_version > target_version {
         bail!(
-                "Database version {initial_major}.{initial_minor}.{initial_patch} is higher than the Meilisearch version {target_major}.{target_minor}.{target_patch}. Downgrade is not supported",
+                "Database version {initial_major}.{initial_minor}.{initial_patch} is higher than the Hanzo Index version {target_major}.{target_minor}.{target_patch}. Downgrade is not supported",
             );
     }
 

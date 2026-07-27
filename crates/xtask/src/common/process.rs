@@ -10,7 +10,7 @@ use crate::common::command::{health_command, run as run_command};
 use crate::common::instance::{Binary, BinarySource, Edition};
 
 #[tracing::instrument]
-pub async fn kill_meili(mut search: tokio::process::Child) {
+pub async fn kill_index(mut search: tokio::process::Child) {
     let Some(id) = search.id() else { return };
 
     match TokioCommand::new("kill").args(["--signal=TERM", &id.to_string()]).spawn() {
@@ -18,18 +18,18 @@ pub async fn kill_meili(mut search: tokio::process::Child) {
             let Err(error) = cmd.wait().await else { return };
             tracing::warn!(
                 error = &error as &dyn std::error::Error,
-                "while awaiting the Meilisearch server kill"
+                "while awaiting the index server kill"
             );
         }
         Err(error) => {
             tracing::warn!(
                 error = &error as &dyn std::error::Error,
-                "while terminating Meilisearch server with a kill -s TERM"
+                "while terminating index server with a kill -s TERM"
             );
             if let Err(error) = search.kill().await {
                 tracing::warn!(
                     error = &error as &dyn std::error::Error,
-                    "while terminating Meilisearch server"
+                    "while terminating index server"
                 )
             }
             return;
@@ -42,7 +42,7 @@ pub async fn kill_meili(mut search: tokio::process::Child) {
             if let Err(error) = search.kill().await {
                 tracing::warn!(
                     error = &error as &dyn std::error::Error,
-                    "while terminating Meilisearch server"
+                    "while terminating index server"
                 )
             }
         }
@@ -59,17 +59,17 @@ async fn build(edition: Edition) -> anyhow::Result<()> {
 
     command.kill_on_drop(true);
 
-    let mut builder = command.spawn().context("error building Meilisearch")?;
+    let mut builder = command.spawn().context("error building Hanzo Index")?;
 
-    if !builder.wait().await.context("could not build Meilisearch")?.success() {
-        bail!("failed building Meilisearch")
+    if !builder.wait().await.context("could not build Hanzo Index")?.success() {
+        bail!("failed building Hanzo Index")
     }
 
     Ok(())
 }
 
 #[tracing::instrument(skip(client, master_key))]
-pub async fn start_meili(
+pub async fn start_index(
     client: &Client,
     master_key: Option<&str>,
     binary: &Binary,
@@ -127,7 +127,7 @@ pub async fn start_meili(
         }
     }
 
-    let mut search = command.spawn().context("Error starting Meilisearch")?;
+    let mut search = command.spawn().context("Error starting Hanzo Index")?;
 
     wait_for_health(client, &mut search).await?;
 
@@ -143,24 +143,24 @@ async fn wait_for_health(
             run_command(client, &health_command(), 0, &BTreeMap::new(), HashMap::new(), "", false)
                 .await;
         if res.is_ok() {
-            // check that this is actually the current Meilisearch instance that answered us
+            // check that this is actually the current index instance that answered us
             if let Some(exit_code) =
-                search.try_wait().context("cannot check Meilisearch server process status")?
+                search.try_wait().context("cannot check index server process status")?
             {
                 tracing::error!("Got an health response from a different process");
-                bail!("Meilisearch server exited early with code {exit_code}");
+                bail!("index server exited early with code {exit_code}");
             }
 
             return Ok(());
         }
         time::sleep(Duration::from_millis(500)).await;
-        // check whether the Meilisearch instance exited early (cut the wait)
+        // check whether the index instance exited early (cut the wait)
         if let Some(exit_code) =
-            search.try_wait().context("cannot check Meilisearch server process status")?
+            search.try_wait().context("cannot check index server process status")?
         {
-            bail!("Meilisearch server exited early with code {exit_code}");
+            bail!("index server exited early with code {exit_code}");
         }
-        tracing::debug!(attempt = i, "Waiting for Meilisearch to go up");
+        tracing::debug!(attempt = i, "Waiting for Hanzo Index to go up");
     }
     bail!("search is not responding")
 }

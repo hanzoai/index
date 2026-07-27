@@ -24,7 +24,7 @@ use tokio::select;
 use tokio::sync::mpsc::{self, Receiver, Sender};
 use uuid::Uuid;
 
-use super::{config_user_id_path, Aggregate, MEILISEARCH_CONFIG_PATH};
+use super::{config_user_id_path, Aggregate, INDEX_CONFIG_PATH};
 use crate::option::{
     default_http_addr, IndexerOpts, LogMode, MaxMemory, MaxThreads, ScheduleSnapshot,
 };
@@ -32,16 +32,16 @@ use crate::routes::indexes::GetIndexStatsParams;
 use crate::routes::{create_all_stats, Stats};
 use crate::Opt;
 
-const ANALYTICS_HEADER: &str = "X-Meilisearch-Client";
-const MEILI_SERVER_PROVIDER: &str = "MEILI_SERVER_PROVIDER";
+const ANALYTICS_HEADER: &str = "X-Hanzo Index-Client";
+const INDEX_SERVER_PROVIDER: &str = "INDEX_SERVER_PROVIDER";
 
-/// Write the instance-uid in the `data.ms` and in `~/.config/MeiliSearch/path-to-db-instance-uid`. Ignore the errors.
+/// Write the instance-uid in the `data.ms` and in `~/.config/HanzoIndex/path-to-db-instance-uid`. Ignore the errors.
 fn write_user_id(db_path: &Path, user_id: &InstanceUid) {
     let _ = fs::write(db_path.join("instance-uid"), user_id.to_string());
-    if let Some((meilisearch_config_path, user_id_path)) =
-        MEILISEARCH_CONFIG_PATH.as_ref().zip(config_user_id_path(db_path))
+    if let Some((index_config_path, user_id_path)) =
+        INDEX_CONFIG_PATH.as_ref().zip(config_user_id_path(db_path))
     {
-        let _ = fs::create_dir_all(meilisearch_config_path);
+        let _ = fs::create_dir_all(index_config_path);
         let _ = fs::write(user_id_path, user_id.to_string());
     }
 }
@@ -138,11 +138,11 @@ impl SegmentAnalytics {
         }
 
         let client =
-            HttpClient::new(client.unwrap(), "https://telemetry.meilisearch.com".to_string());
+            HttpClient::new(client.unwrap(), "https://telemetry.hanzo.ai".to_string());
         let user = User::UserId { user_id: instance_uid.to_string() };
         let mut batcher = AutoBatcher::new(client, Batcher::new(None), SEGMENT_API_KEY.to_string());
 
-        // If Meilisearch is Launched for the first time:
+        // If Hanzo Index is Launched for the first time:
         // 1. Send an event Launched associated to the user `total_launch`.
         // 2. Batch an event Launched with the real instance-id and send it in one hour.
         if first_time_run {
@@ -412,7 +412,7 @@ impl Segment {
                     "cores": sys.cpus().len(),
                     "ram_size": sys.total_memory(),
                     "disk_size": disks.iter().map(|disk| disk.total_space()).max(),
-                    "server_provider": std::env::var(MEILI_SERVER_PROVIDER).ok(),
+                    "server_provider": std::env::var(INDEX_SERVER_PROVIDER).ok(),
             })
         });
         let number_of_documents =
@@ -435,8 +435,8 @@ impl Segment {
         index_scheduler: Arc<IndexScheduler>,
         auth_controller: Arc<AuthController>,
     ) {
-        let interval: Duration = match std::env::var(MEILI_SERVER_PROVIDER) {
-            Ok(provider) if provider.starts_with("meili_cloud:") => {
+        let interval: Duration = match std::env::var(INDEX_SERVER_PROVIDER) {
+            Ok(provider) if provider.starts_with("index_cloud:") => {
                 Duration::from_secs(60 * 60) // one hour
             }
             _ => {

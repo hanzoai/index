@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
 use clap::Parser;
-use search::routes::MeilisearchApi;
+use search::routes::Hanzo IndexApi;
 use serde_json::{Map, Value};
 use utoipa::OpenApi;
 
@@ -16,9 +16,9 @@ type JsonObject = Map<String, Value>;
 
 #[derive(Parser)]
 #[command(name = "openapi-generator")]
-#[command(about = "Generate OpenAPI specification for Meilisearch")]
+#[command(about = "Generate OpenAPI specification for Hanzo Index")]
 struct Cli {
-    /// Output file path (default: meilisearch-openapi.json)
+    /// Output file path (default: index-openapi.json)
     #[arg(short, long, value_name = "FILE")]
     output: Option<PathBuf>,
 
@@ -47,7 +47,7 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
 
     // Generate the OpenAPI specification
-    let openapi = MeilisearchApi::openapi();
+    let openapi = Hanzo IndexApi::openapi();
 
     // Convert to serde_json::Value for modification
     let openapi_value: Value = serde_json::to_value(&openapi)?;
@@ -73,7 +73,7 @@ fn main() -> Result<()> {
     }
 
     // Determine output path
-    let output_path = cli.output.unwrap_or_else(|| PathBuf::from("meilisearch-openapi.json"));
+    let output_path = cli.output.unwrap_or_else(|| PathBuf::from("index-openapi.json"));
 
     // Serialize to JSON
     let json = if cli.pretty {
@@ -541,26 +541,26 @@ fn normalize_path(path: &str) -> String {
 
 /// Checks that query and body parameters in Rust source have explicit `required = true` or `required = false`.
 ///
-/// Scans crates/meilisearch/src for:
+/// Scans crates/index/src for:
 /// - Query: structs with `#[into_params(..., parameter_in = Query, ...)]`: every `#[param(...)]` field must contain `required = true` or `required = false`.
 /// - Body: structs used as `request_body` in path attributes: every field with `#[schema(...)]` must contain `required = true` or `required = false`.
 fn check_params() -> Result<()> {
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").context("CARGO_MANIFEST_DIR not set")?;
-    let meilisearch_src = Path::new(&manifest_dir)
-        .join("../meilisearch/src")
+    let index_src = Path::new(&manifest_dir)
+        .join("../index/src")
         .canonicalize()
         .context("resolve search/src path (run from workspace root)")?;
 
     let mut errors: Vec<String> = Vec::new();
     let mut request_body_types: HashSet<String> = HashSet::new();
 
-    collect_request_body_types(&meilisearch_src, &mut request_body_types)?;
+    collect_request_body_types(&index_src, &mut request_body_types)?;
 
-    for entry in walk_rs_files(&meilisearch_src)? {
+    for entry in walk_rs_files(&index_src)? {
         let path = entry.path();
         let content =
             std::fs::read_to_string(&path).with_context(|| format!("read {}", path.display()))?;
-        let rel = path.strip_prefix(&meilisearch_src).unwrap_or(&path);
+        let rel = path.strip_prefix(&index_src).unwrap_or(&path);
         check_query_params_in_file(&content, rel, &mut errors);
         check_body_schema_in_file(&content, rel, &request_body_types, &mut errors);
     }

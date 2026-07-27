@@ -7,7 +7,7 @@ use semver::{Prerelease, Version};
 use xtask::bench::BenchArgs;
 use xtask::test::TestArgs;
 
-/// This is the version of the crate but also the current Meilisearch version
+/// This is the version of the crate but also the current Hanzo Index version
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// List features available in the workspace

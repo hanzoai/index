@@ -80,7 +80,7 @@ pub struct TaskView {
     #[schema(value_type = String, example = json!("2024-08-08_14:12:09.393Z"))]
     #[serde(with = "time::serde::rfc3339")]
     pub enqueued_at: OffsetDateTime,
-    /// The timestamp when Meilisearch began processing this task, formatted
+    /// The timestamp when Hanzo Index began processing this task, formatted
     /// as an RFC 3339 date-time string. This is `null` for tasks that are
     /// still in the queue waiting to be processed.
     #[schema(value_type = String, example = json!("2024-08-08_14:12:09.393Z"))]
@@ -94,7 +94,7 @@ pub struct TaskView {
     pub finished_at: Option<OffsetDateTime>,
     /// Network topology information for distributed deployments. Contains
     /// details about which nodes are involved in processing this task. This
-    /// is only present when running Meilisearch in a distributed config.
+    /// is only present when running Hanzo Index in a distributed config.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[schema(value_type = Option<DbTaskNetwork>)]
     pub network: Option<DbTaskNetwork>,
@@ -154,7 +154,7 @@ pub struct DetailsView {
     /// The primary key attribute set for the index. For `indexCreation`
     /// tasks, this is the primary key that was specified. For `indexUpdate`
     /// tasks, this shows the new primary key if it was changed. The inner
-    /// `null` means no primary key was specified and Meilisearch will infer
+    /// `null` means no primary key was specified and Hanzo Index will infer
     /// it from documents.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub primary_key: Option<Option<String>>,
@@ -214,11 +214,11 @@ pub struct DetailsView {
     /// their contents.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub swaps: Option<Vec<IndexSwap>>,
-    /// The Meilisearch version before a database upgrade was performed.
+    /// The Hanzo Index version before a database upgrade was performed.
     /// Formatted as `vX.Y.Z`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub upgrade_from: Option<String>,
-    /// The Meilisearch version after a database upgrade was completed.
+    /// The Hanzo Index version after a database upgrade was completed.
     /// Formatted as `vX.Y.Z`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub upgrade_to: Option<String>,
@@ -227,7 +227,7 @@ pub struct DetailsView {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
     /// The API key used for authentication when exporting data to a remote
-    /// Meilisearch instance. This value is partially masked for security.
+    /// index instance. This value is partially masked for security.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub api_key: Option<String>,
     /// The maximum payload size configured for an `export` task, formatted

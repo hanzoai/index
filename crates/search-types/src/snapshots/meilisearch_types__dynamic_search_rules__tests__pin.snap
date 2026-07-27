@@ -1,5 +1,5 @@
 ---
-source: crates/meilisearch-types/src/dynamic_search_rules.rs
+source: crates/indexsearch-types/src/dynamic_search_rules.rs
 expression: action
 ---
 {

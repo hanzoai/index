@@ -29,7 +29,7 @@ pub struct BenchArgs {
     #[command(flatten)]
     common: CommonArgs,
 
-    /// Meilisearch master keys
+    /// Hanzo Index master keys
     #[arg(long)]
     pub master_key: Option<String>,
 
@@ -55,7 +55,7 @@ pub struct BenchArgs {
 
     /// The path to the binary to run.
     ///
-    /// If unspecified, runs `cargo run` after building Meilisearch with `cargo build`.
+    /// If unspecified, runs `cargo run` after building Hanzo Index with `cargo build`.
     #[arg(long)]
     binary_path: Option<PathBuf>,
 }
@@ -93,7 +93,7 @@ pub fn run(args: BenchArgs) -> anyhow::Result<()> {
         None,
     )?;
 
-    let meili_client = Arc::new(Client::new(
+    let index_client = Arc::new(Client::new(
         Some("http://127.0.0.1:7700".into()),
         args.master_key.as_deref(),
         Some(std::time::Duration::from_secs(args.common.tasks_queue_timeout_secs)),
@@ -134,7 +134,7 @@ pub fn run(args: BenchArgs) -> anyhow::Result<()> {
                     &assets_client,
                     &dashboard_client,
                     &logs_client,
-                    &meili_client,
+                    &index_client,
                     invocation_uuid,
                     args.master_key.as_deref(),
                     workload,

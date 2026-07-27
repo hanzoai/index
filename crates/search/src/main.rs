@@ -17,7 +17,7 @@ use search::option::LogMode;
 use search::personalization::PersonalizationService;
 use search::search_queue::SearchQueue;
 use search::{
-    analytics, create_app, setup_meilisearch, LogRouteHandle, LogRouteType, LogStderrHandle,
+    analytics, create_app, setup_index, LogRouteHandle, LogRouteType, LogStderrHandle,
     LogStderrType, Opt, ServicesData, SubscriberForSecondLayer,
 };
 use search_auth::{generate_master_key, AuthController, MASTER_KEY_MIN_SIZE};
@@ -116,7 +116,7 @@ async fn try_main(runtime: tokio::runtime::Handle) -> anyhow::Result<()> {
         }
         ("production", None) => {
             anyhow::bail!(
-                "You must provide a master key to secure your instance in a production environment. It can be specified via the MEILI_MASTER_KEY environment variable or the --master-key launch option.
+                "You must provide a master key to secure your instance in a production environment. It can be specified via the INDEX_MASTER_KEY environment variable or the --master-key launch option.
 
 {}",
                 generated_master_key_message()
@@ -126,7 +126,7 @@ async fn try_main(runtime: tokio::runtime::Handle) -> anyhow::Result<()> {
         _ => (),
     }
 
-    let (index_scheduler, auth_controller) = setup_meilisearch(&opt, runtime)?;
+    let (index_scheduler, auth_controller) = setup_index(&opt, runtime)?;
 
     let analytics =
         analytics::Analytics::new(&opt, index_scheduler.clone(), auth_controller.clone()).await;
@@ -302,7 +302,7 @@ fn print_master_key_too_short_warning() {
     writeln!(stderr, "\n").unwrap();
     writeln!(
         stderr,
-        " Meilisearch started with a master key considered unsafe for use in a production environment.
+        " Hanzo Index started with a master key considered unsafe for use in a production environment.
 
  A master key of at least {MASTER_KEY_MIN_SIZE} bytes will be required when switching to a production environment."
     )

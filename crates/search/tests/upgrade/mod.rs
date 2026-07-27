@@ -31,7 +31,7 @@ async fn malformed_version_file() {
     std::fs::write(db_path.join("VERSION"), "kefir").unwrap();
     let options = Opt { experimental_dumpless_upgrade: true, ..default_settings };
     let err = Server::new_with_options(options).await.map(|_| ()).unwrap_err();
-    snapshot!(err, @"Version file is corrupted and thus Meilisearch is unable to determine the version of the database. The version contains 1 parts instead of 3 (major, minor and patch)");
+    snapshot!(err, @"Version file is corrupted and thus Hanzo Index is unable to determine the version of the database. The version contains 1 parts instead of 3 (major, minor and patch)");
 }
 
 #[actix_rt::test]
@@ -76,7 +76,7 @@ async fn version_requires_downgrade() {
     let err = err.replace(&current_version, "[current version]");
     let err = err.replace(&future_version, "[future version]");
 
-    snapshot!(err, @"Database version [future version] is higher than the Meilisearch version [current version]. Downgrade is not supported");
+    snapshot!(err, @"Database version [future version] is higher than the Hanzo Index version [current version]. Downgrade is not supported");
 }
 
 #[actix_rt::test]

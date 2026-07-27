@@ -41,7 +41,7 @@ use tracing::debug;
 use utoipa::{IntoParams, ToSchema};
 
 use crate::analytics::{Aggregate, AggregateMethod, Analytics};
-use crate::error::MeilisearchHttpError;
+use crate::error::Hanzo IndexHttpError;
 use crate::error::PayloadError::ReceivePayload;
 use crate::extractors::authentication::policies::*;
 use crate::extractors::authentication::GuardedData;
@@ -60,16 +60,16 @@ static ACCEPTED_CONTENT_TYPE: Lazy<Vec<String>> = Lazy::new(|| {
 
 /// Extracts the mime type from the content type and return
 /// a search error if anything bad happen.
-fn extract_mime_type(req: &HttpRequest) -> Result<Option<Mime>, MeilisearchHttpError> {
+fn extract_mime_type(req: &HttpRequest) -> Result<Option<Mime>, Hanzo IndexHttpError> {
     match req.mime_type() {
         Ok(Some(mime)) => Ok(Some(mime)),
         Ok(None) => Ok(None),
         Err(_) => match req.headers().get(CONTENT_TYPE) {
-            Some(content_type) => Err(MeilisearchHttpError::InvalidContentType(
+            Some(content_type) => Err(Hanzo IndexHttpError::InvalidContentType(
                 content_type.as_bytes().as_bstr().to_string(),
                 ACCEPTED_CONTENT_TYPE.clone(),
             )),
-            None => Err(MeilisearchHttpError::MissingContentType(ACCEPTED_CONTENT_TYPE.clone())),
+            None => Err(Hanzo IndexHttpError::MissingContentType(ACCEPTED_CONTENT_TYPE.clone())),
         },
     }
 }
@@ -1096,7 +1096,7 @@ async fn document_addition(
     allow_index_creation: bool,
     skip_creation: Option<bool>,
     req: &HttpRequest,
-) -> Result<SummarizedTaskView, MeilisearchHttpError> {
+) -> Result<SummarizedTaskView, Hanzo IndexHttpError> {
     let mime_type = extract_mime_type(req)?;
     let network = index_scheduler.network();
     let task_network = task_network_and_check_leader_and_version(req, &network)?;
@@ -1111,23 +1111,23 @@ async fn document_addition(
         (Some(("text", "csv")), Some(delimiter)) => PayloadType::Csv { delimiter },
 
         (Some(("application", "json")), Some(_)) => {
-            return Err(MeilisearchHttpError::CsvDelimiterWithWrongContentType(String::from(
+            return Err(Hanzo IndexHttpError::CsvDelimiterWithWrongContentType(String::from(
                 "application/json",
             )))
         }
         (Some(("application", "x-ndjson")), Some(_)) => {
-            return Err(MeilisearchHttpError::CsvDelimiterWithWrongContentType(String::from(
+            return Err(Hanzo IndexHttpError::CsvDelimiterWithWrongContentType(String::from(
                 "application/x-ndjson",
             )))
         }
         (Some((type_, subtype)), _) => {
-            return Err(MeilisearchHttpError::InvalidContentType(
+            return Err(Hanzo IndexHttpError::InvalidContentType(
                 format!("{}/{}", type_, subtype),
                 ACCEPTED_CONTENT_TYPE.clone(),
             ))
         }
         (None, _) => {
-            return Err(MeilisearchHttpError::MissingContentType(ACCEPTED_CONTENT_TYPE.clone()))
+            return Err(Hanzo IndexHttpError::MissingContentType(ACCEPTED_CONTENT_TYPE.clone()))
         }
     };
 
@@ -1149,7 +1149,7 @@ async fn document_addition(
 
             let res = tokio::task::spawn_blocking(move || {
                 let documents_count = file.as_ref().map_or(Ok(0), |ntf| {
-                    read_ndjson(ntf.as_file()).map_err(MeilisearchHttpError::DocumentFormat)
+                    read_ndjson(ntf.as_file()).map_err(Hanzo IndexHttpError::DocumentFormat)
                 })?;
 
                 let update_file = file_store::File::from_parts(path, file);
@@ -1164,7 +1164,7 @@ async fn document_addition(
         PayloadType::Json | PayloadType::Csv { delimiter: _ } => {
             let temp_file = match tempfile() {
                 Ok(file) => file,
-                Err(e) => return Err(MeilisearchHttpError::Payload(ReceivePayload(Box::new(e)))),
+                Err(e) => return Err(Hanzo IndexHttpError::Payload(ReceivePayload(Box::new(e)))),
             };
 
             let read_file = copy_body_to_file(temp_file, body, format).await?;
@@ -1265,7 +1265,7 @@ async fn copy_body_to_file(
     output: std::fs::File,
     mut body: Payload,
     format: PayloadType,
-) -> Result<std::fs::File, MeilisearchHttpError> {
+) -> Result<std::fs::File, Hanzo IndexHttpError> {
     let async_file = File::from_std(output);
     let mut buffer = BufWriter::new(async_file);
     let mut buffer_write_size: usize = 0;
@@ -1273,22 +1273,22 @@ async fn copy_body_to_file(
         let byte = result?;
 
         if byte.is_empty() && buffer_write_size == 0 {
-            return Err(MeilisearchHttpError::MissingPayload(format));
+            return Err(Hanzo IndexHttpError::MissingPayload(format));
         }
 
         match buffer.write_all(&byte).await {
             Ok(()) => buffer_write_size += 1,
-            Err(e) => return Err(MeilisearchHttpError::Payload(ReceivePayload(Box::new(e)))),
+            Err(e) => return Err(Hanzo IndexHttpError::Payload(ReceivePayload(Box::new(e)))),
         }
     }
     if let Err(e) = buffer.flush().await {
-        return Err(MeilisearchHttpError::Payload(ReceivePayload(Box::new(e))));
+        return Err(Hanzo IndexHttpError::Payload(ReceivePayload(Box::new(e))));
     }
     if buffer_write_size == 0 {
-        return Err(MeilisearchHttpError::MissingPayload(format));
+        return Err(Hanzo IndexHttpError::MissingPayload(format));
     }
     if let Err(e) = buffer.seek(std::io::SeekFrom::Start(0)).await {
-        return Err(MeilisearchHttpError::Payload(ReceivePayload(Box::new(e))));
+        return Err(Hanzo IndexHttpError::Payload(ReceivePayload(Box::new(e))));
     }
     let read_file = buffer.into_inner().into_std().await;
     Ok(read_file)
@@ -1479,7 +1479,7 @@ pub async fn delete_documents_by_filter(
         Code::InvalidDocumentFilter,
         index_scheduler.features(),
     )?
-    .ok_or(MeilisearchHttpError::EmptyFilter)?;
+    .ok_or(Hanzo IndexHttpError::EmptyFilter)?;
 
     let task = KindWithContent::DocumentDeletionByFilter {
         index_uid: index_uid.clone(),
@@ -1569,7 +1569,7 @@ impl Aggregate for EditDocumentsByFunctionAggregator {
 
 /// Edit documents by function
 ///
-/// Use a [RHAI function](https://rhai.rs/book/engine/hello-world.html) to edit one or more documents directly in Meilisearch. The function receives each document and returns the modified document.
+/// Use a [RHAI function](https://rhai.rs/book/engine/hello-world.html) to edit one or more documents directly in Hanzo Index. The function receives each document and returns the modified document.
 ///
 /// This feature is experimental and must be enabled through the experimental route.
 #[routes::path(
@@ -1650,7 +1650,7 @@ pub async fn edit_documents_by_function(
             Code::InvalidDocumentFilter,
             index_scheduler.features(),
         )?
-        .ok_or(MeilisearchHttpError::EmptyFilter)?;
+        .ok_or(Hanzo IndexHttpError::EmptyFilter)?;
     }
     let task = KindWithContent::DocumentEdition {
         index_uid: index_uid.clone(),
@@ -1820,7 +1820,7 @@ fn some_documents<'a, 't: 'a>(
                             ExplicitVectors { embeddings: Some(embeddings.into()), regenerate };
                         vectors.insert(
                             name,
-                            serde_json::to_value(embeddings).map_err(MeilisearchHttpError::from)?,
+                            serde_json::to_value(embeddings).map_err(Hanzo IndexHttpError::from)?,
                         );
                     }
                     document.insert("_vectors".into(), vectors.into());
@@ -1925,11 +1925,11 @@ fn retrieve_document<S: AsRef<str>>(
     let internal_id = index
         .external_documents_ids()
         .get(&txn, doc_id)?
-        .ok_or_else(|| MeilisearchHttpError::DocumentNotFound(doc_id.to_string()))?;
+        .ok_or_else(|| Hanzo IndexHttpError::DocumentNotFound(doc_id.to_string()))?;
 
     let document = some_documents(index, &txn, Some(internal_id), retrieve_vectors)?
         .next()
-        .ok_or_else(|| MeilisearchHttpError::DocumentNotFound(doc_id.to_string()))??;
+        .ok_or_else(|| Hanzo IndexHttpError::DocumentNotFound(doc_id.to_string()))??;
 
     let document = match &attributes_to_retrieve {
         Some(attributes_to_retrieve) => permissive_json_pointer::select_values(

@@ -170,7 +170,7 @@ impl EmbedderOptions {
 }
 
 fn infer_api_key() -> String {
-    std::env::var("MEILI_OPENAI_API_KEY")
+    std::env::var("INDEX_OPENAI_API_KEY")
         .or_else(|_| std::env::var("OPENAI_API_KEY"))
         .unwrap_or_default()
 }

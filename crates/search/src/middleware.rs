@@ -64,7 +64,7 @@ where
             let is_registered_resource = req.resource_map().has_resource(request_path);
             if is_registered_resource {
                 histogram_timer = Some(
-                    crate::metrics::MEILISEARCH_HTTP_RESPONSE_TIME_SECONDS
+                    crate::metrics::INDEX_HTTP_RESPONSE_TIME_SECONDS
                         .with_label_values(&[&request_method, &metric_path])
                         .start_timer(),
                 );
@@ -76,7 +76,7 @@ where
         Box::pin(async move {
             let res = fut.await?;
 
-            crate::metrics::MEILISEARCH_HTTP_REQUESTS_TOTAL
+            crate::metrics::INDEX_HTTP_REQUESTS_TOTAL
                 .with_label_values(
                     &[request_method, metric_path, res.status().as_str().to_string()][..],
                 )

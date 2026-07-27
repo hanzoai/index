@@ -1,5 +1,5 @@
 ---
-source: crates/meilisearch/tests/search/multi/proxy.rs
+source: crates/indexsearch/tests/search/multi/proxy.rs
 ---
 [
   {

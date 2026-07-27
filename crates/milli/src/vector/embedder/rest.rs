@@ -186,7 +186,7 @@ impl Embedder {
     ) -> Result<Self, NewEmbedderError> {
         let bearer = options.api_key.as_deref().map(|api_key| format!("Bearer {api_key}"));
 
-        let timeout = std::env::var("MEILI_EXPERIMENTAL_REST_EMBEDDER_TIMEOUT_SECONDS")
+        let timeout = std::env::var("INDEX_EXPERIMENTAL_REST_EMBEDDER_TIMEOUT_SECONDS")
             .ok()
             .map(|p| p.parse().unwrap())
             .unwrap_or(30);
@@ -213,7 +213,7 @@ impl Embedder {
         let response = Response::new(options.response, &request)?;
 
         let max_retry_duration =
-            std::env::var("MEILI_EXPERIMENTAL_REST_EMBEDDER_MAX_RETRY_DURATION_SECONDS")
+            std::env::var("INDEX_EXPERIMENTAL_REST_EMBEDDER_MAX_RETRY_DURATION_SECONDS")
                 .ok()
                 .map(|p| p.parse().unwrap())
                 .unwrap_or(60);

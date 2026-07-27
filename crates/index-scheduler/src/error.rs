@@ -73,7 +73,7 @@ pub enum Error {
     SwapIndexNotFound(String),
     #[error("Cannot rename `{0}` to `{1}` as the index already exists. Hint: You can remove `{1}` first and then do your remove.")]
     SwapIndexFoundDuringRename(String, String),
-    #[error("Meilisearch cannot receive write operations because the limit of the task database has been reached. Please delete tasks to continue performing write operations.")]
+    #[error("Hanzo Index cannot receive write operations because the limit of the task database has been reached. Please delete tasks to continue performing write operations.")]
     NoSpaceLeftInTaskQueue,
     #[error(
         "Indexes {} not found.",
@@ -177,14 +177,14 @@ pub enum Error {
     RollbackFailed { index: String, rollback_outcome: RollbackOutcome },
     #[error(transparent)]
     UnrecoverableError(Box<Self>),
-    #[error("The index scheduler is in version v{}.{}.{}, but Meilisearch is in version v{}.{}.{}.\n  - hint: start the correct version of Meilisearch, or consider updating your database. See also <https://docs.hanzo.ai/index/learn/update_and_migration/updating>",
+    #[error("The index scheduler is in version v{}.{}.{}, but Hanzo Index is in version v{}.{}.{}.\n  - hint: start the correct version of Hanzo Index, or consider updating your database. See also <https://docs.hanzo.ai/index/learn/update_and_migration/updating>",
     index_scheduler_version.0, index_scheduler_version.1, index_scheduler_version.2,
     package_version.0, package_version.1, package_version.2)]
     IndexSchedulerVersionMismatch {
         index_scheduler_version: (u32, u32, u32),
         package_version: (u32, u32, u32),
     },
-    #[error("Index `{index}` is in version v{}.{}.{}, but Meilisearch is in version v{}.{}.{}.\n  - note: this is an internal error, please consider filing a bug report: <https://github.com/meilisearch/meilisearch/issues/new?template=bug_report.md>",
+    #[error("Index `{index}` is in version v{}.{}.{}, but Hanzo Index is in version v{}.{}.{}.\n  - note: this is an internal error, please consider filing a bug report: <https://github.com/hanzoai/index/issues/new?template=bug_report.md>",
     index_version.0, index_version.1, index_version.2, package_version.0, package_version.1, package_version.2)]
     IndexVersionMismatch {
         index: String,

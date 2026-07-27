@@ -11,7 +11,7 @@ use tracing::debug;
 
 use super::{merge_networks, Network, PatchNetworkAnalytics};
 use crate::analytics::Analytics;
-use crate::error::MeilisearchHttpError;
+use crate::error::Hanzo IndexHttpError;
 use crate::extractors::authentication::policies::ActionPolicy;
 use crate::extractors::authentication::GuardedData;
 
@@ -29,13 +29,13 @@ pub async fn patch_network(
         use search_types::error::Code;
 
         return Err(ResponseError::from_msg(
-            "Meilisearch Enterprise Edition is required to set `network.leader`".into(),
+            "Hanzo Index Enterprise Edition is required to set `network.leader`".into(),
             Code::RequiresEnterpriseEdition,
         ));
     }
 
     if !matches!(new_network.previous_remotes, Setting::NotSet) {
-        return Err(MeilisearchHttpError::UnexpectedNetworkPreviousRemotes.into());
+        return Err(Hanzo IndexHttpError::UnexpectedNetworkPreviousRemotes.into());
     }
 
     let merged_network = merge_networks(old_network.clone(), new_network)?;
@@ -58,7 +58,7 @@ pub async fn post_network_change(
     _payload: route::NetworkChange,
 ) -> Result<HttpResponse, ResponseError> {
     Err(ResponseError::from_msg(
-        "Meilisearch Enterprise Edition is required to call this route".into(),
+        "Hanzo Index Enterprise Edition is required to call this route".into(),
         Code::RequiresEnterpriseEdition,
     ))
 }

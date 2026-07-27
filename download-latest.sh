@@ -11,16 +11,16 @@ GREEN='\033[32m'
 DEFAULT='\033[0m'
 
 # Project name
-PNAME='meilisearch'
+PNAME='index'
 
 # GitHub API address
-GITHUB_API='https://api.github.com/repos/meilisearch/meilisearch/releases'
+GITHUB_API='https://api.github.com/repos/hanzoai/index/releases'
 # GitHub Release address
-GITHUB_REL='https://github.com/meilisearch/meilisearch/releases/download/'
+GITHUB_REL='https://github.com/hanzoai/index/releases/download/'
 
 # FUNCTIONS
 
-# Gets the version of the latest stable version of Meilisearch by setting the $latest variable.
+# Gets the version of the latest stable version of Hanzo Index by setting the $latest variable.
 # Returns 0 in case of success, 1 otherwise.
 get_latest() {
     # temp_file is needed because the grep would start before the download is over
@@ -93,7 +93,7 @@ get_archi() {
 }
 
 success_usage() {
-    printf "$GREEN%s\n$DEFAULT" "Meilisearch $latest binary successfully downloaded as '$binary_name' file."
+    printf "$GREEN%s\n$DEFAULT" "Hanzo Index $latest binary successfully downloaded as '$binary_name' file."
     echo ''
     echo 'Run it:'
     echo "    $ ./$PNAME"
@@ -102,18 +102,18 @@ success_usage() {
 }
 
 not_available_failure_usage() {
-    printf "$RED%s\n$DEFAULT" 'ERROR: Meilisearch binary is not available for your OS distribution or your architecture yet.'
+    printf "$RED%s\n$DEFAULT" 'ERROR: Hanzo Index binary is not available for your OS distribution or your architecture yet.'
     echo ''
     echo 'However, you can easily compile the binary from the source files.'
-    echo 'Follow the steps at the page ("Source" tab): https://www.meilisearch.com/docs/learn/getting_started/installation'
+    echo 'Follow the steps at the page ("Source" tab): https://www.hanzo.ai/docs/learn/getting_started/installation'
 }
 
 fetch_release_failure_usage() {
     echo ''
-    printf "$RED%s\n$DEFAULT" 'ERROR: Impossible to get the latest stable version of Meilisearch.'
-    echo 'Please let us know about this issue: https://github.com/meilisearch/meilisearch/issues/new/choose'
+    printf "$RED%s\n$DEFAULT" 'ERROR: Impossible to get the latest stable version of Hanzo Index.'
+    echo 'Please let us know about this issue: https://github.com/hanzoai/index/issues/new/choose'
     echo ''
-    echo 'In the meantime, you can manually download the appropriate binary from the GitHub release assets here: https://github.com/meilisearch/meilisearch/releases/latest'
+    echo 'In the meantime, you can manually download the appropriate binary from the GitHub release assets here: https://github.com/hanzoai/index/releases/latest'
 }
 
 fill_release_variables() {
@@ -140,7 +140,7 @@ fill_release_variables() {
 
 download_binary() {
     fill_release_variables
-    echo "Downloading Meilisearch binary $latest for $os, architecture $archi..."
+    echo "Downloading Hanzo Index binary $latest for $os, architecture $archi..."
     case "$os" in
         'windows')
             release_file="$PNAME-$os-$archi.exe"
@@ -150,7 +150,7 @@ download_binary() {
             release_file="$PNAME-$os-$archi"
             binary_name="$PNAME"
     esac
-    # Fetch the Meilisearch binary.
+    # Fetch the Hanzo Index binary.
     curl --fail -OL "$GITHUB_REL/$latest/$release_file"
     if [ $? -ne 0 ]; then
         fetch_release_failure_usage

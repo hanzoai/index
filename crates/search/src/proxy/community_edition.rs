@@ -4,13 +4,13 @@ use search_types::network::{Network, Remote};
 use search_types::tasks::network::{DbTaskNetwork, TaskNetwork};
 use search_types::tasks::Task;
 
-use crate::error::MeilisearchHttpError;
+use crate::error::Hanzo IndexHttpError;
 use crate::proxy::{Body, Endpoint};
 
 pub fn task_network_and_check_leader_and_version(
     _req: &HttpRequest,
     _network: &Network,
-) -> Result<Option<TaskNetwork>, MeilisearchHttpError> {
+) -> Result<Option<TaskNetwork>, Hanzo IndexHttpError> {
     Ok(None)
 }
 
@@ -22,7 +22,7 @@ pub async fn proxy<T, F, E: Endpoint>(
     _network: Network,
     _body: Body<T, F>,
     task: &Task,
-) -> Result<Task, MeilisearchHttpError>
+) -> Result<Task, Hanzo IndexHttpError>
 where
     T: serde::Serialize,
     F: FnMut(&str, &Remote, &mut T),

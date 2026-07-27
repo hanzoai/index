@@ -105,7 +105,7 @@ steppe = { version = "0.4", default-features = false }
 thread_local = "1.1.9"
 rustc-hash = "2.1.1"
 enum-iterator = "2.3.0"
-bbqueue = { git = "https://github.com/meilisearch/bbqueue" }
+bbqueue = { git = "https://github.com/index/bbqueue" }
 flume = { version = "0.11.1", default-features = false }
 utoipa = { version = "5.4.0", features = [
     "macros",
@@ -121,7 +121,7 @@ twox-hash = { version = "2.1.2", default-features = false, features = [
     "xxhash3_64",
     "xxhash64",
 ] }
-geo-types = "=0.7.17" # fixed version: see <https://github.com/meilisearch/meilisearch/pull/6118>
+geo-types = "=0.7.17" # fixed version: see <https://github.com/hanzoai/index/pull/6118>
 zerometry = "0.3.0"
 
 [dev-dependencies]
@@ -177,5 +177,5 @@ swedish-recomposition = ["charabia/swedish-recomposition"]
 # allow turkish specialized tokenization
 turkish = ["charabia/turkish"]
 
-# allow CUDA support, see <https://github.com/meilisearch/meilisearch/issues/4306>
+# allow CUDA support, see <https://github.com/hanzoai/index/issues/4306>
 cuda = ["candle-core/cuda"]

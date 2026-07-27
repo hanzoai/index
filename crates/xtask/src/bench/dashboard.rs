@@ -196,7 +196,7 @@ impl DashboardClient {
 
         let Some(commit_sha1) = build_info.commit_sha1 else { return Default::default() };
 
-        // https://bench.meilisearch.dev/view_spans?commit_sha1=500ddc76b549fb9f1af54b2dd6abfa15960381bb&workload_name=settings-add-remove-filters.json&target_branch=reduce-transform-disk-usage&baseline_branch=main
+        // https://bench.index.dev/view_spans?commit_sha1=500ddc76b549fb9f1af54b2dd6abfa15960381bb&workload_name=settings-add-remove-filters.json&target_branch=reduce-transform-disk-usage&baseline_branch=main
         let mut url = format!(
             "{base_url}/view_spans?commit_sha1={commit_sha1}&workload_name={workload_name}"
         );

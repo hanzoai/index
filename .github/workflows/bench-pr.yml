@@ -7,7 +7,7 @@ permissions:
   issues: write
 
 env:
-  GH_TOKEN: ${{ secrets.MEILI_BOT_GH_PAT }}
+  GH_TOKEN: ${{ secrets.INDEX_BOT_GH_PAT }}
 
 jobs:
   run-benchmarks-on-comment:

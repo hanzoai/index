@@ -9,11 +9,11 @@ This document describes the newer "bench" benchmarks. For more details on the "m
 
 ## Design philosophy for the benchmarks
 
-The newer "bench" benchmarks are **integration** benchmarks, in the sense that they spawn an actual Meilisearch server and measure its performance end-to-end, including HTTP request overhead.
+The newer "bench" benchmarks are **integration** benchmarks, in the sense that they spawn an actual index server and measure its performance end-to-end, including HTTP request overhead.
 
-Since this is prone to fluctuating, the benchmarks regain a bit of precision by measuring the runtime of the individual spans using the [logging machinery](./CONTRIBUTING.md#logging) of Meilisearch.
+Since this is prone to fluctuating, the benchmarks regain a bit of precision by measuring the runtime of the individual spans using the [logging machinery](./CONTRIBUTING.md#logging) of Hanzo Index.
 
-A span roughly translates to a function call. The benchmark runner collects all the spans by name using the [logs route](https://github.com/orgs/meilisearch/discussions/721) and sums their runtime. The processed results are then sent to the [benchmark dashboard](https://bench.meilisearch.dev), which is in charge of storing and presenting the data.
+A span roughly translates to a function call. The benchmark runner collects all the spans by name using the [logs route](https://github.com/orgs/index/discussions/721) and sums their runtime. The processed results are then sent to the [benchmark dashboard](https://bench.index.dev), which is in charge of storing and presenting the data.
 
 ## Running the benchmarks
 
@@ -23,17 +23,17 @@ Benchmarks can run locally or in CI.
 
 #### With a local benchmark dashboard
 
-The benchmarks dashboard lives in its [own repository](https://github.com/meilisearch/benchboard). We provide binaries for Ubuntu/Debian, but you can build from source for other platforms (MacOS should work as it was developed under that platform).
+The benchmarks dashboard lives in its [own repository](https://github.com/index/benchboard). We provide binaries for Ubuntu/Debian, but you can build from source for other platforms (MacOS should work as it was developed under that platform).
 
 Run the `benchboard` binary to create a fresh database of results. By default it will serve the results and the API to gather results on `http://localhost:9001`.
 
-From the Meilisearch repository, you can then run benchmarks with:
+From the Hanzo Index repository, you can then run benchmarks with:
 
 ```sh
 cargo xtask bench -- workloads/my_workload_1.json ..
 ```
 
-This command will build and run Meilisearch locally on port 7700, so make sure that this port is available.
+This command will build and run Hanzo Index locally on port 7700, so make sure that this port is available.
 To run benchmarks on a different commit, just use the usual git command to get back to the desired commit.
 
 #### Without a local benchmark dashboard
@@ -74,8 +74,8 @@ echo '{ "workload_uuid": "$workload_uuid", "data": $REPORT_JSON_DATA }' | xh PUT
 We have dedicated runners to run workloads on CI. Currently, there are three ways of running the CI:
 
 1. Automatically, on every push to `main`.
-2. Manually, by clicking the [`Run workflow`](https://github.com/meilisearch/meilisearch/actions/workflows/bench-manual.yml) button and specifying the target reference (tag, commit or branch) as well as one or multiple workloads to run. The workloads must exist in the Meilisearch repository (conventionally, in the [`workloads`](./workloads/) directory) on the target reference. Globbing (e.g., `workloads/*.json`) works.
-3. Manually on a PR, by posting a comment containing a `/bench` command, followed by one or multiple workloads to run. Globbing works. The workloads must exist in the Meilisearch repository in the branch of the PR.
+2. Manually, by clicking the [`Run workflow`](https://github.com/hanzoai/index/actions/workflows/bench-manual.yml) button and specifying the target reference (tag, commit or branch) as well as one or multiple workloads to run. The workloads must exist in the Hanzo Index repository (conventionally, in the [`workloads`](./workloads/) directory) on the target reference. Globbing (e.g., `workloads/*.json`) works.
+3. Manually on a PR, by posting a comment containing a `/bench` command, followed by one or multiple workloads to run. Globbing works. The workloads must exist in the Hanzo Index repository in the branch of the PR.
   ```
   /bench workloads/movies*.json /hackernews_1M.json
   ```
@@ -84,7 +84,7 @@ We have dedicated runners to run workloads on CI. Currently, there are three way
 
 ### On the dashboard
 
-Results are available on the global dashboard used by CI at <https://bench.meilisearch.dev> or on your [local dashboard](#with-a-local-benchmark-dashboard).
+Results are available on the global dashboard used by CI at <https://bench.index.dev> or on your [local dashboard](#with-a-local-benchmark-dashboard).
 
 The dashboard homepage presents three sections:
 
@@ -102,7 +102,7 @@ You can click on the name of any span to get a box plot comparing the target com
 
 ### Without dashboard
 
-After the workloads are done running, the reports will live in the Meilisearch repository, in the `bench/reports` directory (by default).
+After the workloads are done running, the reports will live in the Hanzo Index repository, in the `bench/reports` directory (by default).
 
 You can then convert these reports into other formats.
 
@@ -116,7 +116,7 @@ You can then convert these reports into other formats.
 
 ## Designing benchmark workloads
 
-Benchmark workloads conventionally live in the `workloads` directory of the Meilisearch repository.
+Benchmark workloads conventionally live in the `workloads` directory of the Hanzo Index repository.
 
 They are JSON files with the following structure (comments are not actually supported, to make your own, remove them or copy some existing workload file):
 
@@ -126,10 +126,10 @@ They are JSON files with the following structure (comments are not actually supp
   "name": "hackernews.ndjson_1M,no-threads",
   "type": "bench",
   // Number of consecutive runs of the commands that should be performed.
-  // Each run uses a fresh instance of Meilisearch and a fresh database.
+  // Each run uses a fresh instance of Hanzo Index and a fresh database.
   // Each run produces its own report file.
   "run_count": 3,
-  // List of arguments to add to the Meilisearch command line.
+  // List of arguments to add to the Hanzo Index command line.
   "extra_cli_args": ["--max-indexing-threads=1"],
   // An expression that can be parsed as a comma-separated list of targets and levels
   // as described in [tracing_subscriber's documentation](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/targets/struct.Targets.html#examples).
@@ -147,7 +147,7 @@ They are JSON files with the following structure (comments are not actually supp
     //
     // Assets are stored in the `bench/assets/` directory by default.
     "hackernews-100_000.ndjson": {
-      // If the assets exists in the local filesystem (Meilisearch repository or for your local workloads)
+      // If the assets exists in the local filesystem (Hanzo Index repository or for your local workloads)
       // Its file path can be specified here.
       // `null` if the asset should be downloaded from a remote location.
       "local_location": null,
@@ -215,10 +215,10 @@ They are JSON files with the following structure (comments are not actually supp
   },
   // Core of the workload.
   // A list of commands to run sequentially.
-  // Optional: A precommand is a request to the Meilisearch instance that is executed before the profiling runs.
+  // Optional: A precommand is a request to the index instance that is executed before the profiling runs.
   "precommands": [
     {
-      // Meilisearch route to call. `http://localhost:7700/` will be prepended.
+      // Hanzo Index route to call. `http://localhost:7700/` will be prepended.
       "route": "indexes/movies/settings",
       // HTTP method to call.
       "method": "PATCH",
@@ -251,11 +251,11 @@ They are JSON files with the following structure (comments are not actually supp
       // One of:
       // - DontWait: run the next command without waiting the response to this one.
       // - WaitForResponse: run the next command as soon as the response from the server is received.
-      // - WaitForTask: run the next command once **all** the Meilisearch tasks created up to now have finished processing.
+      // - WaitForTask: run the next command once **all** the Hanzo Index tasks created up to now have finished processing.
       "synchronous": "WaitForTask"
     }
   ],
-  // A command is a request to the Meilisearch instance that is executed while the profiling runs.
+  // A command is a request to the index instance that is executed while the profiling runs.
   "commands": [
     {
       "route": "indexes/movies/documents",
@@ -266,7 +266,7 @@ They are JSON files with the following structure (comments are not actually supp
         // "NdJson" => "application/x-ndjson"
         // "Json" => "application/json"
         // "Raw" => "application/octet-stream"
-        // See [AssetFormat::to_content_type](https://github.com/meilisearch/meilisearch/blob/7b670a4afadb132ac4a01b6403108700501a391d/xtask/src/bench/assets.rs#L30)
+        // See [AssetFormat::to_content_type](https://github.com/hanzoai/index/blob/7b670a4afadb132ac4a01b6403108700501a391d/xtask/src/bench/assets.rs#L30)
         // for details and up-to-date list.
         "asset": "hackernews-100_000.ndjson"
       },
@@ -357,11 +357,11 @@ Assets reside in our DigitalOcean S3 space. Assuming you have team access to the
    1. if your dataset is a single file, upload that single file using the "upload" button,
    2. otherwise, create a folder using the "create folder" button, then inside that folder upload your individual files.
 
-## Upgrading `https://bench.meilisearch.dev`
+## Upgrading `https://bench.index.dev`
 
 The URL of the server is in our password manager (look for "benchboard").
 
-1. Make the needed modifications on the [benchboard repository](https://github.com/meilisearch/benchboard) and merge them to main.
+1. Make the needed modifications on the [benchboard repository](https://github.com/index/benchboard) and merge them to main.
 2. Publish a new release to produce the Ubuntu/Debian binary.
 3. Download the binary locally, send it to the server:
   ```
@@ -390,4 +390,4 @@ The URL of the server is in our password manager (look for "benchboard").
   ```
   systemctl status benchboard
   ```
-9. Check the availability of the service by going to <https://bench.meilisearch.dev> on your browser.
+9. Check the availability of the service by going to <https://bench.index.dev> on your browser.

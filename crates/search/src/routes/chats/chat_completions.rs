@@ -46,17 +46,17 @@ use super::config::Config;
 use super::errors::{MistralError, OpenAiOutsideError, StreamErrorEvent};
 use super::utils::format_documents;
 use super::{
-    ChatsParam, MEILI_APPEND_CONVERSATION_MESSAGE_NAME, MEILI_SEARCH_IN_INDEX_FUNCTION_NAME,
-    MEILI_SEARCH_PROGRESS_NAME, MEILI_SEARCH_SOURCES_NAME,
+    ChatsParam, INDEX_APPEND_CONVERSATION_MESSAGE_NAME, INDEX_SEARCH_IN_INDEX_FUNCTION_NAME,
+    INDEX_SEARCH_PROGRESS_NAME, INDEX_SEARCH_SOURCES_NAME,
 };
 use crate::analytics::Analytics;
-use crate::error::MeilisearchHttpError;
+use crate::error::Hanzo IndexHttpError;
 use crate::extractors::authentication::policies::ActionPolicy;
 use crate::extractors::authentication::{extract_token_from_request, GuardedData, Policy as _};
 use crate::metrics::{
-    MEILISEARCH_CHAT_COMPLETION_TOKENS_TOTAL, MEILISEARCH_CHAT_PROMPT_TOKENS_TOTAL,
-    MEILISEARCH_CHAT_SEARCHES_TOTAL, MEILISEARCH_CHAT_TOKENS_TOTAL,
-    MEILISEARCH_DEGRADED_SEARCH_REQUESTS,
+    INDEX_CHAT_COMPLETION_TOKENS_TOTAL, INDEX_CHAT_PROMPT_TOKENS_TOTAL,
+    INDEX_CHAT_SEARCHES_TOTAL, INDEX_CHAT_TOKENS_TOTAL,
+    INDEX_DEGRADED_SEARCH_REQUESTS,
 };
 use crate::routes::chats::utils::SseEventSender;
 use crate::routes::indexes::search::search_kind;
@@ -173,13 +173,13 @@ pub async fn chat(
 
 #[derive(Default, Debug, Clone, Copy)]
 pub struct FunctionSupport {
-    /// Defines if we can call the _meiliSearchProgress function
+    /// Defines if we can call the _indexSearchProgress function
     /// to inform the front-end about what we are searching for.
     report_progress: bool,
-    /// Defines if we can call the _meiliSearchSources function
+    /// Defines if we can call the _indexSearchSources function
     /// to inform the front-end about the sources of the search.
     report_sources: bool,
-    /// Defines if we can call the _meiliAppendConversationMessage
+    /// Defines if we can call the _indexAppendConversationMessage
     /// function to provide the messages to append into the conversation.
     append_to_conversation: bool,
 }
@@ -195,15 +195,15 @@ fn setup_search_tool(
     let tools = chat_completion.tools.get_or_insert_default();
     for tool in &tools[..] {
         match tool.function.name.as_str() {
-            MEILI_SEARCH_IN_INDEX_FUNCTION_NAME => {
+            INDEX_SEARCH_IN_INDEX_FUNCTION_NAME => {
                 return Err(ResponseError::from_msg(
-                    format!("{MEILI_SEARCH_IN_INDEX_FUNCTION_NAME} function is already defined."),
+                    format!("{INDEX_SEARCH_IN_INDEX_FUNCTION_NAME} function is already defined."),
                     Code::BadRequest,
                 ));
             }
-            MEILI_SEARCH_PROGRESS_NAME
-            | MEILI_SEARCH_SOURCES_NAME
-            | MEILI_APPEND_CONVERSATION_MESSAGE_NAME => (),
+            INDEX_SEARCH_PROGRESS_NAME
+            | INDEX_SEARCH_SOURCES_NAME
+            | INDEX_APPEND_CONVERSATION_MESSAGE_NAME => (),
             external_function_name => {
                 return Err(ResponseError::from_msg(
                     format!("{external_function_name}: External functions are not supported yet."),
@@ -219,15 +219,15 @@ fn setup_search_tool(
     let mut append_to_conversation = false;
     tools.retain(|tool| {
         match tool.function.name.as_str() {
-            MEILI_SEARCH_PROGRESS_NAME => {
+            INDEX_SEARCH_PROGRESS_NAME => {
                 report_progress = true;
                 false
             }
-            MEILI_SEARCH_SOURCES_NAME => {
+            INDEX_SEARCH_SOURCES_NAME => {
                 report_sources = true;
                 false
             }
-            MEILI_APPEND_CONVERSATION_MESSAGE_NAME => {
+            INDEX_APPEND_CONVERSATION_MESSAGE_NAME => {
                 append_to_conversation = true;
                 false
             }
@@ -263,7 +263,7 @@ fn setup_search_tool(
         .r#type(ChatCompletionToolType::Function)
         .function(
             FunctionObjectArgs::default()
-                .name(MEILI_SEARCH_IN_INDEX_FUNCTION_NAME)
+                .name(INDEX_SEARCH_IN_INDEX_FUNCTION_NAME)
                 .description(function_description)
                 .parameters(json!({
                     "type": "object",
@@ -391,7 +391,7 @@ async fn process_search_request(
     let output = tokio::task::spawn_blocking(move || -> Result<_, ResponseError> {
         let deadline = index_cloned
             .search_deadline(&rtxn)
-            .map_err(|e| MeilisearchHttpError::from_milli(e, Some(index_uid.clone())))?;
+            .map_err(|e| Hanzo IndexHttpError::from_milli(e, Some(index_uid.clone())))?;
 
         let (search, _is_finite_pagination, _max_total_hits, _offset) = prepare_search(
             &index_cloned,
@@ -406,7 +406,7 @@ async fn process_search_request(
 
         match search_from_kind(index_uid, search_kind, search) {
             Ok((search_results, _)) => Ok((rtxn, Ok(search_results))),
-            Err(MeilisearchHttpError::Milli {
+            Err(Hanzo IndexHttpError::Milli {
                 error: search_types::milli::Error::UserError(user_error),
                 index_name: _,
             }) => Ok((rtxn, Err(user_error))),
@@ -423,9 +423,9 @@ async fn process_search_request(
     };
     let mut documents = Vec::new();
     if let Ok((ref rtxn, ref search_result)) = output {
-        MEILISEARCH_CHAT_SEARCHES_TOTAL.with_label_values(&["internal"]).inc();
+        INDEX_CHAT_SEARCHES_TOTAL.with_label_values(&["internal"]).inc();
         if search_result.degraded {
-            MEILISEARCH_DEGRADED_SEARCH_REQUESTS.inc();
+            INDEX_DEGRADED_SEARCH_REQUESTS.inc();
         }
 
         let fields_ids_map = index.fields_ids_map(rtxn)?;
@@ -514,19 +514,19 @@ async fn non_streamed_chat(
             Some(FinishReason::ToolCalls) => {
                 let tool_calls = mem::take(&mut choice.message.tool_calls).unwrap_or_default();
 
-                let (meili_calls, other_calls): (Vec<_>, Vec<_>) = tool_calls
+                let (index_calls, other_calls): (Vec<_>, Vec<_>) = tool_calls
                     .into_iter()
-                    .partition(|call| call.function.name == MEILI_SEARCH_IN_INDEX_FUNCTION_NAME);
+                    .partition(|call| call.function.name == INDEX_SEARCH_IN_INDEX_FUNCTION_NAME);
 
                 chat_completion.messages.push(
                     ChatCompletionRequestAssistantMessageArgs::default()
-                        .tool_calls(meili_calls.clone())
+                        .tool_calls(index_calls.clone())
                         .build()
                         .unwrap()
                         .into(),
                 );
 
-                for call in meili_calls {
+                for call in index_calls {
                     let result = match serde_json::from_str(&call.function.arguments) {
                         Ok(SearchInIndexParameters { index_uid, q, filter }) => {
                             process_search_request(
@@ -707,13 +707,13 @@ async fn run_conversation<C: async_openai::config::Config>(
         match result {
             Ok(resp) => {
                 if let Some(usage) = resp.usage.as_ref() {
-                    MEILISEARCH_CHAT_PROMPT_TOKENS_TOTAL
+                    INDEX_CHAT_PROMPT_TOKENS_TOTAL
                         .with_label_values(&[workspace_uid, &chat_completion.model])
                         .inc_by(usage.prompt_tokens as u64);
-                    MEILISEARCH_CHAT_COMPLETION_TOKENS_TOTAL
+                    INDEX_CHAT_COMPLETION_TOKENS_TOTAL
                         .with_label_values(&[workspace_uid, &chat_completion.model])
                         .inc_by(usage.completion_tokens as u64);
-                    MEILISEARCH_CHAT_TOKENS_TOTAL
+                    INDEX_CHAT_TOKENS_TOTAL
                         .with_label_values(&[workspace_uid, &chat_completion.model])
                         .inc_by(usage.total_tokens as u64);
                 }
@@ -744,7 +744,7 @@ async fn run_conversation<C: async_openai::config::Config>(
                                     }
                                 })
                                 .or_insert_with(|| {
-                                    if name.as_deref() == Some(MEILI_SEARCH_IN_INDEX_FUNCTION_NAME)
+                                    if name.as_deref() == Some(INDEX_SEARCH_IN_INDEX_FUNCTION_NAME)
                                     {
                                         Call::Internal {
                                             id: id.as_ref().unwrap().clone(),
@@ -759,7 +759,7 @@ async fn run_conversation<C: async_openai::config::Config>(
                     }
                     None => {
                         if !global_tool_calls.is_empty() {
-                            let (meili_calls, _other_calls): (Vec<_>, Vec<_>) =
+                            let (index_calls, _other_calls): (Vec<_>, Vec<_>) =
                                 mem::take(global_tool_calls)
                                     .into_values()
                                     .flat_map(|call| match call {
@@ -773,24 +773,24 @@ async fn run_conversation<C: async_openai::config::Config>(
                                         Call::External => None,
                                     })
                                     .partition(|call| {
-                                        call.function.name == MEILI_SEARCH_IN_INDEX_FUNCTION_NAME
+                                        call.function.name == INDEX_SEARCH_IN_INDEX_FUNCTION_NAME
                                     });
 
                             chat_completion.messages.push(
                                 ChatCompletionRequestAssistantMessageArgs::default()
-                                    .tool_calls(meili_calls.clone())
+                                    .tool_calls(index_calls.clone())
                                     .build()
                                     .unwrap()
                                     .into(),
                             );
 
-                            handle_meili_tools(
+                            handle_index_tools(
                                 index_scheduler,
                                 auth_ctrl,
                                 search_queue,
                                 auth_token,
                                 tx,
-                                meili_calls,
+                                index_calls,
                                 chat_completion,
                                 &resp,
                                 function_support,
@@ -816,7 +816,7 @@ async fn run_conversation<C: async_openai::config::Config>(
         }
     }
 
-    // We must stop if the finish reason is not something we can solve with Meilisearch
+    // We must stop if the finish reason is not something we can solve with Hanzo Index
     match finish_reason {
         Some(FinishReason::ToolCalls) => Ok(ControlFlow::Continue(())),
         otherwise => Ok(ControlFlow::Break(otherwise)),
@@ -824,7 +824,7 @@ async fn run_conversation<C: async_openai::config::Config>(
 }
 
 #[allow(clippy::too_many_arguments)]
-async fn handle_meili_tools(
+async fn handle_index_tools(
     index_scheduler: &GuardedData<
         ActionPolicy<{ actions::CHAT_COMPLETIONS }>,
         Data<IndexScheduler>,
@@ -833,12 +833,12 @@ async fn handle_meili_tools(
     search_queue: &web::Data<SearchQueue>,
     auth_token: &str,
     tx: &SseEventSender,
-    meili_calls: Vec<ChatCompletionMessageToolCall>,
+    index_calls: Vec<ChatCompletionMessageToolCall>,
     chat_completion: &mut CreateChatCompletionRequest,
     resp: &CreateChatCompletionStreamResponse,
     FunctionSupport { report_progress, report_sources, append_to_conversation, .. }: FunctionSupport,
 ) -> Result<(), SendError<Event>> {
-    for call in meili_calls {
+    for call in index_calls {
         if report_progress {
             tx.report_search_progress(
                 resp.clone(),
@@ -915,7 +915,7 @@ async fn handle_meili_tools(
 /// The structure used to aggregate the function calls to make.
 #[derive(Debug)]
 enum Call {
-    /// Tool calls to tools that must be managed by Meilisearch internally.
+    /// Tool calls to tools that must be managed by Hanzo Index internally.
     /// Typically the search functions.
     Internal { id: String, function_name: String, arguments: String },
     /// Tool calls that we track but only to know that its not our functions.

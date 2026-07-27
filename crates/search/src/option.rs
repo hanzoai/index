@@ -25,73 +25,73 @@ use url::Url;
 
 const POSSIBLE_ENV: [&str; 2] = ["development", "production"];
 
-const MEILI_DB_PATH: &str = "MEILI_DB_PATH";
-const MEILI_HTTP_ADDR: &str = "MEILI_HTTP_ADDR";
-const MEILI_MASTER_KEY: &str = "MEILI_MASTER_KEY";
-const MEILI_ENV: &str = "MEILI_ENV";
-const MEILI_TASK_WEBHOOK_URL: &str = "MEILI_TASK_WEBHOOK_URL";
-const MEILI_TASK_WEBHOOK_AUTHORIZATION_HEADER: &str = "MEILI_TASK_WEBHOOK_AUTHORIZATION_HEADER";
-const MEILI_NO_ANALYTICS: &str = "MEILI_NO_ANALYTICS";
-const MEILI_HTTP_PAYLOAD_SIZE_LIMIT: &str = "MEILI_HTTP_PAYLOAD_SIZE_LIMIT";
-const MEILI_SSL_CERT_PATH: &str = "MEILI_SSL_CERT_PATH";
-const MEILI_SSL_KEY_PATH: &str = "MEILI_SSL_KEY_PATH";
-const MEILI_SSL_AUTH_PATH: &str = "MEILI_SSL_AUTH_PATH";
-const MEILI_SSL_OCSP_PATH: &str = "MEILI_SSL_OCSP_PATH";
-const MEILI_SSL_REQUIRE_AUTH: &str = "MEILI_SSL_REQUIRE_AUTH";
-const MEILI_SSL_RESUMPTION: &str = "MEILI_SSL_RESUMPTION";
-const MEILI_SSL_TICKETS: &str = "MEILI_SSL_TICKETS";
-const MEILI_IMPORT_SNAPSHOT: &str = "MEILI_IMPORT_SNAPSHOT";
-const MEILI_IGNORE_MISSING_SNAPSHOT: &str = "MEILI_IGNORE_MISSING_SNAPSHOT";
-const MEILI_IGNORE_SNAPSHOT_IF_DB_EXISTS: &str = "MEILI_IGNORE_SNAPSHOT_IF_DB_EXISTS";
-const MEILI_SNAPSHOT_DIR: &str = "MEILI_SNAPSHOT_DIR";
-const MEILI_SCHEDULE_SNAPSHOT: &str = "MEILI_SCHEDULE_SNAPSHOT";
-const MEILI_IMPORT_DUMP: &str = "MEILI_IMPORT_DUMP";
-const MEILI_IGNORE_MISSING_DUMP: &str = "MEILI_IGNORE_MISSING_DUMP";
-const MEILI_IGNORE_DUMP_IF_DB_EXISTS: &str = "MEILI_IGNORE_DUMP_IF_DB_EXISTS";
-const MEILI_DUMP_DIR: &str = "MEILI_DUMP_DIR";
-const MEILI_LOG_LEVEL: &str = "MEILI_LOG_LEVEL";
-const MEILI_EXPERIMENTAL_LOGS_MODE: &str = "MEILI_EXPERIMENTAL_LOGS_MODE";
-const MEILI_EXPERIMENTAL_DUMPLESS_UPGRADE: &str = "MEILI_EXPERIMENTAL_DUMPLESS_UPGRADE";
-const MEILI_EXPERIMENTAL_REPLICATION_PARAMETERS: &str = "MEILI_EXPERIMENTAL_REPLICATION_PARAMETERS";
-const MEILI_EXPERIMENTAL_ENABLE_LOGS_ROUTE: &str = "MEILI_EXPERIMENTAL_ENABLE_LOGS_ROUTE";
-const MEILI_EXPERIMENTAL_CONTAINS_FILTER: &str = "MEILI_EXPERIMENTAL_CONTAINS_FILTER";
-const MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_SETTINGS: &str =
-    "MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_SETTINGS";
-const MEILI_EXPERIMENTAL_ENABLE_METRICS: &str = "MEILI_EXPERIMENTAL_ENABLE_METRICS";
-const MEILI_EXPERIMENTAL_SEARCH_QUEUE_SIZE: &str = "MEILI_EXPERIMENTAL_SEARCH_QUEUE_SIZE";
-const MEILI_EXPERIMENTAL_DROP_SEARCH_AFTER: &str = "MEILI_EXPERIMENTAL_DROP_SEARCH_AFTER";
-const MEILI_EXPERIMENTAL_NB_SEARCHES_PER_CORE: &str = "MEILI_EXPERIMENTAL_NB_SEARCHES_PER_CORE";
-const MEILI_EXPERIMENTAL_REDUCE_INDEXING_MEMORY_USAGE: &str =
-    "MEILI_EXPERIMENTAL_REDUCE_INDEXING_MEMORY_USAGE";
-const MEILI_EXPERIMENTAL_MAX_NUMBER_OF_BATCHED_TASKS: &str =
-    "MEILI_EXPERIMENTAL_MAX_NUMBER_OF_BATCHED_TASKS";
-const MEILI_EXPERIMENTAL_LIMIT_BATCHED_TASKS_TOTAL_SIZE: &str =
-    "MEILI_EXPERIMENTAL_LIMIT_BATCHED_TASKS_TOTAL_SIZE";
-const MEILI_EXPERIMENTAL_EMBEDDING_CACHE_ENTRIES: &str =
-    "MEILI_EXPERIMENTAL_EMBEDDING_CACHE_ENTRIES";
-const MEILI_EXPERIMENTAL_NO_SNAPSHOT_COMPACTION: &str = "MEILI_EXPERIMENTAL_NO_SNAPSHOT_COMPACTION";
-const MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_DUMPS: &str =
-    "MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_DUMPS";
-const MEILI_EXPERIMENTAL_PERSONALIZATION_API_KEY: &str =
-    "MEILI_EXPERIMENTAL_PERSONALIZATION_API_KEY";
+const INDEX_DB_PATH: &str = "INDEX_DB_PATH";
+const INDEX_HTTP_ADDR: &str = "INDEX_HTTP_ADDR";
+const INDEX_MASTER_KEY: &str = "INDEX_MASTER_KEY";
+const INDEX_ENV: &str = "INDEX_ENV";
+const INDEX_TASK_WEBHOOK_URL: &str = "INDEX_TASK_WEBHOOK_URL";
+const INDEX_TASK_WEBHOOK_AUTHORIZATION_HEADER: &str = "INDEX_TASK_WEBHOOK_AUTHORIZATION_HEADER";
+const INDEX_NO_ANALYTICS: &str = "INDEX_NO_ANALYTICS";
+const INDEX_HTTP_PAYLOAD_SIZE_LIMIT: &str = "INDEX_HTTP_PAYLOAD_SIZE_LIMIT";
+const INDEX_SSL_CERT_PATH: &str = "INDEX_SSL_CERT_PATH";
+const INDEX_SSL_KEY_PATH: &str = "INDEX_SSL_KEY_PATH";
+const INDEX_SSL_AUTH_PATH: &str = "INDEX_SSL_AUTH_PATH";
+const INDEX_SSL_OCSP_PATH: &str = "INDEX_SSL_OCSP_PATH";
+const INDEX_SSL_REQUIRE_AUTH: &str = "INDEX_SSL_REQUIRE_AUTH";
+const INDEX_SSL_RESUMPTION: &str = "INDEX_SSL_RESUMPTION";
+const INDEX_SSL_TICKETS: &str = "INDEX_SSL_TICKETS";
+const INDEX_IMPORT_SNAPSHOT: &str = "INDEX_IMPORT_SNAPSHOT";
+const INDEX_IGNORE_MISSING_SNAPSHOT: &str = "INDEX_IGNORE_MISSING_SNAPSHOT";
+const INDEX_IGNORE_SNAPSHOT_IF_DB_EXISTS: &str = "INDEX_IGNORE_SNAPSHOT_IF_DB_EXISTS";
+const INDEX_SNAPSHOT_DIR: &str = "INDEX_SNAPSHOT_DIR";
+const INDEX_SCHEDULE_SNAPSHOT: &str = "INDEX_SCHEDULE_SNAPSHOT";
+const INDEX_IMPORT_DUMP: &str = "INDEX_IMPORT_DUMP";
+const INDEX_IGNORE_MISSING_DUMP: &str = "INDEX_IGNORE_MISSING_DUMP";
+const INDEX_IGNORE_DUMP_IF_DB_EXISTS: &str = "INDEX_IGNORE_DUMP_IF_DB_EXISTS";
+const INDEX_DUMP_DIR: &str = "INDEX_DUMP_DIR";
+const INDEX_LOG_LEVEL: &str = "INDEX_LOG_LEVEL";
+const INDEX_EXPERIMENTAL_LOGS_MODE: &str = "INDEX_EXPERIMENTAL_LOGS_MODE";
+const INDEX_EXPERIMENTAL_DUMPLESS_UPGRADE: &str = "INDEX_EXPERIMENTAL_DUMPLESS_UPGRADE";
+const INDEX_EXPERIMENTAL_REPLICATION_PARAMETERS: &str = "INDEX_EXPERIMENTAL_REPLICATION_PARAMETERS";
+const INDEX_EXPERIMENTAL_ENABLE_LOGS_ROUTE: &str = "INDEX_EXPERIMENTAL_ENABLE_LOGS_ROUTE";
+const INDEX_EXPERIMENTAL_CONTAINS_FILTER: &str = "INDEX_EXPERIMENTAL_CONTAINS_FILTER";
+const INDEX_EXPERIMENTAL_NO_EDITION_2024_FOR_SETTINGS: &str =
+    "INDEX_EXPERIMENTAL_NO_EDITION_2024_FOR_SETTINGS";
+const INDEX_EXPERIMENTAL_ENABLE_METRICS: &str = "INDEX_EXPERIMENTAL_ENABLE_METRICS";
+const INDEX_EXPERIMENTAL_SEARCH_QUEUE_SIZE: &str = "INDEX_EXPERIMENTAL_SEARCH_QUEUE_SIZE";
+const INDEX_EXPERIMENTAL_DROP_SEARCH_AFTER: &str = "INDEX_EXPERIMENTAL_DROP_SEARCH_AFTER";
+const INDEX_EXPERIMENTAL_NB_SEARCHES_PER_CORE: &str = "INDEX_EXPERIMENTAL_NB_SEARCHES_PER_CORE";
+const INDEX_EXPERIMENTAL_REDUCE_INDEXING_MEMORY_USAGE: &str =
+    "INDEX_EXPERIMENTAL_REDUCE_INDEXING_MEMORY_USAGE";
+const INDEX_EXPERIMENTAL_MAX_NUMBER_OF_BATCHED_TASKS: &str =
+    "INDEX_EXPERIMENTAL_MAX_NUMBER_OF_BATCHED_TASKS";
+const INDEX_EXPERIMENTAL_LIMIT_BATCHED_TASKS_TOTAL_SIZE: &str =
+    "INDEX_EXPERIMENTAL_LIMIT_BATCHED_TASKS_TOTAL_SIZE";
+const INDEX_EXPERIMENTAL_EMBEDDING_CACHE_ENTRIES: &str =
+    "INDEX_EXPERIMENTAL_EMBEDDING_CACHE_ENTRIES";
+const INDEX_EXPERIMENTAL_NO_SNAPSHOT_COMPACTION: &str = "INDEX_EXPERIMENTAL_NO_SNAPSHOT_COMPACTION";
+const INDEX_EXPERIMENTAL_NO_EDITION_2024_FOR_DUMPS: &str =
+    "INDEX_EXPERIMENTAL_NO_EDITION_2024_FOR_DUMPS";
+const INDEX_EXPERIMENTAL_PERSONALIZATION_API_KEY: &str =
+    "INDEX_EXPERIMENTAL_PERSONALIZATION_API_KEY";
 
-const MEILI_EXPERIMENTAL_ALLOWED_IP_NETWORKS: &str = "MEILI_EXPERIMENTAL_ALLOWED_IP_NETWORKS";
+const INDEX_EXPERIMENTAL_ALLOWED_IP_NETWORKS: &str = "INDEX_EXPERIMENTAL_ALLOWED_IP_NETWORKS";
 
 // Related to S3 snapshots
-const MEILI_S3_BUCKET_URL: &str = "MEILI_S3_BUCKET_URL";
-const MEILI_S3_BUCKET_REGION: &str = "MEILI_S3_BUCKET_REGION";
-const MEILI_S3_BUCKET_NAME: &str = "MEILI_S3_BUCKET_NAME";
-const MEILI_S3_SNAPSHOT_PREFIX: &str = "MEILI_S3_SNAPSHOT_PREFIX";
-const MEILI_S3_ACCESS_KEY: &str = "MEILI_S3_ACCESS_KEY";
-const MEILI_S3_SECRET_KEY: &str = "MEILI_S3_SECRET_KEY";
-const MEILI_EXPERIMENTAL_S3_ROLE_ARN: &str = "MEILI_EXPERIMENTAL_S3_ROLE_ARN";
-const MEILI_EXPERIMENTAL_S3_WEB_IDENTITY_TOKEN_FILE: &str =
-    "MEILI_EXPERIMENTAL_S3_WEB_IDENTITY_TOKEN_FILE";
-const MEILI_EXPERIMENTAL_S3_MAX_IN_FLIGHT_PARTS: &str = "MEILI_EXPERIMENTAL_S3_MAX_IN_FLIGHT_PARTS";
-const MEILI_EXPERIMENTAL_S3_COMPRESSION_LEVEL: &str = "MEILI_EXPERIMENTAL_S3_COMPRESSION_LEVEL";
-const MEILI_EXPERIMENTAL_S3_SIGNATURE_DURATION_SECONDS: &str =
-    "MEILI_EXPERIMENTAL_S3_SIGNATURE_DURATION_SECONDS";
-const MEILI_EXPERIMENTAL_S3_MULTIPART_PART_SIZE: &str = "MEILI_EXPERIMENTAL_S3_MULTIPART_PART_SIZE";
+const INDEX_S3_BUCKET_URL: &str = "INDEX_S3_BUCKET_URL";
+const INDEX_S3_BUCKET_REGION: &str = "INDEX_S3_BUCKET_REGION";
+const INDEX_S3_BUCKET_NAME: &str = "INDEX_S3_BUCKET_NAME";
+const INDEX_S3_SNAPSHOT_PREFIX: &str = "INDEX_S3_SNAPSHOT_PREFIX";
+const INDEX_S3_ACCESS_KEY: &str = "INDEX_S3_ACCESS_KEY";
+const INDEX_S3_SECRET_KEY: &str = "INDEX_S3_SECRET_KEY";
+const INDEX_EXPERIMENTAL_S3_ROLE_ARN: &str = "INDEX_EXPERIMENTAL_S3_ROLE_ARN";
+const INDEX_EXPERIMENTAL_S3_WEB_IDENTITY_TOKEN_FILE: &str =
+    "INDEX_EXPERIMENTAL_S3_WEB_IDENTITY_TOKEN_FILE";
+const INDEX_EXPERIMENTAL_S3_MAX_IN_FLIGHT_PARTS: &str = "INDEX_EXPERIMENTAL_S3_MAX_IN_FLIGHT_PARTS";
+const INDEX_EXPERIMENTAL_S3_COMPRESSION_LEVEL: &str = "INDEX_EXPERIMENTAL_S3_COMPRESSION_LEVEL";
+const INDEX_EXPERIMENTAL_S3_SIGNATURE_DURATION_SECONDS: &str =
+    "INDEX_EXPERIMENTAL_S3_SIGNATURE_DURATION_SECONDS";
+const INDEX_EXPERIMENTAL_S3_MULTIPART_PART_SIZE: &str = "INDEX_EXPERIMENTAL_S3_MULTIPART_PART_SIZE";
 
 const DEFAULT_CONFIG_FILE_PATH: &str = "./config.toml";
 const DEFAULT_DB_PATH: &str = "./data.ms";
@@ -107,8 +107,8 @@ const DEFAULT_S3_SNAPSHOT_COMPRESSION_LEVEL: u32 = 0;
 const DEFAULT_S3_SNAPSHOT_SIGNATURE_DURATION_SECONDS: u64 = 8 * 3600; // 8 hours
 const DEFAULT_S3_SNAPSHOT_MULTIPART_PART_SIZE: Byte = Byte::from_u64(375 * 1024 * 1024); // 375 MiB
 
-const MEILI_MAX_INDEXING_MEMORY: &str = "MEILI_MAX_INDEXING_MEMORY";
-const MEILI_MAX_INDEXING_THREADS: &str = "MEILI_MAX_INDEXING_THREADS";
+const INDEX_MAX_INDEXING_MEMORY: &str = "INDEX_MAX_INDEXING_MEMORY";
+const INDEX_MAX_INDEXING_THREADS: &str = "INDEX_MAX_INDEXING_THREADS";
 const DEFAULT_LOG_EVERY_N: usize = 100_000;
 
 // Each environment (index and task-db) is taking space in the virtual address space.
@@ -214,43 +214,43 @@ impl FromStr for LogLevel {
 #[serde(rename_all = "snake_case", deny_unknown_fields)]
 pub struct Opt {
     /// Designates the location where database files will be created and retrieved.
-    #[clap(long, env = MEILI_DB_PATH, default_value_os_t = default_db_path())]
+    #[clap(long, env = INDEX_DB_PATH, default_value_os_t = default_db_path())]
     #[serde(default = "default_db_path")]
     pub db_path: PathBuf,
 
-    /// Sets the HTTP address and port Meilisearch will use.
-    #[clap(long, env = MEILI_HTTP_ADDR, default_value_t = default_http_addr())]
+    /// Sets the HTTP address and port Hanzo Index will use.
+    #[clap(long, env = INDEX_HTTP_ADDR, default_value_t = default_http_addr())]
     #[serde(default = "default_http_addr")]
     pub http_addr: String,
 
     /// Sets the instance's master key, automatically protecting all routes except `GET /health`.
-    #[clap(long, env = MEILI_MASTER_KEY)]
+    #[clap(long, env = INDEX_MASTER_KEY)]
     pub master_key: Option<String>,
 
     /// Configures the instance's environment. Value must be either `production` or `development`.
-    #[clap(long, env = MEILI_ENV, default_value_t = default_env(), value_parser = POSSIBLE_ENV)]
+    #[clap(long, env = INDEX_ENV, default_value_t = default_env(), value_parser = POSSIBLE_ENV)]
     #[serde(default = "default_env")]
     pub env: String,
 
     /// Called whenever a task finishes so a third party can be notified.
     /// See also the dedicated API `/webhooks`.
-    #[clap(long, env = MEILI_TASK_WEBHOOK_URL)]
+    #[clap(long, env = INDEX_TASK_WEBHOOK_URL)]
     pub task_webhook_url: Option<Url>,
 
     /// The Authorization header to send on the webhook URL whenever
     /// a task finishes so a third party can be notified.
     /// See also the dedicated API `/webhooks`.
-    #[clap(long, env = MEILI_TASK_WEBHOOK_AUTHORIZATION_HEADER)]
+    #[clap(long, env = INDEX_TASK_WEBHOOK_AUTHORIZATION_HEADER)]
     pub task_webhook_authorization_header: Option<String>,
 
-    /// Deactivates Meilisearch's built-in telemetry when provided.
+    /// Deactivates Hanzo Index's built-in telemetry when provided.
     ///
-    /// Meilisearch automatically collects data from all instances that
+    /// Hanzo Index automatically collects data from all instances that
     /// do not opt out using this flag. All gathered data is used solely
-    /// for the purpose of improving Meilisearch, and can be deleted
+    /// for the purpose of improving Hanzo Index, and can be deleted
     /// at any time.
     #[serde(default)] // we can't send true
-    #[clap(long, env = MEILI_NO_ANALYTICS)]
+    #[clap(long, env = INDEX_NO_ANALYTICS)]
     pub no_analytics: bool,
 
     /// Sets the maximum size of the index. Value must be given in bytes or explicitly
@@ -267,211 +267,211 @@ pub struct Opt {
 
     /// Sets the maximum size of accepted payloads. Value must be given in bytes or explicitly stating a
     /// base unit (for instance: 107374182400, '107.7Gb', or '107374 Mb').
-    #[clap(long, env = MEILI_HTTP_PAYLOAD_SIZE_LIMIT, default_value_t = default_http_payload_size_limit())]
+    #[clap(long, env = INDEX_HTTP_PAYLOAD_SIZE_LIMIT, default_value_t = default_http_payload_size_limit())]
     #[serde(default = "default_http_payload_size_limit")]
     pub http_payload_size_limit: Byte,
 
     /// Sets the server's SSL certificates.
-    #[clap(long, env = MEILI_SSL_CERT_PATH, value_parser)]
+    #[clap(long, env = INDEX_SSL_CERT_PATH, value_parser)]
     pub ssl_cert_path: Option<PathBuf>,
 
     /// Sets the server's SSL key files.
-    #[clap(long, env = MEILI_SSL_KEY_PATH, value_parser)]
+    #[clap(long, env = INDEX_SSL_KEY_PATH, value_parser)]
     pub ssl_key_path: Option<PathBuf>,
 
     /// Enables client authentication in the specified path.
-    #[clap(long, env = MEILI_SSL_AUTH_PATH, value_parser)]
+    #[clap(long, env = INDEX_SSL_AUTH_PATH, value_parser)]
     pub ssl_auth_path: Option<PathBuf>,
 
     /// Sets the server's OCSP file. *Optional*
     ///
     /// Reads DER-encoded OCSP response from OCSPFILE and staple to certificate.
-    #[clap(long, env = MEILI_SSL_OCSP_PATH, value_parser)]
+    #[clap(long, env = INDEX_SSL_OCSP_PATH, value_parser)]
     pub ssl_ocsp_path: Option<PathBuf>,
 
     /// Makes SSL authentication mandatory.
     #[serde(default)]
-    #[clap(long, env = MEILI_SSL_REQUIRE_AUTH)]
+    #[clap(long, env = INDEX_SSL_REQUIRE_AUTH)]
     pub ssl_require_auth: bool,
 
     /// Activates SSL session resumption.
     #[serde(default)]
-    #[clap(long, env = MEILI_SSL_RESUMPTION)]
+    #[clap(long, env = INDEX_SSL_RESUMPTION)]
     pub ssl_resumption: bool,
 
     /// Activates SSL tickets.
     #[serde(default)]
-    #[clap(long, env = MEILI_SSL_TICKETS)]
+    #[clap(long, env = INDEX_SSL_TICKETS)]
     pub ssl_tickets: bool,
 
-    /// Launches Meilisearch after importing a previously-generated snapshot at the given filepath.
-    #[clap(long, env = MEILI_IMPORT_SNAPSHOT)]
+    /// Launches Hanzo Index after importing a previously-generated snapshot at the given filepath.
+    #[clap(long, env = INDEX_IMPORT_SNAPSHOT)]
     pub import_snapshot: Option<PathBuf>,
 
-    /// Prevents a Meilisearch instance from throwing an error when `--import-snapshot`
+    /// Prevents an index instance from throwing an error when `--import-snapshot`
     /// does not point to a valid snapshot file.
     ///
     /// This command will throw an error if `--import-snapshot` is not defined.
     #[clap(
         long,
-        env = MEILI_IGNORE_MISSING_SNAPSHOT,
+        env = INDEX_IGNORE_MISSING_SNAPSHOT,
         requires = "import_snapshot"
     )]
     #[serde(default)]
     pub ignore_missing_snapshot: bool,
 
-    /// Prevents a Meilisearch instance with an existing database from throwing an
+    /// Prevents an index instance with an existing database from throwing an
     /// error when using `--import-snapshot`. Instead, the snapshot will be ignored
-    /// and Meilisearch will launch using the existing database.
+    /// and Hanzo Index will launch using the existing database.
     ///
     /// This command will throw an error if `--import-snapshot` is not defined.
     #[clap(
         long,
-        env = MEILI_IGNORE_SNAPSHOT_IF_DB_EXISTS,
+        env = INDEX_IGNORE_SNAPSHOT_IF_DB_EXISTS,
         requires = "import_snapshot"
     )]
     #[serde(default)]
     pub ignore_snapshot_if_db_exists: bool,
 
-    /// Sets the directory where Meilisearch will store snapshots.
-    #[clap(long, env = MEILI_SNAPSHOT_DIR, default_value_os_t = default_snapshot_dir())]
+    /// Sets the directory where Hanzo Index will store snapshots.
+    #[clap(long, env = INDEX_SNAPSHOT_DIR, default_value_os_t = default_snapshot_dir())]
     #[serde(default = "default_snapshot_dir")]
     pub snapshot_dir: PathBuf,
 
     /// Activates scheduled snapshots when provided. Snapshots are disabled by default.
     ///
     /// When provided with a value, defines the interval between each snapshot, in seconds.
-    #[clap(long,env = MEILI_SCHEDULE_SNAPSHOT, num_args(0..=1), value_parser=parse_schedule_snapshot, default_value_t, default_missing_value=default_snapshot_interval_sec(),  value_name = "SNAPSHOT_INTERVAL_SEC")]
+    #[clap(long,env = INDEX_SCHEDULE_SNAPSHOT, num_args(0..=1), value_parser=parse_schedule_snapshot, default_value_t, default_missing_value=default_snapshot_interval_sec(),  value_name = "SNAPSHOT_INTERVAL_SEC")]
     #[serde(default, deserialize_with = "schedule_snapshot_deserialize")]
     pub schedule_snapshot: ScheduleSnapshot,
 
     /// Imports the dump file located at the specified path. Path must point to a `.dump` file.
-    /// If a database already exists, Meilisearch will throw an error and abort launch.
-    #[clap(long, env = MEILI_IMPORT_DUMP, conflicts_with = "import_snapshot")]
+    /// If a database already exists, Hanzo Index will throw an error and abort launch.
+    #[clap(long, env = INDEX_IMPORT_DUMP, conflicts_with = "import_snapshot")]
     pub import_dump: Option<PathBuf>,
 
-    /// Prevents Meilisearch from throwing an error when `--import-dump` does not point to
-    /// a valid dump file. Instead, Meilisearch will start normally without importing any dump.
+    /// Prevents Hanzo Index from throwing an error when `--import-dump` does not point to
+    /// a valid dump file. Instead, Hanzo Index will start normally without importing any dump.
     ///
     /// This option will trigger an error if `--import-dump` is not defined.
-    #[clap(long, env = MEILI_IGNORE_MISSING_DUMP, requires = "import_dump")]
+    #[clap(long, env = INDEX_IGNORE_MISSING_DUMP, requires = "import_dump")]
     #[serde(default)]
     pub ignore_missing_dump: bool,
 
-    /// Prevents a Meilisearch instance with an existing database from throwing an error
-    /// when using `--import-dump`. Instead, the dump will be ignored and Meilisearch will
+    /// Prevents an index instance with an existing database from throwing an error
+    /// when using `--import-dump`. Instead, the dump will be ignored and Hanzo Index will
     /// launch using the existing database.
     ///
     /// This option will trigger an error if `--import-dump` is not defined.
-    #[clap(long, env = MEILI_IGNORE_DUMP_IF_DB_EXISTS, requires = "import_dump")]
+    #[clap(long, env = INDEX_IGNORE_DUMP_IF_DB_EXISTS, requires = "import_dump")]
     #[serde(default)]
     pub ignore_dump_if_db_exists: bool,
 
-    /// Sets the directory where Meilisearch will create dump files.
-    #[clap(long, env = MEILI_DUMP_DIR, default_value_os_t = default_dump_dir())]
+    /// Sets the directory where Hanzo Index will create dump files.
+    #[clap(long, env = INDEX_DUMP_DIR, default_value_os_t = default_dump_dir())]
     #[serde(default = "default_dump_dir")]
     pub dump_dir: PathBuf,
 
-    /// Defines how much detail should be present in Meilisearch's logs.
+    /// Defines how much detail should be present in Hanzo Index's logs.
     ///
-    /// Meilisearch currently supports six log levels, listed in order of
+    /// Hanzo Index currently supports six log levels, listed in order of
     /// increasing verbosity: OFF, ERROR, WARN, INFO, DEBUG, TRACE.
-    #[clap(long, env = MEILI_LOG_LEVEL, default_value_t)]
+    #[clap(long, env = INDEX_LOG_LEVEL, default_value_t)]
     #[serde(default)]
     pub log_level: LogLevel,
 
     /// Experimental contains filter feature. For more information,
-    /// see: <https://github.com/orgs/meilisearch/discussions/763>
+    /// see: <https://github.com/orgs/index/discussions/763>
     ///
     /// Enables the experimental contains filter operator.
-    #[clap(long, env = MEILI_EXPERIMENTAL_CONTAINS_FILTER)]
+    #[clap(long, env = INDEX_EXPERIMENTAL_CONTAINS_FILTER)]
     #[serde(default)]
     pub experimental_contains_filter: bool,
 
     /// Experimental metrics feature. For more information,
-    /// see: <https://github.com/meilisearch/meilisearch/discussions/3518>
+    /// see: <https://github.com/hanzoai/index/discussions/3518>
     ///
     /// Enables the Prometheus metrics on the `GET /metrics` endpoint.
-    #[clap(long, env = MEILI_EXPERIMENTAL_ENABLE_METRICS)]
+    #[clap(long, env = INDEX_EXPERIMENTAL_ENABLE_METRICS)]
     #[serde(default)]
     pub experimental_enable_metrics: bool,
 
     /// Experimental search queue size. For more information,
-    /// see: <https://github.com/orgs/meilisearch/discussions/729>
+    /// see: <https://github.com/orgs/index/discussions/729>
     ///
-    /// Lets you customize the size of the search queue. Meilisearch processes
+    /// Lets you customize the size of the search queue. Hanzo Index processes
     /// your search requests as fast as possible but once the queue is full
     /// it starts returning HTTP 503, Service Unavailable.
     ///
     /// The default value is 1000.
-    #[clap(long, env = MEILI_EXPERIMENTAL_SEARCH_QUEUE_SIZE, default_value_t = default_experimental_search_queue_size())]
+    #[clap(long, env = INDEX_EXPERIMENTAL_SEARCH_QUEUE_SIZE, default_value_t = default_experimental_search_queue_size())]
     #[serde(default = "default_experimental_search_queue_size")]
     pub experimental_search_queue_size: usize,
 
     /// Experimental drop search after. For more information,
-    /// see: <https://github.com/orgs/meilisearch/discussions/783>
+    /// see: <https://github.com/orgs/index/discussions/783>
     ///
-    /// Let you customize after how many seconds Meilisearch should consider
+    /// Let you customize after how many seconds Hanzo Index should consider
     /// a search request irrelevant and drop it.
     ///
     /// The default value is 60.
-    #[clap(long, env = MEILI_EXPERIMENTAL_DROP_SEARCH_AFTER, default_value_t = default_drop_search_after())]
+    #[clap(long, env = INDEX_EXPERIMENTAL_DROP_SEARCH_AFTER, default_value_t = default_drop_search_after())]
     #[serde(default = "default_drop_search_after")]
     pub experimental_drop_search_after: NonZeroUsize,
 
     /// Experimental number of searches per core. For more information,
-    /// see: <https://github.com/orgs/meilisearch/discussions/784>
+    /// see: <https://github.com/orgs/index/discussions/784>
     ///
     /// Lets you customize how many search requests can run on each core concurrently.
     /// The default value is 4.
-    #[clap(long, env = MEILI_EXPERIMENTAL_NB_SEARCHES_PER_CORE, default_value_t = default_nb_searches_per_core())]
+    #[clap(long, env = INDEX_EXPERIMENTAL_NB_SEARCHES_PER_CORE, default_value_t = default_nb_searches_per_core())]
     #[serde(default = "default_nb_searches_per_core")]
     pub experimental_nb_searches_per_core: NonZeroUsize,
 
     /// Experimental logs mode feature. For more information,
-    /// see: <https://github.com/orgs/meilisearch/discussions/723>
+    /// see: <https://github.com/orgs/index/discussions/723>
     ///
     /// Change the mode of the logs on the console.
-    #[clap(long, env = MEILI_EXPERIMENTAL_LOGS_MODE, default_value_t)]
+    #[clap(long, env = INDEX_EXPERIMENTAL_LOGS_MODE, default_value_t)]
     #[serde(default)]
     pub experimental_logs_mode: LogMode,
 
-    /// Experimental dumpless upgrade. For more information, see: <https://github.com/orgs/meilisearch/discussions/804>
+    /// Experimental dumpless upgrade. For more information, see: <https://github.com/orgs/index/discussions/804>
     ///
-    /// When set, Meilisearch will auto-update its database without using a dump.
-    #[clap(long, env = MEILI_EXPERIMENTAL_DUMPLESS_UPGRADE, default_value_t)]
+    /// When set, Hanzo Index will auto-update its database without using a dump.
+    #[clap(long, env = INDEX_EXPERIMENTAL_DUMPLESS_UPGRADE, default_value_t)]
     #[serde(default)]
     pub experimental_dumpless_upgrade: bool,
 
     /// Experimental logs route feature. For more information,
-    /// see: <https://github.com/orgs/meilisearch/discussions/721>
+    /// see: <https://github.com/orgs/index/discussions/721>
     ///
     /// Enables the log routes on the `POST /logs/stream`, `POST /logs/stderr` endpoints,
     /// and the `DELETE /logs/stream` to stop receiving logs.
-    #[clap(long, env = MEILI_EXPERIMENTAL_ENABLE_LOGS_ROUTE)]
+    #[clap(long, env = INDEX_EXPERIMENTAL_ENABLE_LOGS_ROUTE)]
     #[serde(default)]
     pub experimental_enable_logs_route: bool,
 
     /// Enable multiple features that helps you to run search in a replicated context.
-    /// For more information, see: <https://github.com/orgs/meilisearch/discussions/725>
+    /// For more information, see: <https://github.com/orgs/index/discussions/725>
     ///
     /// - /!\ Disable the automatic clean up of old processed tasks, you're in charge of that now
     /// - Lets you specify a custom task ID upon registering a task
     /// - Lets you execute dry-register a task (get an answer from the route but nothing is actually
     ///   registered in search and it won't be processed)
-    #[clap(long, env = MEILI_EXPERIMENTAL_REPLICATION_PARAMETERS)]
+    #[clap(long, env = INDEX_EXPERIMENTAL_REPLICATION_PARAMETERS)]
     #[serde(default)]
     pub experimental_replication_parameters: bool,
 
     /// Experimental RAM reduction during indexing, do not use in production,
-    /// see: <https://github.com/meilisearch/product/discussions/652>
-    #[clap(long, env = MEILI_EXPERIMENTAL_REDUCE_INDEXING_MEMORY_USAGE)]
+    /// see: <https://github.com/index/product/discussions/652>
+    #[clap(long, env = INDEX_EXPERIMENTAL_REDUCE_INDEXING_MEMORY_USAGE)]
     #[serde(default)]
     pub experimental_reduce_indexing_memory_usage: bool,
 
     /// Experimentally reduces the maximum number of tasks that will be processed at once,
-    /// see: <https://github.com/orgs/meilisearch/discussions/713>
-    #[clap(long, env = MEILI_EXPERIMENTAL_MAX_NUMBER_OF_BATCHED_TASKS, default_value_t = default_limit_batched_tasks())]
+    /// see: <https://github.com/orgs/index/discussions/713>
+    #[clap(long, env = INDEX_EXPERIMENTAL_MAX_NUMBER_OF_BATCHED_TASKS, default_value_t = default_limit_batched_tasks())]
     #[serde(default = "default_limit_batched_tasks")]
     pub experimental_max_number_of_batched_tasks: usize,
 
@@ -479,38 +479,38 @@ pub struct Opt {
     /// simultaneously. When unspecified, defaults to half of the maximum indexing memory and
     /// clamped to 10 GiB.
     ///
-    /// See: <https://github.com/orgs/meilisearch/discussions/801>
-    #[clap(long, env = MEILI_EXPERIMENTAL_LIMIT_BATCHED_TASKS_TOTAL_SIZE)]
+    /// See: <https://github.com/orgs/index/discussions/801>
+    #[clap(long, env = INDEX_EXPERIMENTAL_LIMIT_BATCHED_TASKS_TOTAL_SIZE)]
     #[serde(default)]
     pub experimental_limit_batched_tasks_total_size: Option<Byte>,
 
     /// Enables experimental caching of search query embeddings. The value represents the maximal number of entries in the cache of each
     /// distinct embedder.
     ///
-    /// For more information, see <https://github.com/orgs/meilisearch/discussions/818>.
-    #[clap(long, env = MEILI_EXPERIMENTAL_EMBEDDING_CACHE_ENTRIES, default_value_t = default_embedding_cache_entries())]
+    /// For more information, see <https://github.com/orgs/index/discussions/818>.
+    #[clap(long, env = INDEX_EXPERIMENTAL_EMBEDDING_CACHE_ENTRIES, default_value_t = default_embedding_cache_entries())]
     #[serde(default = "default_embedding_cache_entries")]
     pub experimental_embedding_cache_entries: usize,
 
     /// Experimental no snapshot compaction feature.
     ///
-    /// When enabled, Meilisearch will not compact snapshots during creation.
+    /// When enabled, Hanzo Index will not compact snapshots during creation.
     ///
-    /// For more information, see <https://github.com/orgs/meilisearch/discussions/833>.
-    #[clap(long, env = MEILI_EXPERIMENTAL_NO_SNAPSHOT_COMPACTION)]
+    /// For more information, see <https://github.com/orgs/index/discussions/833>.
+    #[clap(long, env = INDEX_EXPERIMENTAL_NO_SNAPSHOT_COMPACTION)]
     #[serde(default)]
     pub experimental_no_snapshot_compaction: bool,
 
     /// Experimental personalization API key feature.
     ///
     /// Sets the API key for personalization features.
-    #[clap(long, env = MEILI_EXPERIMENTAL_PERSONALIZATION_API_KEY)]
+    #[clap(long, env = INDEX_EXPERIMENTAL_PERSONALIZATION_API_KEY)]
     pub experimental_personalization_api_key: Option<String>,
 
     /// Experimental control over IP policy.
     ///
     /// Sets this to override the default IP policy of blocking all internal IPs and allow some internal IPs.
-    #[clap(long, env = MEILI_EXPERIMENTAL_ALLOWED_IP_NETWORKS, value_delimiter=',', action=clap::ArgAction::Set)]
+    #[clap(long, env = INDEX_EXPERIMENTAL_ALLOWED_IP_NETWORKS, value_delimiter=',', action=clap::ArgAction::Set)]
     #[serde(default)]
     pub experimental_allowed_ip_networks: Vec<cidr::AnyIpCidr>,
 
@@ -542,7 +542,7 @@ impl Opt {
         let user_specified_config_file_path = opts
             .config_file_path
             .clone()
-            .or_else(|| env::var("MEILI_CONFIG_FILE_PATH").map(PathBuf::from).ok());
+            .or_else(|| env::var("INDEX_CONFIG_FILE_PATH").map(PathBuf::from).ok());
         let config_file_path = user_specified_config_file_path
             .clone()
             .unwrap_or_else(|| PathBuf::from(DEFAULT_CONFIG_FILE_PATH));
@@ -627,110 +627,110 @@ impl Opt {
             experimental_allowed_ip_networks,
             s3_snapshot_options,
         } = self;
-        export_to_env_if_not_present(MEILI_DB_PATH, db_path);
-        export_to_env_if_not_present(MEILI_HTTP_ADDR, http_addr);
+        export_to_env_if_not_present(INDEX_DB_PATH, db_path);
+        export_to_env_if_not_present(INDEX_HTTP_ADDR, http_addr);
         if let Some(master_key) = master_key {
-            export_to_env_if_not_present(MEILI_MASTER_KEY, master_key);
+            export_to_env_if_not_present(INDEX_MASTER_KEY, master_key);
         }
-        export_to_env_if_not_present(MEILI_ENV, env);
+        export_to_env_if_not_present(INDEX_ENV, env);
         if let Some(task_webhook_url) = task_webhook_url {
-            export_to_env_if_not_present(MEILI_TASK_WEBHOOK_URL, task_webhook_url.to_string());
+            export_to_env_if_not_present(INDEX_TASK_WEBHOOK_URL, task_webhook_url.to_string());
         }
         if let Some(task_webhook_authorization_header) = task_webhook_authorization_header {
             export_to_env_if_not_present(
-                MEILI_TASK_WEBHOOK_AUTHORIZATION_HEADER,
+                INDEX_TASK_WEBHOOK_AUTHORIZATION_HEADER,
                 task_webhook_authorization_header,
             );
         }
 
-        export_to_env_if_not_present(MEILI_NO_ANALYTICS, no_analytics.to_string());
+        export_to_env_if_not_present(INDEX_NO_ANALYTICS, no_analytics.to_string());
         export_to_env_if_not_present(
-            MEILI_HTTP_PAYLOAD_SIZE_LIMIT,
+            INDEX_HTTP_PAYLOAD_SIZE_LIMIT,
             http_payload_size_limit.to_string(),
         );
         if let Some(ssl_cert_path) = ssl_cert_path {
-            export_to_env_if_not_present(MEILI_SSL_CERT_PATH, ssl_cert_path);
+            export_to_env_if_not_present(INDEX_SSL_CERT_PATH, ssl_cert_path);
         }
         if let Some(ssl_key_path) = ssl_key_path {
-            export_to_env_if_not_present(MEILI_SSL_KEY_PATH, ssl_key_path);
+            export_to_env_if_not_present(INDEX_SSL_KEY_PATH, ssl_key_path);
         }
         if let Some(ssl_auth_path) = ssl_auth_path {
-            export_to_env_if_not_present(MEILI_SSL_AUTH_PATH, ssl_auth_path);
+            export_to_env_if_not_present(INDEX_SSL_AUTH_PATH, ssl_auth_path);
         }
         if let Some(ssl_ocsp_path) = ssl_ocsp_path {
-            export_to_env_if_not_present(MEILI_SSL_OCSP_PATH, ssl_ocsp_path);
+            export_to_env_if_not_present(INDEX_SSL_OCSP_PATH, ssl_ocsp_path);
         }
-        export_to_env_if_not_present(MEILI_SSL_REQUIRE_AUTH, ssl_require_auth.to_string());
-        export_to_env_if_not_present(MEILI_SSL_RESUMPTION, ssl_resumption.to_string());
-        export_to_env_if_not_present(MEILI_SSL_TICKETS, ssl_tickets.to_string());
-        export_to_env_if_not_present(MEILI_SNAPSHOT_DIR, snapshot_dir);
+        export_to_env_if_not_present(INDEX_SSL_REQUIRE_AUTH, ssl_require_auth.to_string());
+        export_to_env_if_not_present(INDEX_SSL_RESUMPTION, ssl_resumption.to_string());
+        export_to_env_if_not_present(INDEX_SSL_TICKETS, ssl_tickets.to_string());
+        export_to_env_if_not_present(INDEX_SNAPSHOT_DIR, snapshot_dir);
         if let Some(snapshot_interval) = schedule_snapshot_to_env(schedule_snapshot) {
-            export_to_env_if_not_present(MEILI_SCHEDULE_SNAPSHOT, snapshot_interval)
+            export_to_env_if_not_present(INDEX_SCHEDULE_SNAPSHOT, snapshot_interval)
         }
 
-        export_to_env_if_not_present(MEILI_DUMP_DIR, dump_dir);
-        export_to_env_if_not_present(MEILI_LOG_LEVEL, log_level.to_string());
+        export_to_env_if_not_present(INDEX_DUMP_DIR, dump_dir);
+        export_to_env_if_not_present(INDEX_LOG_LEVEL, log_level.to_string());
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_CONTAINS_FILTER,
+            INDEX_EXPERIMENTAL_CONTAINS_FILTER,
             experimental_contains_filter.to_string(),
         );
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_ENABLE_METRICS,
+            INDEX_EXPERIMENTAL_ENABLE_METRICS,
             experimental_enable_metrics.to_string(),
         );
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_SEARCH_QUEUE_SIZE,
+            INDEX_EXPERIMENTAL_SEARCH_QUEUE_SIZE,
             experimental_search_queue_size.to_string(),
         );
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_DROP_SEARCH_AFTER,
+            INDEX_EXPERIMENTAL_DROP_SEARCH_AFTER,
             experimental_drop_search_after.to_string(),
         );
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_NB_SEARCHES_PER_CORE,
+            INDEX_EXPERIMENTAL_NB_SEARCHES_PER_CORE,
             experimental_nb_searches_per_core.to_string(),
         );
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_LOGS_MODE,
+            INDEX_EXPERIMENTAL_LOGS_MODE,
             experimental_logs_mode.to_string(),
         );
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_DUMPLESS_UPGRADE,
+            INDEX_EXPERIMENTAL_DUMPLESS_UPGRADE,
             experimental_dumpless_upgrade.to_string(),
         );
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_REPLICATION_PARAMETERS,
+            INDEX_EXPERIMENTAL_REPLICATION_PARAMETERS,
             experimental_replication_parameters.to_string(),
         );
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_ENABLE_LOGS_ROUTE,
+            INDEX_EXPERIMENTAL_ENABLE_LOGS_ROUTE,
             experimental_enable_logs_route.to_string(),
         );
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_REDUCE_INDEXING_MEMORY_USAGE,
+            INDEX_EXPERIMENTAL_REDUCE_INDEXING_MEMORY_USAGE,
             experimental_reduce_indexing_memory_usage.to_string(),
         );
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_MAX_NUMBER_OF_BATCHED_TASKS,
+            INDEX_EXPERIMENTAL_MAX_NUMBER_OF_BATCHED_TASKS,
             experimental_max_number_of_batched_tasks.to_string(),
         );
         if let Some(limit) = experimental_limit_batched_tasks_total_size {
             export_to_env_if_not_present(
-                MEILI_EXPERIMENTAL_LIMIT_BATCHED_TASKS_TOTAL_SIZE,
+                INDEX_EXPERIMENTAL_LIMIT_BATCHED_TASKS_TOTAL_SIZE,
                 limit.to_string(),
             );
         }
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_EMBEDDING_CACHE_ENTRIES,
+            INDEX_EXPERIMENTAL_EMBEDDING_CACHE_ENTRIES,
             experimental_embedding_cache_entries.to_string(),
         );
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_NO_SNAPSHOT_COMPACTION,
+            INDEX_EXPERIMENTAL_NO_SNAPSHOT_COMPACTION,
             experimental_no_snapshot_compaction.to_string(),
         );
         if let Some(experimental_personalization_api_key) = experimental_personalization_api_key {
             export_to_env_if_not_present(
-                MEILI_EXPERIMENTAL_PERSONALIZATION_API_KEY,
+                INDEX_EXPERIMENTAL_PERSONALIZATION_API_KEY,
                 experimental_personalization_api_key,
             );
         }
@@ -741,7 +741,7 @@ impl Opt {
                 .map(|any_or_cidr| any_or_cidr.to_string())
                 .join(",");
             export_to_env_if_not_present(
-                MEILI_EXPERIMENTAL_ALLOWED_IP_NETWORKS,
+                INDEX_EXPERIMENTAL_ALLOWED_IP_NETWORKS,
                 experimental_allowed_ip_networks,
             );
         }
@@ -813,16 +813,16 @@ impl Opt {
 
 #[derive(Debug, Default, Clone, Parser, Deserialize)]
 pub struct IndexerOpts {
-    /// Sets the maximum amount of RAM Meilisearch can use when indexing. By default, Meilisearch
+    /// Sets the maximum amount of RAM Hanzo Index can use when indexing. By default, Hanzo Index
     /// uses no more than two thirds of available memory.
-    #[clap(long, env = MEILI_MAX_INDEXING_MEMORY, default_value_t)]
+    #[clap(long, env = INDEX_MAX_INDEXING_MEMORY, default_value_t)]
     #[serde(default)]
     pub max_indexing_memory: MaxMemory,
 
-    /// Sets the maximum number of threads Meilisearch can use during indexation. By default, the
+    /// Sets the maximum number of threads Hanzo Index can use during indexation. By default, the
     /// indexer avoids using more than half of a machine's total processing units. This ensures
-    /// Meilisearch is always ready to perform searches, even while you are updating an index.
-    #[clap(long, env = MEILI_MAX_INDEXING_THREADS, default_value_t)]
+    /// Hanzo Index is always ready to perform searches, even while you are updating an index.
+    #[clap(long, env = INDEX_MAX_INDEXING_THREADS, default_value_t)]
     #[serde(default)]
     pub max_indexing_threads: MaxThreads,
 
@@ -836,19 +836,19 @@ pub struct IndexerOpts {
     pub skip_index_budget: bool,
 
     /// Experimental no edition 2024 for settings feature. For more information,
-    /// see: <https://github.com/orgs/meilisearch/discussions/847>
+    /// see: <https://github.com/orgs/index/discussions/847>
     ///
     /// Enables the experimental no edition 2024 for settings feature.
-    #[clap(long, env = MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_SETTINGS)]
+    #[clap(long, env = INDEX_EXPERIMENTAL_NO_EDITION_2024_FOR_SETTINGS)]
     #[serde(default)]
     pub experimental_no_edition_2024_for_settings: bool,
 
     /// Experimental make dump imports use the old document indexer.
     ///
-    /// When enabled, Meilisearch will use the old document indexer when importing dumps.
+    /// When enabled, Hanzo Index will use the old document indexer when importing dumps.
     ///
-    /// For more information, see <https://github.com/orgs/meilisearch/discussions/851>.
-    #[clap(long, env = MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_DUMPS)]
+    /// For more information, see <https://github.com/orgs/index/discussions/851>.
+    #[clap(long, env = INDEX_EXPERIMENTAL_NO_EDITION_2024_FOR_DUMPS)]
     #[serde(default)]
     pub experimental_no_edition_2024_for_dumps: bool,
 }
@@ -865,25 +865,25 @@ impl IndexerOpts {
         } = self;
         if let Some(max_indexing_memory) = max_indexing_memory.0 {
             export_to_env_if_not_present(
-                MEILI_MAX_INDEXING_MEMORY,
+                INDEX_MAX_INDEXING_MEMORY,
                 max_indexing_memory.to_string(),
             );
         }
         if let Some(max_indexing_threads) = max_indexing_threads.0 {
             export_to_env_if_not_present(
-                MEILI_MAX_INDEXING_THREADS,
+                INDEX_MAX_INDEXING_THREADS,
                 max_indexing_threads.to_string(),
             );
         }
         if experimental_no_edition_2024_for_settings {
             export_to_env_if_not_present(
-                MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_SETTINGS,
+                INDEX_EXPERIMENTAL_NO_EDITION_2024_FOR_SETTINGS,
                 experimental_no_edition_2024_for_settings.to_string(),
             );
         }
         if experimental_no_edition_2024_for_dumps {
             export_to_env_if_not_present(
-                MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_DUMPS,
+                INDEX_EXPERIMENTAL_NO_EDITION_2024_FOR_DUMPS,
                 experimental_no_edition_2024_for_dumps.to_string(),
             );
         }
@@ -931,25 +931,25 @@ impl TryFrom<&IndexerOpts> for IndexerConfig {
 #[group(requires_all = ["s3_bucket_url", "s3_bucket_region", "s3_bucket_name", "s3_snapshot_prefix", "s3_auth"])]
 pub struct S3SnapshotOpts {
     /// The S3 bucket URL in the format https://s3.<region>.amazonaws.com.
-    #[clap(long, env = MEILI_S3_BUCKET_URL, required = false)]
+    #[clap(long, env = INDEX_S3_BUCKET_URL, required = false)]
     pub s3_bucket_url: String,
 
     /// The region in the format us-east-1.
-    #[clap(long, env = MEILI_S3_BUCKET_REGION, required = false)]
+    #[clap(long, env = INDEX_S3_BUCKET_REGION, required = false)]
     pub s3_bucket_region: String,
 
     /// The bucket name.
-    #[clap(long, env = MEILI_S3_BUCKET_NAME, required = false)]
+    #[clap(long, env = INDEX_S3_BUCKET_NAME, required = false)]
     pub s3_bucket_name: String,
 
     /// The prefix path where to put the snapshot, uses normal slashes (/).
-    #[clap(long, env = MEILI_S3_SNAPSHOT_PREFIX, required = false)]
+    #[clap(long, env = INDEX_S3_SNAPSHOT_PREFIX, required = false)]
     pub s3_snapshot_prefix: String,
 
     /// The S3 access key. Conflicts with --experimental-s3-role-arn and --experimental-s3-web-identity-token-file.
     #[clap(
         long,
-        env = MEILI_S3_ACCESS_KEY,
+        env = INDEX_S3_ACCESS_KEY,
         required = false,
         group = "s3_auth",
         requires = "s3_secret_key"
@@ -960,7 +960,7 @@ pub struct S3SnapshotOpts {
     /// The S3 secret key. Conflicts with --experimental-s3-role-arn and --experimental-s3-web-identity-token-file.
     #[clap(
         long,
-        env = MEILI_S3_SECRET_KEY,
+        env = INDEX_S3_SECRET_KEY,
         required = false,
         conflicts_with_all = ["experimental_s3_role_arn", "experimental_s3_web_identity_token_file"]
     )]
@@ -970,7 +970,7 @@ pub struct S3SnapshotOpts {
     /// The IAM role ARN for web identity federation. Conflicts with --s3-access-key and --s3-secret-key.
     #[clap(
         long,
-        env = MEILI_EXPERIMENTAL_S3_ROLE_ARN,
+        env = INDEX_EXPERIMENTAL_S3_ROLE_ARN,
         required = false,
         group = "s3_auth",
         requires = "experimental_s3_web_identity_token_file"
@@ -981,7 +981,7 @@ pub struct S3SnapshotOpts {
     /// The path to the web identity token file. Conflicts with --s3-access-key and --s3-secret-key.
     #[clap(
         long,
-        env = MEILI_EXPERIMENTAL_S3_WEB_IDENTITY_TOKEN_FILE,
+        env = INDEX_EXPERIMENTAL_S3_WEB_IDENTITY_TOKEN_FILE,
         required = false,
         conflicts_with_all = ["s3_access_key", "s3_secret_key"]
     )]
@@ -990,22 +990,22 @@ pub struct S3SnapshotOpts {
 
     /// The maximum number of parts that can be uploaded in parallel.
     ///
-    /// For more information, see <https://github.com/orgs/meilisearch/discussions/869>.
-    #[clap(long, env = MEILI_EXPERIMENTAL_S3_MAX_IN_FLIGHT_PARTS, default_value_t = default_experimental_s3_snapshot_max_in_flight_parts())]
+    /// For more information, see <https://github.com/orgs/index/discussions/869>.
+    #[clap(long, env = INDEX_EXPERIMENTAL_S3_MAX_IN_FLIGHT_PARTS, default_value_t = default_experimental_s3_snapshot_max_in_flight_parts())]
     #[serde(default = "default_experimental_s3_snapshot_max_in_flight_parts")]
     pub experimental_s3_max_in_flight_parts: NonZeroUsize,
 
     /// The compression level. Defaults to no compression (0).
     ///
-    /// For more information, see <https://github.com/orgs/meilisearch/discussions/869>.
-    #[clap(long, env = MEILI_EXPERIMENTAL_S3_COMPRESSION_LEVEL, default_value_t = default_experimental_s3_snapshot_compression_level())]
+    /// For more information, see <https://github.com/orgs/index/discussions/869>.
+    #[clap(long, env = INDEX_EXPERIMENTAL_S3_COMPRESSION_LEVEL, default_value_t = default_experimental_s3_snapshot_compression_level())]
     #[serde(default = "default_experimental_s3_snapshot_compression_level")]
     pub experimental_s3_compression_level: u32,
 
     /// The signature duration for the multipart upload.
     ///
-    /// For more information, see <https://github.com/orgs/meilisearch/discussions/869>.
-    #[clap(long, env = MEILI_EXPERIMENTAL_S3_SIGNATURE_DURATION_SECONDS, default_value_t = default_experimental_s3_snapshot_signature_duration_seconds())]
+    /// For more information, see <https://github.com/orgs/index/discussions/869>.
+    #[clap(long, env = INDEX_EXPERIMENTAL_S3_SIGNATURE_DURATION_SECONDS, default_value_t = default_experimental_s3_snapshot_signature_duration_seconds())]
     #[serde(default = "default_experimental_s3_snapshot_signature_duration_seconds")]
     pub experimental_s3_signature_duration_seconds: u64,
 
@@ -1015,8 +1015,8 @@ pub struct S3SnapshotOpts {
     /// twice the boundaries of the AWS S3 multipart upload
     /// because we use it a bit differently internally.
     ///
-    /// For more information, see <https://github.com/orgs/meilisearch/discussions/869>.
-    #[clap(long, env = MEILI_EXPERIMENTAL_S3_MULTIPART_PART_SIZE, default_value_t = default_experimental_s3_snapshot_multipart_part_size())]
+    /// For more information, see <https://github.com/orgs/index/discussions/869>.
+    #[clap(long, env = INDEX_EXPERIMENTAL_S3_MULTIPART_PART_SIZE, default_value_t = default_experimental_s3_snapshot_multipart_part_size())]
     #[serde(default = "default_experimental_s3_snapshot_multipart_part_size")]
     pub experimental_s3_multipart_part_size: Byte,
 }
@@ -1039,36 +1039,36 @@ impl S3SnapshotOpts {
             experimental_s3_multipart_part_size,
         } = self;
 
-        export_to_env_if_not_present(MEILI_S3_BUCKET_URL, s3_bucket_url);
-        export_to_env_if_not_present(MEILI_S3_BUCKET_REGION, s3_bucket_region);
-        export_to_env_if_not_present(MEILI_S3_BUCKET_NAME, s3_bucket_name);
-        export_to_env_if_not_present(MEILI_S3_SNAPSHOT_PREFIX, s3_snapshot_prefix);
+        export_to_env_if_not_present(INDEX_S3_BUCKET_URL, s3_bucket_url);
+        export_to_env_if_not_present(INDEX_S3_BUCKET_REGION, s3_bucket_region);
+        export_to_env_if_not_present(INDEX_S3_BUCKET_NAME, s3_bucket_name);
+        export_to_env_if_not_present(INDEX_S3_SNAPSHOT_PREFIX, s3_snapshot_prefix);
         if let Some(key) = s3_access_key {
-            export_to_env_if_not_present(MEILI_S3_ACCESS_KEY, key);
+            export_to_env_if_not_present(INDEX_S3_ACCESS_KEY, key);
         }
         if let Some(key) = s3_secret_key {
-            export_to_env_if_not_present(MEILI_S3_SECRET_KEY, key);
+            export_to_env_if_not_present(INDEX_S3_SECRET_KEY, key);
         }
         if let Some(arn) = experimental_s3_role_arn {
-            export_to_env_if_not_present(MEILI_EXPERIMENTAL_S3_ROLE_ARN, arn);
+            export_to_env_if_not_present(INDEX_EXPERIMENTAL_S3_ROLE_ARN, arn);
         }
         if let Some(path) = experimental_s3_web_identity_token_file {
-            export_to_env_if_not_present(MEILI_EXPERIMENTAL_S3_WEB_IDENTITY_TOKEN_FILE, path);
+            export_to_env_if_not_present(INDEX_EXPERIMENTAL_S3_WEB_IDENTITY_TOKEN_FILE, path);
         }
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_S3_MAX_IN_FLIGHT_PARTS,
+            INDEX_EXPERIMENTAL_S3_MAX_IN_FLIGHT_PARTS,
             experimental_s3_max_in_flight_parts.to_string(),
         );
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_S3_COMPRESSION_LEVEL,
+            INDEX_EXPERIMENTAL_S3_COMPRESSION_LEVEL,
             experimental_s3_compression_level.to_string(),
         );
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_S3_SIGNATURE_DURATION_SECONDS,
+            INDEX_EXPERIMENTAL_S3_SIGNATURE_DURATION_SECONDS,
             experimental_s3_signature_duration_seconds.to_string(),
         );
         export_to_env_if_not_present(
-            MEILI_EXPERIMENTAL_S3_MULTIPART_PART_SIZE,
+            INDEX_EXPERIMENTAL_S3_MULTIPART_PART_SIZE,
             experimental_s3_multipart_part_size.to_string(),
         );
     }

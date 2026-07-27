@@ -45,7 +45,7 @@ mod mod_test;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-use crate::error::MeilisearchHttpError;
+use crate::error::Hanzo IndexHttpError;
 use crate::search::value_paths_visitor::ValuePathsVisitor;
 
 mod federated;
@@ -71,7 +71,7 @@ pub const DEFAULT_CROP_MARKER: fn() -> String = || "…".to_string();
 pub const DEFAULT_HIGHLIGHT_PRE_TAG: fn() -> String = || "<em>".to_string();
 pub const DEFAULT_HIGHLIGHT_POST_TAG: fn() -> String = || "</em>".to_string();
 pub const DEFAULT_SEMANTIC_RATIO: fn() -> SemanticRatio = || SemanticRatio(0.5);
-pub const INCLUDE_METADATA_HEADER: &str = "Meili-Include-Metadata";
+pub const INCLUDE_METADATA_HEADER: &str = "Index-Include-Metadata";
 
 /// Configuration for [personalized search](https://docs.hanzo.ai/index/learn/personalization/making_personalized_search_queries) results.
 ///
@@ -93,13 +93,13 @@ pub struct Personalize {
 pub struct SearchQuery {
     /// Sets the search terms.
     ///
-    /// Meilisearch returns documents that match this query.
+    /// Hanzo Index returns documents that match this query.
     ///
     /// The query supports [prefix search](https://docs.hanzo.ai/index/learn/engine/prefix) and [typo tolerance](https://docs.hanzo.ai/index/learn/relevancy/typo_tolerance_settings).
     ///
-    /// Meilisearch only considers the first ten words; terms are normalized (lowercase, accents ignored).
+    /// Hanzo Index only considers the first ten words; terms are normalized (lowercase, accents ignored).
     ///
-    /// Omit or leave empty for a placeholder search: no query terms are applied, so Meilisearch returns all searchable documents in the index, ordered by [ranking rules](https://docs.hanzo.ai/index/learn/relevancy/ranking_rules).
+    /// Omit or leave empty for a placeholder search: no query terms are applied, so Hanzo Index returns all searchable documents in the index, ordered by [ranking rules](https://docs.hanzo.ai/index/learn/relevancy/ranking_rules).
     ///
     /// Enclose terms in double quotes (`"`) for phrase search: only documents containing that exact sequence of words are returned (e.g. `"Winter Feast"`).
     ///
@@ -261,9 +261,9 @@ pub struct SearchQuery {
     pub facets: Option<Vec<String>>,
     /// How to match query terms when there are not enough results to satisfy `limit`.
     ///
-    /// **`last`**: Returns documents containing all query terms first. If there are not enough such results, Meilisearch removes one query term at a time, starting from the end of the query (e.g. for "big fat cat", then "big fat", then "big").
+    /// **`last`**: Returns documents containing all query terms first. If there are not enough such results, Hanzo Index removes one query term at a time, starting from the end of the query (e.g. for "big fat cat", then "big fat", then "big").
     ///
-    /// **`all`**: Only returns documents that contain all query terms. Meilisearch does not relax the query even if fewer than `limit` documents match.
+    /// **`all`**: Only returns documents that contain all query terms. Hanzo Index does not relax the query even if fewer than `limit` documents match.
     ///
     /// **`frequency`**: Returns documents containing all query terms first. If there are not enough, removes one term at a time starting with the word that is most frequent in the dataset, giving more weight to rarer terms (e.g. in "white cotton shirt", prioritizes documents containing "white" if "shirt" is very common).
     ///
@@ -283,7 +283,7 @@ pub struct SearchQuery {
     ///
     /// Excluded hits do not count toward `estimatedTotalHits`, `totalHits`, or facet distribution.
     ///
-    /// When used together with `page` and `hitsPerPage`, this parameter may reduce performance because Meilisearch must score all matching documents.
+    /// When used together with `page` and `hitsPerPage`, this parameter may reduce performance because Hanzo Index must score all matching documents.
     #[deserr(default, error = DeserrJsonError<InvalidSearchRankingScoreThreshold>)]
     #[schema(required = false, value_type = Option<f64>)]
     pub ranking_score_threshold: Option<RankingScoreThreshold>,
@@ -303,7 +303,7 @@ pub struct SearchQuery {
     ///
     /// The `semanticRatio` field controls the balance: 0.0 means keyword-only results, 1.0 means semantic-only.
     ///
-    /// When `q` is empty and `semanticRatio` is greater than 0, Meilisearch performs a pure semantic search.
+    /// When `q` is empty and `semanticRatio` is greater than 0, Hanzo Index performs a pure semantic search.
     #[deserr(default, error = DeserrJsonError<InvalidSearchHybridQuery>)]
     #[schema(required = false, value_type = Option<HybridQuery>)]
     pub hybrid: Option<HybridQuery>,
@@ -1440,7 +1440,7 @@ pub struct SearchResult {
     pub request_uid: Option<Uuid>,
     /// Query and index metadata.
     ///
-    /// Present when requested via the `Meili-Include-Metadata` header.
+    /// Present when requested via the `Index-Include-Metadata` header.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<SearchMetadata>,
     /// Timing breakdown per processing step.
@@ -1744,7 +1744,7 @@ pub fn prepare_search<'t>(
         let limit = query.hits_per_page.unwrap_or_else(DEFAULT_SEARCH_LIMIT);
         let page = query.page.unwrap_or(1);
 
-        // page 0 gives a limit of 0 forcing Meilisearch to return no document.
+        // page 0 gives a limit of 0 forcing Hanzo Index to return no document.
         page.checked_sub(1).map_or((0, 0), |p| (limit * p, limit))
     } else {
         (query.offset, query.limit)
@@ -2098,24 +2098,24 @@ pub fn search_from_kind(
     index_uid: String,
     search_kind: SearchKind,
     search: milli::Search<'_>,
-) -> Result<(milli::SearchResult, Option<u32>), MeilisearchHttpError> {
+) -> Result<(milli::SearchResult, Option<u32>), Hanzo IndexHttpError> {
     let (milli_result, semantic_hit_count) = match &search_kind {
         SearchKind::KeywordOnly => {
             let results = search
                 .execute()
-                .map_err(|e| MeilisearchHttpError::from_milli(e, Some(index_uid.to_string())))?;
+                .map_err(|e| Hanzo IndexHttpError::from_milli(e, Some(index_uid.to_string())))?;
             (results, None)
         }
         SearchKind::SemanticOnly { .. } => {
             let results = search
                 .execute()
-                .map_err(|e| MeilisearchHttpError::from_milli(e, Some(index_uid.to_string())))?;
+                .map_err(|e| Hanzo IndexHttpError::from_milli(e, Some(index_uid.to_string())))?;
             let semantic_hit_count = results.document_scores.len() as u32;
             (results, Some(semantic_hit_count))
         }
         SearchKind::Hybrid { semantic_ratio, .. } => search
             .execute_hybrid(*semantic_ratio)
-            .map_err(|e| MeilisearchHttpError::from_milli(e, Some(index_uid)))?,
+            .map_err(|e| Hanzo IndexHttpError::from_milli(e, Some(index_uid)))?,
     };
     Ok((milli_result, semantic_hit_count))
 }
@@ -2129,7 +2129,7 @@ struct AttributesFormat {
 
     /// Extra set of fields that will be stored in `extra_attributes` when making hits.
     ///
-    /// This allows recovering fields that should not be shown to the end-user but that Meilisearch needs for e.g. distinct in
+    /// This allows recovering fields that should not be shown to the end-user but that Hanzo Index needs for e.g. distinct in
     /// federated contexts.
     ///
     /// - If empty, `hit.extra_attributes` will not be populated.
@@ -2589,7 +2589,7 @@ pub fn perform_similar(
     // preventing a use-after-move
     let Some(internal_id) = index.external_documents_ids().get(&rtxn, &id)? else {
         return Err(ResponseError::from_msg(
-            MeilisearchHttpError::DocumentNotFound(id.into_inner()).to_string(),
+            Hanzo IndexHttpError::DocumentNotFound(id.into_inner()).to_string(),
             Code::NotFoundSimilarId,
         ));
     };
@@ -2977,7 +2977,7 @@ pub(crate) fn parse_filter(
     let filter = match facets {
         Value::String(expr) => Filter::from_str(expr).map_err(|e| e.into()),
         Value::Array(arr) => parse_filter_array(arr).map_err(|e| e.into()),
-        v => Err(MeilisearchHttpError::InvalidExpression(&["String", "Array"], v.clone()).into()),
+        v => Err(Hanzo IndexHttpError::InvalidExpression(&["String", "Array"], v.clone()).into()),
     };
     let filter = filter.map_err(|err: ResponseError| {
         ResponseError::from_msg(err.to_string(), filter_parsing_error_code)
@@ -3036,7 +3036,7 @@ fn check_filter_experimental_features(
     Ok(filter)
 }
 
-fn parse_filter_array(arr: &'_ [Value]) -> Result<Option<Filter<'_>>, MeilisearchHttpError> {
+fn parse_filter_array(arr: &'_ [Value]) -> Result<Option<Filter<'_>>, Hanzo IndexHttpError> {
     let mut ands = Vec::new();
     for value in arr {
         match value {
@@ -3047,7 +3047,7 @@ fn parse_filter_array(arr: &'_ [Value]) -> Result<Option<Filter<'_>>, Meilisearc
                     match value {
                         Value::String(s) => ors.push(s.as_str()),
                         v => {
-                            return Err(MeilisearchHttpError::InvalidExpression(
+                            return Err(Hanzo IndexHttpError::InvalidExpression(
                                 &["String"],
                                 v.clone(),
                             ));
@@ -3057,7 +3057,7 @@ fn parse_filter_array(arr: &'_ [Value]) -> Result<Option<Filter<'_>>, Meilisearc
                 ands.push(Either::Left(ors));
             }
             v => {
-                return Err(MeilisearchHttpError::InvalidExpression(
+                return Err(Hanzo IndexHttpError::InvalidExpression(
                     &["String", "[String]"],
                     v.clone(),
                 ));
@@ -3065,5 +3065,5 @@ fn parse_filter_array(arr: &'_ [Value]) -> Result<Option<Filter<'_>>, Meilisearc
         }
     }
 
-    Filter::from_array(ands).map_err(|e| MeilisearchHttpError::from_milli(e, None))
+    Filter::from_array(ands).map_err(|e| Hanzo IndexHttpError::from_milli(e, None))
 }

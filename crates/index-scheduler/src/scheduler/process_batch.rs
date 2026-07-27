@@ -1090,7 +1090,7 @@ impl IndexScheduler {
                 unreachable!("wrong details for upgrade task {latest_upgrade_task}")
             };
 
-            // check that we are rollbacking an upgrade to the current Meilisearch
+            // check that we are rollbacking an upgrade to the current Hanzo Index
             let bin_major: u32 = search_types::versioning::VERSION_MAJOR;
             let bin_minor: u32 = search_types::versioning::VERSION_MINOR;
             let bin_patch: u32 = search_types::versioning::VERSION_PATCH;

@@ -16,7 +16,7 @@
 
 Hanzo Search helps you shape a delightful search experience in a snap, offering features that work out of the box to speed up your workflow.
 
-Forked from [meilisearch/meilisearch](https://github.com/meilisearch/meilisearch) (MIT AND BUSL-1.1).
+Forked from [hanzoai/index](https://github.com/hanzoai/index) (MIT AND BUSL-1.1).
 
 > **License:** Hanzo Search is distributed under the MIT License (see [`LICENSE-MIT`](./LICENSE-MIT)). This distribution uses **only** the MIT-licensed core; it does **not** include or use the Business Source License 1.1 (BUSL-1.1) Enterprise Edition code ([`LICENSE-EE`](./LICENSE-EE)). See [License](#-license) below.
 
@@ -73,7 +73,7 @@ It does **not** include or use the upstream Business Source License 1.1 (BUSL-1.
 
 ### 📦 Upstream attribution
 
-Hanzo Search is based on [Meilisearch](https://github.com/meilisearch/meilisearch), a search engine created by Meili SAS, available under the MIT License. The upstream copyright and license notices are retained in [`LICENSE`](./LICENSE) and [`LICENSE-MIT`](./LICENSE-MIT).
+Hanzo Search is based on [Hanzo Index](https://github.com/hanzoai/index), a search engine created by Index SAS, available under the MIT License. The upstream copyright and license notices are retained in [`LICENSE`](./LICENSE) and [`LICENSE-MIT`](./LICENSE-MIT).
 
 ### 📦 External crates
 

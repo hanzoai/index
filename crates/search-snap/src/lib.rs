@@ -81,7 +81,7 @@ pub fn default_snapshot_settings_for_test<'a>(
     };
 
     let store_whole_snapshot =
-        std::env::var("MEILI_TEST_FULL_SNAPS").unwrap_or_else(|_| "false".to_owned());
+        std::env::var("INDEX_TEST_FULL_SNAPS").unwrap_or_else(|_| "false".to_owned());
     let store_whole_snapshot: bool = store_whole_snapshot.parse().unwrap();
 
     (settings, snap_name, store_whole_snapshot)
@@ -214,7 +214,7 @@ macro_rules! snapshot {
     };
     ($value:expr, @$inline:literal) => {
         // Note that the name given as argument does not matter since it is only an inline snapshot
-        // We don't pass None because otherwise `meili-snap` will try to assign it a unique identifier
+        // We don't pass None because otherwise `index-snap` will try to assign it a unique identifier
         let (settings, _, _) = $crate::default_snapshot_settings_for_test("", Some("_dummy_argument"));
         settings.bind(|| {
             let snap = format!("{}", $value);

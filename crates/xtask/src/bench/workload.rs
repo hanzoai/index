@@ -17,7 +17,7 @@ use crate::common::assets::{self, Asset};
 use crate::common::client::Client;
 use crate::common::command::{run_commands, Command};
 use crate::common::instance::Binary;
-use crate::common::process::{self, delete_db, start_meili};
+use crate::common::process::{self, delete_db, start_index};
 
 /// A bench workload.
 /// Not to be confused with [a test workload](crate::test::workload::Workload).
@@ -37,7 +37,7 @@ pub struct BenchWorkload {
 async fn run_workload_commands(
     dashboard_client: &DashboardClient,
     logs_client: &Client,
-    meili_client: &Arc<Client>,
+    index_client: &Arc<Client>,
     workload_uuid: Uuid,
     workload: &BenchWorkload,
     args: &BenchArgs,
@@ -49,7 +49,7 @@ async fn run_workload_commands(
     let asset_folder = args.common.asset_folder.clone().leak();
 
     run_commands(
-        meili_client,
+        index_client,
         &workload.precommands,
         0,
         &assets,
@@ -68,7 +68,7 @@ async fn run_workload_commands(
     let report_handle = start_report(logs_client, trace_filename, &workload.target).await?;
 
     run_commands(
-        meili_client,
+        index_client,
         &workload.commands,
         0,
         &assets,
@@ -86,12 +86,12 @@ async fn run_workload_commands(
 }
 
 #[allow(clippy::too_many_arguments)] // not best code quality, but this is a benchmark runner
-#[tracing::instrument(skip(assets_client, dashboard_client, logs_client, meili_client, workload, master_key, args), fields(workload = workload.name))]
+#[tracing::instrument(skip(assets_client, dashboard_client, logs_client, index_client, workload, master_key, args), fields(workload = workload.name))]
 pub async fn execute(
     assets_client: &Client,
     dashboard_client: &DashboardClient,
     logs_client: &Client,
-    meili_client: &Arc<Client>,
+    index_client: &Arc<Client>,
     invocation_uuid: Uuid,
     master_key: Option<&str>,
     workload: BenchWorkload,
@@ -108,7 +108,7 @@ pub async fn execute(
             execute_run(
                 dashboard_client,
                 logs_client,
-                meili_client,
+                index_client,
                 workload_uuid,
                 master_key,
                 &workload,
@@ -135,11 +135,11 @@ pub async fn execute(
 }
 
 #[allow(clippy::too_many_arguments)] // not best code quality, but this is a benchmark runner
-#[tracing::instrument(skip(dashboard_client, logs_client, meili_client, workload, master_key, args), fields(workload = %workload.name))]
+#[tracing::instrument(skip(dashboard_client, logs_client, index_client, workload, master_key, args), fields(workload = %workload.name))]
 async fn execute_run(
     dashboard_client: &DashboardClient,
     logs_client: &Client,
-    meili_client: &Arc<Client>,
+    index_client: &Arc<Client>,
     workload_uuid: Uuid,
     master_key: Option<&str>,
     workload: &BenchWorkload,
@@ -165,12 +165,12 @@ async fn execute_run(
     };
 
     let search =
-        start_meili(meili_client, master_key, &binary, &args.common.asset_folder).await?;
+        start_index(index_client, master_key, &binary, &args.common.asset_folder).await?;
 
     let processor = run_workload_commands(
         dashboard_client,
         logs_client,
-        meili_client,
+        index_client,
         workload_uuid,
         workload,
         args,
@@ -178,7 +178,7 @@ async fn execute_run(
     )
     .await?;
 
-    process::kill_meili(search).await;
+    process::kill_index(search).await;
 
     tracing::info!(run_number, "Successful run");
 

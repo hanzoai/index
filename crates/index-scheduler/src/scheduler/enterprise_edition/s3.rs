@@ -1,5 +1,5 @@
-// Copyright © 2025 Meilisearch Some Rights Reserved
-// This file is part of Meilisearch Enterprise Edition (EE).
+// Copyright © 2025 Hanzo Index Some Rights Reserved
+// This file is part of Hanzo Index Enterprise Edition (EE).
 // Use of this source code is governed by the Business Source License 1.1,
 // as found in the LICENSE-EE file or at <https://mariadb.com/bsl11>
 
@@ -23,7 +23,7 @@ impl IndexScheduler {
             .map_err(|e| anyhow::anyhow!("Failed to read web identity token file: {e}"))?;
 
         let duration: u32 =
-            match std::env::var("MEILI_EXPERIMENTAL_S3_WEB_IDENTITY_TOKEN_DURATION_SECONDS") {
+            match std::env::var("INDEX_EXPERIMENTAL_S3_WEB_IDENTITY_TOKEN_DURATION_SECONDS") {
                 Ok(s) => s.parse()?,
                 Err(VarError::NotPresent) => 3600,
                 Err(VarError::NotUnicode(e)) => {
@@ -35,7 +35,7 @@ impl IndexScheduler {
             ("Action", "AssumeRoleWithWebIdentity"),
             ("Version", "2011-06-15"),
             ("RoleArn", role_arn),
-            ("RoleSessionName", "meilisearch-snapshot-session"),
+            ("RoleSessionName", "index-snapshot-session"),
             ("WebIdentityToken", &token),
             ("DurationSeconds", &duration.to_string()),
         ];

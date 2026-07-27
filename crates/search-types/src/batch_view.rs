@@ -38,7 +38,7 @@ pub struct BatchView {
     /// that haven't finished processing yet.
     #[serde(serialize_with = "serialize_duration", default)]
     pub duration: Option<Duration>,
-    /// The timestamp when Meilisearch began processing this batch, formatted
+    /// The timestamp when Hanzo Index began processing this batch, formatted
     /// as an RFC 3339 date-time string. All batches have a start time as it's
     /// set when processing begins.
     #[serde(with = "time::serde::rfc3339", default)]

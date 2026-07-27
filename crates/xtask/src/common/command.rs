@@ -400,7 +400,7 @@ pub async fn run_commands(
 
 pub fn health_command() -> Command {
     Command {
-        description: Some("Waiting for the Meilisearch server to be up.".into()),
+        description: Some("Waiting for the index server to be up.".into()),
         route: "/health".into(),
         method: crate::common::client::Method::Get,
         body: Default::default(),

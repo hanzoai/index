@@ -502,7 +502,7 @@ fn degraded_search_and_score_details() {
 }
 
 #[test]
-#[ignore] // See <https://github.com/meilisearch/meilisearch/pull/6116> for explanations
+#[ignore] // See <https://github.com/hanzoai/index/pull/6116> for explanations
 fn degraded_search_and_score_details_vector() {
     let index = create_index();
 

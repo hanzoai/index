@@ -23,8 +23,8 @@ use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::Sender;
 
 use super::errors::StreamErrorEvent;
-use super::MEILI_APPEND_CONVERSATION_MESSAGE_NAME;
-use crate::routes::chats::{MEILI_SEARCH_PROGRESS_NAME, MEILI_SEARCH_SOURCES_NAME};
+use super::INDEX_APPEND_CONVERSATION_MESSAGE_NAME;
+use crate::routes::chats::{INDEX_SEARCH_PROGRESS_NAME, INDEX_SEARCH_SOURCES_NAME};
 
 pub struct SseEventSender(Sender<Event>);
 
@@ -71,7 +71,7 @@ impl SseEventSender {
             id: Some(uuid::Uuid::new_v4().to_string()),
             r#type: Some(ChatCompletionToolType::Function),
             function: Some(FunctionCallStream {
-                name: Some(MEILI_APPEND_CONVERSATION_MESSAGE_NAME.to_string()),
+                name: Some(INDEX_APPEND_CONVERSATION_MESSAGE_NAME.to_string()),
                 arguments: Some(call_text),
             }),
         };
@@ -101,8 +101,8 @@ impl SseEventSender {
         function_arguments: &str,
     ) -> Result<(), SendError<Event>> {
         #[derive(Debug, Clone, Serialize)]
-        /// Provides information about the current Meilisearch search operation.
-        struct MeiliSearchProgress<'a> {
+        /// Provides information about the current Hanzo Index search operation.
+        struct HanzoIndexProgress<'a> {
             /// The call ID to track the sources of the search.
             call_id: &'a str,
             /// The name of the function we are executing.
@@ -111,14 +111,14 @@ impl SseEventSender {
             function_arguments: &'a str,
         }
 
-        let progress = MeiliSearchProgress { call_id, function_name, function_arguments };
+        let progress = HanzoIndexProgress { call_id, function_name, function_arguments };
         let call_text = serde_json::to_string(&progress).unwrap();
         let tool_call = ChatCompletionMessageToolCallChunk {
             index: 0,
             id: Some(uuid::Uuid::new_v4().to_string()),
             r#type: Some(ChatCompletionToolType::Function),
             function: Some(FunctionCallStream {
-                name: Some(MEILI_SEARCH_PROGRESS_NAME.to_string()),
+                name: Some(INDEX_SEARCH_PROGRESS_NAME.to_string()),
                 arguments: Some(call_text),
             }),
         };
@@ -148,7 +148,7 @@ impl SseEventSender {
     ) -> Result<(), SendError<Event>> {
         #[derive(Debug, Clone, Serialize)]
         /// Provides sources of the search.
-        struct MeiliSearchSources<'a> {
+        struct HanzoIndexSources<'a> {
             /// The call ID to track the original search associated to those sources.
             call_id: &'a str,
             /// The documents associated with the search (call_id).
@@ -156,14 +156,14 @@ impl SseEventSender {
             sources: &'a [Document],
         }
 
-        let sources = MeiliSearchSources { call_id, sources: documents };
+        let sources = HanzoIndexSources { call_id, sources: documents };
         let call_text = serde_json::to_string(&sources).unwrap();
         let tool_call = ChatCompletionMessageToolCallChunk {
             index: 0,
             id: Some(uuid::Uuid::new_v4().to_string()),
             r#type: Some(ChatCompletionToolType::Function),
             function: Some(FunctionCallStream {
-                name: Some(MEILI_SEARCH_SOURCES_NAME.to_string()),
+                name: Some(INDEX_SEARCH_SOURCES_NAME.to_string()),
                 arguments: Some(call_text),
             }),
         };

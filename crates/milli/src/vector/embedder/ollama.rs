@@ -214,5 +214,5 @@ impl Embedder {
 
 fn get_ollama_path() -> String {
     // Important: Hostname not enough, has to be entire path to embeddings endpoint
-    std::env::var("MEILI_OLLAMA_URL").unwrap_or("http://localhost:11434/api/embeddings".to_string())
+    std::env::var("INDEX_OLLAMA_URL").unwrap_or("http://localhost:11434/api/embeddings".to_string())
 }

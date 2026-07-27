@@ -26,7 +26,7 @@ use rand::rngs::StdRng;
 use rand::{Rng, SeedableRng};
 use tokio::sync::{mpsc, oneshot};
 
-use crate::error::MeilisearchHttpError;
+use crate::error::Hanzo IndexHttpError;
 
 #[derive(Debug)]
 pub struct SearchQueue {
@@ -174,13 +174,13 @@ impl SearchQueue {
 
     /// Returns a search `Permit`.
     /// It should be dropped as soon as you've freed all the RAM associated with the search request being processed.
-    pub async fn try_get_search_permit(&self) -> Result<Permit, MeilisearchHttpError> {
+    pub async fn try_get_search_permit(&self) -> Result<Permit, Hanzo IndexHttpError> {
         let now = std::time::Instant::now();
         let (sender, receiver) = oneshot::channel();
-        self.sender.send(sender).await.map_err(|_| MeilisearchHttpError::SearchLimiterIsDown)?;
+        self.sender.send(sender).await.map_err(|_| Hanzo IndexHttpError::SearchLimiterIsDown)?;
         let permit = receiver
             .await
-            .map_err(|_| MeilisearchHttpError::TooManySearchRequests(self.capacity))?;
+            .map_err(|_| Hanzo IndexHttpError::TooManySearchRequests(self.capacity))?;
 
         // If we've been for more than one minute to get a search permit, it's better to simply
         // abort the search request than spending time processing something where the client
@@ -188,17 +188,17 @@ impl SearchQueue {
         // We may find a better solution in https://github.com/actix/actix-web/issues/3462.
         if now.elapsed() > self.time_to_abort {
             permit.drop().await;
-            Err(MeilisearchHttpError::TooManySearchRequests(self.capacity))
+            Err(Hanzo IndexHttpError::TooManySearchRequests(self.capacity))
         } else {
             Ok(permit)
         }
     }
 
     /// Returns `Ok(())` if everything seems normal.
-    /// Returns `Err(MeilisearchHttpError::SearchLimiterIsDown)` if the search limiter seems down.
-    pub fn health(&self) -> Result<(), MeilisearchHttpError> {
+    /// Returns `Err(Hanzo IndexHttpError::SearchLimiterIsDown)` if the search limiter seems down.
+    pub fn health(&self) -> Result<(), Hanzo IndexHttpError> {
         if self.sender.is_closed() {
-            Err(MeilisearchHttpError::SearchLimiterIsDown)
+            Err(Hanzo IndexHttpError::SearchLimiterIsDown)
         } else {
             Ok(())
         }

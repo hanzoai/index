@@ -360,7 +360,7 @@ impl PersonalizationService {
                 index_scheduler::error::FeatureNotEnabledError {
                     disabled_action: "reranking search results",
                     feature: "personalization",
-                    issue_link: "https://github.com/orgs/meilisearch/discussions/866",
+                    issue_link: "https://github.com/orgs/index/discussions/866",
                 },
             )
             .into()),

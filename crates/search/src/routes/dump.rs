@@ -24,7 +24,7 @@ crate::empty_analytics!(DumpAnalytics, "Dump Created");
 
 /// Create dump
 ///
-/// Trigger a dump creation process. When complete, a dump file is written to the [dump directory](https://docs.hanzo.ai/index/learn/self_hosted/configure_meilisearch_at_launch#dump-directory). The directory is created if it does not exist.
+/// Trigger a dump creation process. When complete, a dump file is written to the [dump directory](https://docs.hanzo.ai/index/learn/self_hosted/configure_index_at_launch#dump-directory). The directory is created if it does not exist.
 #[routes::path(
     security(("Bearer" = ["dumps.create", "dumps.*", "*"])),
     responses(

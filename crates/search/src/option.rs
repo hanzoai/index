@@ -381,7 +381,7 @@ pub struct Opt {
     pub log_level: LogLevel,
 
     /// Experimental contains filter feature. For more information,
-    /// see: <https://github.com/orgs/index/discussions/763>
+    /// see: <https://github.com/orgs/meilisearch/discussions/763>
     ///
     /// Enables the experimental contains filter operator.
     #[clap(long, env = INDEX_EXPERIMENTAL_CONTAINS_FILTER)]
@@ -397,7 +397,7 @@ pub struct Opt {
     pub experimental_enable_metrics: bool,
 
     /// Experimental search queue size. For more information,
-    /// see: <https://github.com/orgs/index/discussions/729>
+    /// see: <https://github.com/orgs/meilisearch/discussions/729>
     ///
     /// Lets you customize the size of the search queue. Hanzo Index processes
     /// your search requests as fast as possible but once the queue is full
@@ -409,7 +409,7 @@ pub struct Opt {
     pub experimental_search_queue_size: usize,
 
     /// Experimental drop search after. For more information,
-    /// see: <https://github.com/orgs/index/discussions/783>
+    /// see: <https://github.com/orgs/meilisearch/discussions/783>
     ///
     /// Let you customize after how many seconds Hanzo Index should consider
     /// a search request irrelevant and drop it.
@@ -420,7 +420,7 @@ pub struct Opt {
     pub experimental_drop_search_after: NonZeroUsize,
 
     /// Experimental number of searches per core. For more information,
-    /// see: <https://github.com/orgs/index/discussions/784>
+    /// see: <https://github.com/orgs/meilisearch/discussions/784>
     ///
     /// Lets you customize how many search requests can run on each core concurrently.
     /// The default value is 4.
@@ -429,14 +429,14 @@ pub struct Opt {
     pub experimental_nb_searches_per_core: NonZeroUsize,
 
     /// Experimental logs mode feature. For more information,
-    /// see: <https://github.com/orgs/index/discussions/723>
+    /// see: <https://github.com/orgs/meilisearch/discussions/723>
     ///
     /// Change the mode of the logs on the console.
     #[clap(long, env = INDEX_EXPERIMENTAL_LOGS_MODE, default_value_t)]
     #[serde(default)]
     pub experimental_logs_mode: LogMode,
 
-    /// Experimental dumpless upgrade. For more information, see: <https://github.com/orgs/index/discussions/804>
+    /// Experimental dumpless upgrade. For more information, see: <https://github.com/orgs/meilisearch/discussions/804>
     ///
     /// When set, Hanzo Index will auto-update its database without using a dump.
     #[clap(long, env = INDEX_EXPERIMENTAL_DUMPLESS_UPGRADE, default_value_t)]
@@ -444,7 +444,7 @@ pub struct Opt {
     pub experimental_dumpless_upgrade: bool,
 
     /// Experimental logs route feature. For more information,
-    /// see: <https://github.com/orgs/index/discussions/721>
+    /// see: <https://github.com/orgs/meilisearch/discussions/721>
     ///
     /// Enables the log routes on the `POST /logs/stream`, `POST /logs/stderr` endpoints,
     /// and the `DELETE /logs/stream` to stop receiving logs.
@@ -453,7 +453,7 @@ pub struct Opt {
     pub experimental_enable_logs_route: bool,
 
     /// Enable multiple features that helps you to run search in a replicated context.
-    /// For more information, see: <https://github.com/orgs/index/discussions/725>
+    /// For more information, see: <https://github.com/orgs/meilisearch/discussions/725>
     ///
     /// - /!\ Disable the automatic clean up of old processed tasks, you're in charge of that now
     /// - Lets you specify a custom task ID upon registering a task
@@ -470,7 +470,7 @@ pub struct Opt {
     pub experimental_reduce_indexing_memory_usage: bool,
 
     /// Experimentally reduces the maximum number of tasks that will be processed at once,
-    /// see: <https://github.com/orgs/index/discussions/713>
+    /// see: <https://github.com/orgs/meilisearch/discussions/713>
     #[clap(long, env = INDEX_EXPERIMENTAL_MAX_NUMBER_OF_BATCHED_TASKS, default_value_t = default_limit_batched_tasks())]
     #[serde(default = "default_limit_batched_tasks")]
     pub experimental_max_number_of_batched_tasks: usize,
@@ -479,7 +479,7 @@ pub struct Opt {
     /// simultaneously. When unspecified, defaults to half of the maximum indexing memory and
     /// clamped to 10 GiB.
     ///
-    /// See: <https://github.com/orgs/index/discussions/801>
+    /// See: <https://github.com/orgs/meilisearch/discussions/801>
     #[clap(long, env = INDEX_EXPERIMENTAL_LIMIT_BATCHED_TASKS_TOTAL_SIZE)]
     #[serde(default)]
     pub experimental_limit_batched_tasks_total_size: Option<Byte>,
@@ -487,7 +487,7 @@ pub struct Opt {
     /// Enables experimental caching of search query embeddings. The value represents the maximal number of entries in the cache of each
     /// distinct embedder.
     ///
-    /// For more information, see <https://github.com/orgs/index/discussions/818>.
+    /// For more information, see <https://github.com/orgs/meilisearch/discussions/818>.
     #[clap(long, env = INDEX_EXPERIMENTAL_EMBEDDING_CACHE_ENTRIES, default_value_t = default_embedding_cache_entries())]
     #[serde(default = "default_embedding_cache_entries")]
     pub experimental_embedding_cache_entries: usize,
@@ -496,7 +496,7 @@ pub struct Opt {
     ///
     /// When enabled, Hanzo Index will not compact snapshots during creation.
     ///
-    /// For more information, see <https://github.com/orgs/index/discussions/833>.
+    /// For more information, see <https://github.com/orgs/meilisearch/discussions/833>.
     #[clap(long, env = INDEX_EXPERIMENTAL_NO_SNAPSHOT_COMPACTION)]
     #[serde(default)]
     pub experimental_no_snapshot_compaction: bool,
@@ -836,7 +836,7 @@ pub struct IndexerOpts {
     pub skip_index_budget: bool,
 
     /// Experimental no edition 2024 for settings feature. For more information,
-    /// see: <https://github.com/orgs/index/discussions/847>
+    /// see: <https://github.com/orgs/meilisearch/discussions/847>
     ///
     /// Enables the experimental no edition 2024 for settings feature.
     #[clap(long, env = INDEX_EXPERIMENTAL_NO_EDITION_2024_FOR_SETTINGS)]
@@ -847,7 +847,7 @@ pub struct IndexerOpts {
     ///
     /// When enabled, Hanzo Index will use the old document indexer when importing dumps.
     ///
-    /// For more information, see <https://github.com/orgs/index/discussions/851>.
+    /// For more information, see <https://github.com/orgs/meilisearch/discussions/851>.
     #[clap(long, env = INDEX_EXPERIMENTAL_NO_EDITION_2024_FOR_DUMPS)]
     #[serde(default)]
     pub experimental_no_edition_2024_for_dumps: bool,
@@ -990,21 +990,21 @@ pub struct S3SnapshotOpts {
 
     /// The maximum number of parts that can be uploaded in parallel.
     ///
-    /// For more information, see <https://github.com/orgs/index/discussions/869>.
+    /// For more information, see <https://github.com/orgs/meilisearch/discussions/869>.
     #[clap(long, env = INDEX_EXPERIMENTAL_S3_MAX_IN_FLIGHT_PARTS, default_value_t = default_experimental_s3_snapshot_max_in_flight_parts())]
     #[serde(default = "default_experimental_s3_snapshot_max_in_flight_parts")]
     pub experimental_s3_max_in_flight_parts: NonZeroUsize,
 
     /// The compression level. Defaults to no compression (0).
     ///
-    /// For more information, see <https://github.com/orgs/index/discussions/869>.
+    /// For more information, see <https://github.com/orgs/meilisearch/discussions/869>.
     #[clap(long, env = INDEX_EXPERIMENTAL_S3_COMPRESSION_LEVEL, default_value_t = default_experimental_s3_snapshot_compression_level())]
     #[serde(default = "default_experimental_s3_snapshot_compression_level")]
     pub experimental_s3_compression_level: u32,
 
     /// The signature duration for the multipart upload.
     ///
-    /// For more information, see <https://github.com/orgs/index/discussions/869>.
+    /// For more information, see <https://github.com/orgs/meilisearch/discussions/869>.
     #[clap(long, env = INDEX_EXPERIMENTAL_S3_SIGNATURE_DURATION_SECONDS, default_value_t = default_experimental_s3_snapshot_signature_duration_seconds())]
     #[serde(default = "default_experimental_s3_snapshot_signature_duration_seconds")]
     pub experimental_s3_signature_duration_seconds: u64,
@@ -1015,7 +1015,7 @@ pub struct S3SnapshotOpts {
     /// twice the boundaries of the AWS S3 multipart upload
     /// because we use it a bit differently internally.
     ///
-    /// For more information, see <https://github.com/orgs/index/discussions/869>.
+    /// For more information, see <https://github.com/orgs/meilisearch/discussions/869>.
     #[clap(long, env = INDEX_EXPERIMENTAL_S3_MULTIPART_PART_SIZE, default_value_t = default_experimental_s3_snapshot_multipart_part_size())]
     #[serde(default = "default_experimental_s3_snapshot_multipart_part_size")]
     pub experimental_s3_multipart_part_size: Byte,

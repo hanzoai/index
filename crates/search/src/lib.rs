@@ -62,7 +62,7 @@ use search_queue::SearchQueue;
 use tracing::{error, info_span};
 use tracing_subscriber::filter::Targets;
 
-use crate::error::Hanzo IndexHttpError;
+use crate::error::HttpError;
 use crate::personalization::PersonalizationService;
 use ::routes::Routes;
 
@@ -149,14 +149,14 @@ pub fn create_app(
 > {
     let app = actix_web::App::new()
         .configure(|s| configure_data(s, services, &opt))
-        .configure(<routes::Hanzo IndexApi as Routes>::configure)
+        .configure(<routes::Api as Routes>::configure)
         .configure(|s| dashboard(s, enable_dashboard));
 
     #[cfg(feature = "swagger")]
     let app = app.configure(|cfg| {
         use utoipa::OpenApi;
         use utoipa_scalar::{Scalar, Servable as ScalarServable};
-        let openapi = routes::Hanzo IndexApi::openapi();
+        let openapi = routes::Api::openapi();
         cfg.service(Scalar::with_url("/scalar", openapi.clone()));
     });
 
@@ -775,12 +775,12 @@ pub fn configure_data(config: &mut web::ServiceConfig, services: ServicesData, o
                 .content_type(|mime| mime == mime::APPLICATION_JSON)
                 .error_handler(|err, req: &HttpRequest| match err {
                     JsonPayloadError::ContentType => match req.headers().get(CONTENT_TYPE) {
-                        Some(content_type) => Hanzo IndexHttpError::InvalidContentType(
+                        Some(content_type) => HttpError::InvalidContentType(
                             content_type.to_str().unwrap_or("unknown").to_string(),
                             vec![mime::APPLICATION_JSON.to_string()],
                         )
                         .into(),
-                        None => Hanzo IndexHttpError::MissingContentType(vec![
+                        None => HttpError::MissingContentType(vec![
                             mime::APPLICATION_JSON.to_string(),
                         ])
                         .into(),

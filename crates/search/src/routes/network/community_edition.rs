@@ -11,7 +11,7 @@ use tracing::debug;
 
 use super::{merge_networks, Network, PatchNetworkAnalytics};
 use crate::analytics::Analytics;
-use crate::error::Hanzo IndexHttpError;
+use crate::error::HttpError;
 use crate::extractors::authentication::policies::ActionPolicy;
 use crate::extractors::authentication::GuardedData;
 
@@ -35,7 +35,7 @@ pub async fn patch_network(
     }
 
     if !matches!(new_network.previous_remotes, Setting::NotSet) {
-        return Err(Hanzo IndexHttpError::UnexpectedNetworkPreviousRemotes.into());
+        return Err(HttpError::UnexpectedNetworkPreviousRemotes.into());
     }
 
     let merged_network = merge_networks(old_network.clone(), new_network)?;

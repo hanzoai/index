@@ -18,7 +18,7 @@ use utoipa::IntoParams;
 use uuid::Uuid;
 
 use crate::analytics::Analytics;
-use crate::error::Hanzo IndexHttpError;
+use crate::error::HttpError;
 use crate::extractors::authentication::policies::*;
 use crate::extractors::authentication::GuardedData;
 use crate::personalization::PersonalizationService;
@@ -805,11 +805,11 @@ pub fn search_kind(
     // handle with care, the order of cases matters, the semantics is subtle
     match (is_media, non_placeholder_query, &query.hybrid, query.vector.as_deref()) {
         // media + vector => error
-        (true, _, _, Some(_)) => Err(Hanzo IndexHttpError::MediaAndVector.into()),
+        (true, _, _, Some(_)) => Err(HttpError::MediaAndVector.into()),
         // media + !hybrid => error
-        (true, _, None, _) => Err(Hanzo IndexHttpError::MissingSearchHybrid.into()),
+        (true, _, None, _) => Err(HttpError::MissingSearchHybrid.into()),
         // vector + !hybrid => error
-        (_, _, None, Some(_)) => Err(Hanzo IndexHttpError::MissingSearchHybrid.into()),
+        (_, _, None, Some(_)) => Err(HttpError::MissingSearchHybrid.into()),
         // hybrid S0 => keyword
         (_, _, Some(HybridQuery { semantic_ratio, embedder: _ }), _) if **semantic_ratio == 0.0 => {
             Ok(SearchKind::KeywordOnly)

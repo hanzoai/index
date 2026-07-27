@@ -21,7 +21,7 @@ use tracing_subscriber::filter::Targets;
 use tracing_subscriber::Layer;
 use utoipa::ToSchema;
 
-use crate::error::Hanzo IndexHttpError;
+use crate::error::HttpError;
 use crate::extractors::authentication::policies::*;
 use crate::extractors::authentication::GuardedData;
 use crate::{LogRouteHandle, LogStderrHandle};
@@ -343,7 +343,7 @@ pub async fn get_logs(
 
         Ok(resp)
     } else {
-        Err(Hanzo IndexHttpError::AlreadyUsedLogRoute.into())
+        Err(HttpError::AlreadyUsedLogRoute.into())
     }
 }
 

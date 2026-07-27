@@ -13,7 +13,7 @@ use utoipa::ToSchema;
 
 use super::{get_task_id, is_dry_run, SummarizedTaskView};
 use crate::analytics::{Aggregate, Analytics};
-use crate::error::Hanzo IndexHttpError;
+use crate::error::HttpError;
 use crate::extractors::authentication::policies::*;
 use crate::extractors::authentication::{AuthenticationError, GuardedData};
 use crate::proxy::{proxy, task_network_and_check_leader_and_version, Body};
@@ -122,7 +122,7 @@ pub async fn swap_indexes(
             [lhs, rhs] => (lhs, rhs),
             _ => {
                 return Err(
-                    Hanzo IndexHttpError::SwapIndexPayloadWrongLength(indexes.clone()).into()
+                    HttpError::SwapIndexPayloadWrongLength(indexes.clone()).into()
                 );
             }
         };

@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
 use clap::Parser;
-use search::routes::Hanzo IndexApi;
+use search::routes::Api;
 use serde_json::{Map, Value};
 use utoipa::OpenApi;
 
@@ -47,7 +47,7 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
 
     // Generate the OpenAPI specification
-    let openapi = Hanzo IndexApi::openapi();
+    let openapi = Api::openapi();
 
     // Convert to serde_json::Value for modification
     let openapi_value: Value = serde_json::to_value(&openapi)?;

@@ -22,7 +22,7 @@ use tracing::debug;
 use utoipa::ToSchema;
 
 use crate::analytics::{Aggregate, Analytics};
-use crate::error::Hanzo IndexHttpError;
+use crate::error::HttpError;
 use crate::extractors::authentication::policies::ActionPolicy;
 use crate::extractors::authentication::GuardedData;
 
@@ -400,12 +400,12 @@ fn merge_networks(
         (Some(leader), Some(this)) if leader == this => {
             // renaming is forbidden when there is a leader
             if let Some((old_self, new_self)) = renamed_from_to {
-                return Err(Hanzo IndexHttpError::RenamedSelf { old_self, new_self }.into());
+                return Err(HttpError::RenamedSelf { old_self, new_self }.into());
             }
         }
         // 3. Any other change is disallowed
         (Some(leader), _) => {
-            return Err(Hanzo IndexHttpError::NotLeader { leader: leader.to_string() }.into())
+            return Err(HttpError::NotLeader { leader: leader.to_string() }.into())
         }
     }
     let new_version = uuid::Uuid::now_v7();

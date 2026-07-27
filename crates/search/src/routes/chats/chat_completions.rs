@@ -50,7 +50,7 @@ use super::{
     INDEX_SEARCH_PROGRESS_NAME, INDEX_SEARCH_SOURCES_NAME,
 };
 use crate::analytics::Analytics;
-use crate::error::Hanzo IndexHttpError;
+use crate::error::HttpError;
 use crate::extractors::authentication::policies::ActionPolicy;
 use crate::extractors::authentication::{extract_token_from_request, GuardedData, Policy as _};
 use crate::metrics::{
@@ -391,7 +391,7 @@ async fn process_search_request(
     let output = tokio::task::spawn_blocking(move || -> Result<_, ResponseError> {
         let deadline = index_cloned
             .search_deadline(&rtxn)
-            .map_err(|e| Hanzo IndexHttpError::from_milli(e, Some(index_uid.clone())))?;
+            .map_err(|e| HttpError::from_milli(e, Some(index_uid.clone())))?;
 
         let (search, _is_finite_pagination, _max_total_hits, _offset) = prepare_search(
             &index_cloned,
@@ -406,7 +406,7 @@ async fn process_search_request(
 
         match search_from_kind(index_uid, search_kind, search) {
             Ok((search_results, _)) => Ok((rtxn, Ok(search_results))),
-            Err(Hanzo IndexHttpError::Milli {
+            Err(HttpError::Milli {
                 error: search_types::milli::Error::UserError(user_error),
                 index_name: _,
             }) => Ok((rtxn, Err(user_error))),

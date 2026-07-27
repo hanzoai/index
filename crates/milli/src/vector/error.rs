@@ -60,7 +60,7 @@ pub enum EmbedErrorKind {
     ModelForward(candle_core::Error),
     #[error("attempt to embed the following text in a configuration where embeddings must be user provided:\n  - `{0}`")]
     ManualEmbed(String),
-    #[error("model not found. Meilisearch will not automatically download models from the Ollama library, please pull the model manually{}", option_info(.0.as_deref(), "server replied with "))]
+    #[error("model not found. Hanzo Index will not automatically download models from the Ollama library, please pull the model manually{}", option_info(.0.as_deref(), "server replied with "))]
     OllamaModelNotFoundError(Option<String>),
     #[error("error deserializing the response body as JSON:\n  - {0}")]
     RestResponseDeserialization(http_client::ureq::Error),
@@ -74,7 +74,7 @@ pub enum EmbedErrorKind {
     server_reply=option_info(.0.as_deref(), "server replied with "),
     hint=match *.1 {
         ConfigurationSource::User => "\n  - Hint: Check the `apiKey` parameter in the embedder configuration",
-        ConfigurationSource::OpenAi => "\n  - Hint: Check the `apiKey` parameter in the embedder configuration, and the `MEILI_OPENAI_API_KEY` and `OPENAI_API_KEY` environment variables",
+        ConfigurationSource::OpenAi => "\n  - Hint: Check the `apiKey` parameter in the embedder configuration, and the `INDEX_OPENAI_API_KEY` and `OPENAI_API_KEY` environment variables",
         ConfigurationSource::Ollama => "\n  - Hint: Check the `apiKey` parameter in the embedder configuration"
     })]
     RestUnauthorized(Option<String>, ConfigurationSource),
@@ -605,7 +605,7 @@ pub enum NewEmbedderErrorKind {
     CompositeTestEmbeddingFailed { inner: EmbedError, failing_embedder: &'static str },
     #[error("error while generating test embeddings.\n  - the number of generated embeddings differs.\n  - {search_count} embeddings for the search time embedder.\n  - {index_count} embeddings for the indexing time embedder.")]
     CompositeEmbeddingCountMismatch { search_count: usize, index_count: usize },
-    #[error("error while generating test embeddings.\n  - the embeddings produced at search time and indexing time are not similar enough.\n  - angular distance {distance:.2}\n  - Meilisearch requires a maximum distance of {MAX_COMPOSITE_DISTANCE}.\n  - Note: check that both embedders produce similar embeddings.{hint}")]
+    #[error("error while generating test embeddings.\n  - the embeddings produced at search time and indexing time are not similar enough.\n  - angular distance {distance:.2}\n  - Hanzo Index requires a maximum distance of {MAX_COMPOSITE_DISTANCE}.\n  - Note: check that both embedders produce similar embeddings.{hint}")]
     CompositeEmbeddingValueMismatch { distance: f32, hint: CompositeEmbedderContainsHuggingFace },
     #[error("cannot infer `dimensions` for an embedder using `indexingFragments`.\n  - Note: Specify `dimensions` explicitly or don't use `indexingFragments`.")]
     RestCannotInferDimensionsForFragment,

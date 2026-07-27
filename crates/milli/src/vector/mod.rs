@@ -23,7 +23,7 @@ pub use store::{QuantizationStatus, VectorStore, VectorStoreBackend, VectorStore
 
 pub const REQUEST_PARALLELISM: usize = 40;
 
-/// Whether CUDA is supported in this version of Meilisearch.
+/// Whether CUDA is supported in this version of Hanzo Index.
 pub const fn is_cuda_enabled() -> bool {
     cfg!(feature = "cuda")
 }

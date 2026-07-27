@@ -456,7 +456,7 @@ mod tests {
         // This missing level in the facet DBs would make the incremental indexer
         // (and other search algorithms) crash.
         //
-        // https://github.com/meilisearch/meilisearch/issues/3165
+        // https://github.com/hanzoai/index/issues/3165
         let index = TempIndex::new_with_map_size(4096 * 1000 * 100);
 
         index

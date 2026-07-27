@@ -1,6 +1,6 @@
 # Compile
 # rust:1.91 — rust-toolchain.toml pins `channel = "1.91.1"`. On the 1.89 image
-# the cargo step died in 13 seconds, far too fast for a Meilisearch release
+# the cargo step died in 13 seconds, far too fast for a Hanzo Index release
 # build: rustup has to fetch the pinned toolchain before compiling and that is
 # where it stops. Third instance of this shape today — golang:1.23 vs go 1.26.4
 # in hanzoai/search-fts5, node:20 vs pnpm@11 in hanzoai/world. The base image
@@ -31,12 +31,12 @@ RUN     set -eux; \
 FROM    ghcr.io/hanzoai/alpine:3.22
 LABEL   org.opencontainers.image.source="https://github.com/hanzoai/search"
 LABEL   org.opencontainers.image.title="Hanzo Search"
-LABEL   org.opencontainers.image.description="AI-powered search engine built on Meilisearch"
+LABEL   org.opencontainers.image.description="AI-powered search engine built on Hanzo Index"
 LABEL   org.opencontainers.image.vendor="Hanzo AI Inc."
 LABEL   org.opencontainers.image.url="https://hanzo.ai"
 
-ENV     MEILI_HTTP_ADDR 0.0.0.0:7700
-ENV     MEILI_SERVER_PROVIDER docker
+ENV     INDEX_HTTP_ADDR 0.0.0.0:7700
+ENV     INDEX_SERVER_PROVIDER docker
 
 RUN     apk add -q --no-cache libgcc tini curl
 
@@ -46,10 +46,10 @@ RUN     apk add -q --no-cache libgcc tini curl
 COPY    --from=compiler /target/release/search /bin/search
 COPY    --from=compiler /target/release/searchtool /bin/searchtool
 
-# This directory should hold all the data related to meilisearch so we're going
+# This directory should hold all the data related to index so we're going
 # to move our PWD in there.
-# We don't want to put the meilisearch binary
-WORKDIR /meili_data
+# We don't want to put the index binary
+WORKDIR /index_data
 
 
 EXPOSE  7700/tcp

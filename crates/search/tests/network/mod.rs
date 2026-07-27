@@ -12,7 +12,7 @@ async fn error_network_not_enabled() {
     search_snap::snapshot!(code, @"400 Bad Request");
     search_snap::snapshot!(search_snap::json_string!(response), @r###"
     {
-      "message": "Using the /network route requires enabling the `network` experimental feature. See https://github.com/orgs/meilisearch/discussions/805",
+      "message": "Using the /network route requires enabling the `network` experimental feature. See https://github.com/orgs/index/discussions/805",
       "code": "feature_not_enabled",
       "type": "invalid_request",
       "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
@@ -24,7 +24,7 @@ async fn error_network_not_enabled() {
     search_snap::snapshot!(code, @"400 Bad Request");
     search_snap::snapshot!(search_snap::json_string!(response), @r###"
     {
-      "message": "Using the /network route requires enabling the `network` experimental feature. See https://github.com/orgs/meilisearch/discussions/805",
+      "message": "Using the /network route requires enabling the `network` experimental feature. See https://github.com/orgs/index/discussions/805",
       "code": "feature_not_enabled",
       "type": "invalid_request",
       "link": "https://docs.hanzo.ai/errors#feature_not_enabled"

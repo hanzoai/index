@@ -378,10 +378,10 @@ pub struct AuthParam {
     key: String,
 }
 
-/// Represents an API key used for authenticating requests to Meilisearch.
+/// Represents an API key used for authenticating requests to Hanzo Index.
 /// Each key has specific permissions defined by its actions and can be scoped
 /// to particular indexes. Keys provide fine-grained access control for your
-/// Meilisearch instance.
+/// index instance.
 #[derive(Debug, Serialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub(super) struct KeyView {
@@ -394,7 +394,7 @@ pub(super) struct KeyView {
     /// used. This is optional and can be `null`.
     description: Option<String>,
     /// The actual API key string to use in the `Authorization: Bearer <key>`
-    /// header when making requests to Meilisearch. Keep this value secret and
+    /// header when making requests to Hanzo Index. Keep this value secret and
     /// never expose it in client-side code.
     key: String,
     /// The unique identifier (UUID) for this API key. Use this to update or
@@ -415,13 +415,13 @@ pub(super) struct KeyView {
     #[serde(serialize_with = "time::serde::rfc3339::option::serialize")]
     expires_at: Option<OffsetDateTime>,
     /// The date and time when this API key was created, formatted as an
-    /// RFC 3339 date-time string. This is automatically set by Meilisearch
+    /// RFC 3339 date-time string. This is automatically set by Hanzo Index
     /// and cannot be modified.
     #[schema(read_only)]
     #[serde(serialize_with = "time::serde::rfc3339::serialize")]
     created_at: OffsetDateTime,
     /// The date and time when this API key was last modified, formatted as an
-    /// RFC 3339 date-time string. This is automatically updated by Meilisearch
+    /// RFC 3339 date-time string. This is automatically updated by Hanzo Index
     /// when the key's name or description changes.
     #[schema(read_only)]
     #[serde(serialize_with = "time::serde::rfc3339::serialize")]

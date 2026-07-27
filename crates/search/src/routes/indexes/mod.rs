@@ -212,7 +212,7 @@ impl Aggregate for IndexCreatedAggregate {
 ///
 /// Create a new index with an optional [primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key).
 ///
-/// If no primary key is provided, Meilisearch will [infer one](https://docs.hanzo.ai/index/learn/getting_started/primary_key#meilisearch-guesses-your-primary-key) from the first batch of documents.
+/// If no primary key is provided, Hanzo Index will [infer one](https://docs.hanzo.ai/index/learn/getting_started/primary_key#index-guesses-your-primary-key) from the first batch of documents.
 #[routes::path(
     security(("Bearer" = ["indexes.create", "indexes.*", "*"])),
     request_body = IndexCreateRequest,

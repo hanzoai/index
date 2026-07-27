@@ -73,7 +73,7 @@ pub struct EmbeddingSettings {
 
     /// API key sent to the embedder.
     ///
-    /// - If not set for source `openAi`, the key is read from the `OPENAI_API_KEY` then `MEILI_OPENAI_API_KEY` environment variables.
+    /// - If not set for source `openAi`, the key is read from the `OPENAI_API_KEY` then `INDEX_OPENAI_API_KEY` environment variables.
     /// - If not set for other sources, no bearer token is sent.
     /// - This setting is partially hidden when returned by the settings
     /// - 🌱 Changing the value of this parameter never regenerates embeddings
@@ -132,7 +132,7 @@ pub struct EmbeddingSettings {
     /// - 🏗️ When modified for `ollama` and `rest`, embeddings are always regenerated
     /// - If targetting URL resolving to a non-global IP (such as `localhost`), make sure that
     ///   `--experimental-allowed-ip-networks` allows it. For details on how use this parameter,
-    ///   refer to [this documentation](https://docs.hanzo.ai/index/learn/self_hosted/configure_meilisearch_at_launch#allow-requests-to-private-networks).
+    ///   refer to [this documentation](https://docs.hanzo.ai/index/learn/self_hosted/configure_index_at_launch#allow-requests-to-private-networks).
     #[serde(default, skip_serializing_if = "Setting::is_not_set")]
     #[deserr(default)]
     #[schema(value_type = Option<String>, example = json!("http://localhost:11434/api/embeddings"))]
@@ -213,7 +213,7 @@ pub struct EmbeddingSettings {
 
     /// Affine transform (mean, sigma) applied to the semantic score to make it more comparable with the ranking score.
     ///
-    /// See also [this article](https://www.meilisearch.com/blog/fixing-hybrid-search#making-the-scores-comparable).
+    /// See also [this article](https://www.hanzo.ai/blog/fixing-hybrid-search#making-the-scores-comparable).
     ///
     /// - Available for all sources.
     /// - 🌱 Changing the value of this parameter never regenerates embeddings
@@ -278,7 +278,7 @@ pub struct SubEmbeddingSettings {
 
     /// API key sent to the embedder.
     ///
-    /// - If not set for source `openAi`, the key is read from the `OPENAI_API_KEY` then `MEILI_OPENAI_API_KEY` environment variables.
+    /// - If not set for source `openAi`, the key is read from the `OPENAI_API_KEY` then `INDEX_OPENAI_API_KEY` environment variables.
     /// - If not set for other sources, no bearer token is sent.
     /// - This setting is partially hidden when returned by the settings
     /// - 🌱 Changing the value of this parameter never regenerates embeddings
@@ -329,7 +329,7 @@ pub struct SubEmbeddingSettings {
     /// - 🏗️ When modified for `ollama` and `rest`, embeddings are always regenerated
     /// - If targetting URL resolving to a non-global IP (such as `localhost`), make sure that
     ///   `--experimental-allowed-ip-networks` allows it. For details on how use this parameter,
-    ///   refer to [this documentation](https://docs.hanzo.ai/index/learn/self_hosted/configure_meilisearch_at_launch#allow-requests-to-private-networks).
+    ///   refer to [this documentation](https://docs.hanzo.ai/index/learn/self_hosted/configure_index_at_launch#allow-requests-to-private-networks).
     #[serde(default, skip_serializing_if = "Setting::is_not_set")]
     #[deserr(default)]
     #[schema(value_type = Option<String>, example = json!("http://localhost:11434/api/embeddings"))]

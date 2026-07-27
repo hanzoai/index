@@ -159,7 +159,7 @@ async fn experimental_feature_metrics() {
     search_snap::snapshot!(code, @"400 Bad Request");
     search_snap::snapshot!(search_snap::json_string!(response), @r###"
     {
-      "message": "Getting metrics requires enabling the `metrics` experimental feature. See https://github.com/meilisearch/product/discussions/625",
+      "message": "Getting metrics requires enabling the `metrics` experimental feature. See https://github.com/index/product/discussions/625",
       "code": "feature_not_enabled",
       "type": "invalid_request",
       "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
@@ -254,7 +254,7 @@ async fn search_with_personalization_without_enabling_the_feature() {
     search_snap::snapshot!(code, @"400 Bad Request");
     search_snap::snapshot!(search_snap::json_string!(response), @r###"
     {
-      "message": "reranking search results requires enabling the `personalization` experimental feature. See https://github.com/orgs/meilisearch/discussions/866",
+      "message": "reranking search results requires enabling the `personalization` experimental feature. See https://github.com/orgs/index/discussions/866",
       "code": "feature_not_enabled",
       "type": "invalid_request",
       "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
@@ -301,7 +301,7 @@ async fn multi_search_with_personalization_without_enabling_the_feature() {
     search_snap::snapshot!(code, @"400 Bad Request");
     search_snap::snapshot!(search_snap::json_string!(response), @r###"
     {
-      "message": "Inside `.queries[0]`: reranking search results requires enabling the `personalization` experimental feature. See https://github.com/orgs/meilisearch/discussions/866",
+      "message": "Inside `.queries[0]`: reranking search results requires enabling the `personalization` experimental feature. See https://github.com/orgs/index/discussions/866",
       "code": "feature_not_enabled",
       "type": "invalid_request",
       "link": "https://docs.hanzo.ai/errors#feature_not_enabled"

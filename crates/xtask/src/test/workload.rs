@@ -10,7 +10,7 @@ use crate::common::assets::{fetch_assets, Asset};
 use crate::common::client::Client;
 use crate::common::command::{run_commands, Command};
 use crate::common::instance::Binary;
-use crate::common::process::{self, delete_db, kill_meili};
+use crate::common::process::{self, delete_db, kill_index};
 use crate::common::workload::Workload;
 use crate::test::TestArgs;
 
@@ -83,7 +83,7 @@ impl TestWorkload {
         mut self,
         args: &TestArgs,
         assets_client: &Client,
-        meili_client: &Arc<Client>,
+        index_client: &Arc<Client>,
         asset_folder: &'static str,
     ) -> anyhow::Result<()> {
         // Group commands between upgrades
@@ -119,8 +119,8 @@ impl TestWorkload {
 
         // Run server
         delete_db().await;
-        let mut process = process::start_meili(
-            meili_client,
+        let mut process = process::start_index(
+            index_client,
             Some("masterKey"),
             &self.binary,
             &args.common.asset_folder,
@@ -136,7 +136,7 @@ impl TestWorkload {
                 CommandOrBinaryVec::Commands(commands) => {
                     let cloned: Vec<_> = commands.iter().map(|c| (*c).clone()).collect();
                     let responses = run_commands(
-                        meili_client,
+                        index_client,
                         &cloned,
                         first_command_index,
                         &assets,
@@ -162,11 +162,11 @@ impl TestWorkload {
                     }
                 }
                 CommandOrBinaryVec::Binary(binary) => {
-                    kill_meili(process).await;
+                    kill_index(process).await;
                     tracing::info!("☕️ waiting 5 seconds for the port to be available again");
                     tokio::time::sleep(std::time::Duration::from_secs(5)).await;
-                    process = process::start_meili(
-                        meili_client,
+                    process = process::start_index(
+                        index_client,
                         Some("masterKey"),
                         &binary,
                         &args.common.asset_folder,
@@ -181,7 +181,7 @@ impl TestWorkload {
         if return_responses {
             // Filter out the assets we added for the versions
             self.assets.retain(|_, asset| {
-                asset.local_location.as_ref().is_none_or(|a| !a.starts_with("meilisearch-"))
+                asset.local_location.as_ref().is_none_or(|a| !a.starts_with("index-"))
             });
 
             let workload = Workload::Test(self);

@@ -34,7 +34,7 @@ impl UpgradeIndex for CleanupFidBasedDatabases {
             }
         };
 
-        if matches!(std::env::var_os("MEILI_EXPERIMENTAL_DISABLE_FID_BASED_DATABASES_CLEANUP"), Some(x) if x != "false" && x != "0")
+        if matches!(std::env::var_os("INDEX_EXPERIMENTAL_DISABLE_FID_BASED_DATABASES_CLEANUP"), Some(x) if x != "false" && x != "0")
         {
             return Ok(false);
         }

@@ -72,11 +72,11 @@ impl Release {
         }
 
         let url = format!(
-            "https://api.github.com/repos/meilisearch/meilisearch/releases/tags/v{version}"
+            "https://api.github.com/repos/hanzoai/index/releases/tags/v{version}"
         );
 
         let client = reqwest::Client::builder()
-            .user_agent("Meilisearch bench xtask")
+            .user_agent("Hanzo Index bench xtask")
             .build()
             .context("failed to build reqwest client")?;
         let body = client.get(url).send().await?.text().await?;
@@ -111,10 +111,10 @@ impl Release {
         // We hardcode some values to speed up tests and avoid hitting Github
         // Also, versions prior to 1.15 don't have sha256 available anyway
         let sha256 = match local_filename.as_str() {
-            "meilisearch-1.12.0-macos-apple-silicon" => {
+            "index-1.12.0-macos-apple-silicon" => {
                 Some("3b384707a5df9edf66f9157f0ddb70dcd3ac84d4887149169cf93067d06717b7".into())
             }
-            "meilisearch-1.12.0-linux-amd64" => {
+            "index-1.12.0-linux-amd64" => {
                 Some("865a3fc222e3b3bd1f4b64346cb114b9669af691aae28d71fa68dbf39427abcf".into())
             }
             _ => match self.fetch_sha256().await {
@@ -127,7 +127,7 @@ impl Release {
         };
 
         let url = format!(
-        "https://github.com/meilisearch/meilisearch/releases/download/v{version}/{remote_filename}"
+        "https://github.com/hanzoai/index/releases/download/v{version}/{remote_filename}"
     );
 
         let asset = Asset {

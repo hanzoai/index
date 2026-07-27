@@ -496,7 +496,7 @@ pub(crate) mod test {
         insta::assert_snapshot!(network.remotes.get("ms-0").as_ref().unwrap().search_api_key.is_none(), @"true");
         insta::assert_snapshot!(network.remotes.get("ms-1").as_ref().unwrap().url, @"http://localhost:7701");
         insta::assert_snapshot!(network.remotes.get("ms-1").as_ref().unwrap().search_api_key.is_none(), @"true");
-        insta::assert_snapshot!(network.remotes.get("ms-2").as_ref().unwrap().url, @"http://ms-5679.example.meilisearch.io");
+        insta::assert_snapshot!(network.remotes.get("ms-2").as_ref().unwrap().url, @"http://ms-5679.example.index.io");
         insta::assert_snapshot!(network.remotes.get("ms-2").as_ref().unwrap().search_api_key.as_ref().unwrap(), @"foo");
     }
 
@@ -897,7 +897,7 @@ pub(crate) mod test {
     }
 
     #[test]
-    fn import_dump_v2_from_meilisearch_v0_22_0_issue_3435() {
+    fn import_dump_v2_from_index_v0_22_0_issue_3435() {
         let dump = File::open("tests/assets/v2-v0.22.0.dump").unwrap();
         let mut dump = DumpReader::open(dump).unwrap();
 

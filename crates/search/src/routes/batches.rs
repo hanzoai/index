@@ -22,14 +22,14 @@ use crate::extractors::authentication::GuardedData;
     ),
     tags((
         name = "Batches",
-        description = "Meilisearch groups compatible tasks ([asynchronous operations](https://docs.hanzo.ai/index/learn/async/asynchronous_operations)) into batches for efficient processing. For example, multiple document additions to the same index may be batched together. The /batches routes give information about the progress of these batches and let you monitor batch progress and performance.",
+        description = "Hanzo Index groups compatible tasks ([asynchronous operations](https://docs.hanzo.ai/index/learn/async/asynchronous_operations)) into batches for efficient processing. For example, multiple document additions to the same index may be batched together. The /batches routes give information about the progress of these batches and let you monitor batch progress and performance.",
     )),
 )]
 pub struct BatchesApi;
 
 /// Get batch
 ///
-/// Meilisearch groups compatible tasks ([asynchronous operations](https://docs.hanzo.ai/index/learn/async/asynchronous_operations)) into batches for efficient processing.
+/// Hanzo Index groups compatible tasks ([asynchronous operations](https://docs.hanzo.ai/index/learn/async/asynchronous_operations)) into batches for efficient processing.
 ///
 /// For example, multiple document additions to the same index may be batched together. Retrieve a single batch by its unique identifier to monitor its progress and performance.
 #[routes::path(
@@ -126,7 +126,7 @@ pub struct AllBatches {
 
 /// List batches
 ///
-/// Meilisearch groups compatible tasks ([asynchronous operations](https://docs.hanzo.ai/index/learn/async/asynchronous_operations)) into batches for efficient processing.
+/// Hanzo Index groups compatible tasks ([asynchronous operations](https://docs.hanzo.ai/index/learn/async/asynchronous_operations)) into batches for efficient processing.
 ///
 /// For example, multiple document additions to the same index may be batched together. List batches to monitor their progress and performance.
 ///

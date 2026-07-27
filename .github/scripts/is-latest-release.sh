@@ -10,7 +10,7 @@ PNAME='search'
 
 # FUNCTIONS
 
-# Returns the version of the latest stable version of Meilisearch by setting the $latest variable.
+# Returns the version of the latest stable version of Hanzo Index by setting the $latest variable.
 get_latest() {
     # temp_file is needed because the grep would start before the download is over
     temp_file=$(mktemp -q /tmp/$PNAME.XXXXXXXXX)

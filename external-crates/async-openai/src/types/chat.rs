@@ -1092,7 +1092,7 @@ mod tests {
     #[test]
     fn mistral_stream_delta_content_parts_deserialize() {
         // Mistral returns content as an array of typed parts instead of a plain string.
-        // See https://github.com/meilisearch/meilisearch/issues/6123
+        // See https://github.com/hanzoai/index/issues/6123
         let json = r#"{
           "id":"fbf4551b8c3444c7a2da5995673b6543",
           "object":"chat.completion.chunk",

@@ -1,5 +1,5 @@
 ---
-source: crates/meilisearch/tests/settings/vectors.rs
+source: crates/indexsearch/tests/settings/vectors.rs
 ---
 {
   "message": "`.embedders.test`: Field `pooling` unavailable for source `rest`.\n  - note: `pooling` is available for sources: `huggingFace`\n  - note: available fields for source `rest`: `source`, `apiKey`, `dimensions`, `documentTemplate`, `documentTemplateMaxBytes`, `url`, `request`, `response`, `headers`, `distribution`, `binaryQuantized`",

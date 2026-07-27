@@ -2,11 +2,11 @@
 
 ## What is a prototype?
 
-A prototype is an alternative version of Meilisearch (provided in a Docker image) containing a new feature or an improvement the engine team provides to the users.
+A prototype is an alternative version of Hanzo Index (provided in a Docker image) containing a new feature or an improvement the engine team provides to the users.
 
 ## Why providing a prototype?
 
-For some features or improvements we want to introduce in Meilisearch, we also have to make the users test them first before releasing them for many reasons:
+For some features or improvements we want to introduce in Hanzo Index, we also have to make the users test them first before releasing them for many reasons:
 - to ensure we solve the first use case defined during the discovery
 - to ensure the API does not have major issues of usages
 - identify/remove concrete technical roadblocks by working on an implementation as soon as possible, like performance issues
@@ -21,7 +21,7 @@ These make us iterate fast before stabilizing it for the current release.
 ### Release steps
 
 The prototype name must [follow this convention](https://semver.org/#spec-item-11): `prototype-v<version>-<name>.<iteration>` where
-- `version` is the version of Meilisearch on which the prototype is based.
+- `version` is the version of Hanzo Index on which the prototype is based.
 - `name` is the feature name formatted in `kebab-case`.
 - `iteration` is the iteration of the prototype, starting from `0`.
 
@@ -38,15 +38,15 @@ Steps to create a prototype:
 1. In your terminal, go to the last commit of your branch (the one you want to provide as a prototype).
 2. Use the `cargo xtask generate-prototype` command to generate the prototype name.
 3. Create the tag using the `git tag` command.
-4. Checkout the tag, run Meilisearch and check that it launches summary features a line: `Prototype: prototype-v<version>-<name>.<iteration>`.
+4. Checkout the tag, run Hanzo Index and check that it launches summary features a line: `Prototype: prototype-v<version>-<name>.<iteration>`.
 5. Checkout back to your branch: `git checkout -`.
 6. Push the tag: `git push origin prototype-v<version>-<name>.<iteration>`
-7. Check that the [Docker CI](https://github.com/meilisearch/meilisearch/actions/workflows/publish-docker-images.yml) is now running.
+7. Check that the [Docker CI](https://github.com/hanzoai/index/actions/workflows/publish-docker-images.yml) is now running.
 
-🐳 Once the CI has finished to run, a Docker image named `prototype-v<version>-<name>.<iteration>` will be available on [DockerHub](https://hub.docker.com/repository/docker/getmeili/meilisearch/general). People can use it with the following command: `docker run -p 7700:7700 -v $(pwd)/meili_data:/meili_data getmeili/meilisearch:prototype-v<version>-<name>.<iteration>`. <br>
-More information about [how to run Meilisearch with Docker](https://docs.meilisearch.com/learn/cookbooks/docker.html#download-meilisearch-with-docker).
+🐳 Once the CI has finished to run, a Docker image named `prototype-v<version>-<name>.<iteration>` will be available on [DockerHub](https://hub.docker.com/repository/docker/getindex/index/general). People can use it with the following command: `docker run -p 7700:7700 -v $(pwd)/index_data:/index_data getindex/index:prototype-v<version>-<name>.<iteration>`. <br>
+More information about [how to run Hanzo Index with Docker](https://docs.hanzo.ai/learn/cookbooks/docker.html#download-index-with-docker).
 
-⚠️ However, no binaries will be created. If the users do not use Docker, they can go to the `prototype-v<version>-<name>.<iteration>` tag in the Meilisearch repository and compile it from the source code.
+⚠️ However, no binaries will be created. If the users do not use Docker, they can go to the `prototype-v<version>-<name>.<iteration>` tag in the Hanzo Index repository and compile it from the source code.
 
 ### Communication
 
@@ -67,7 +67,7 @@ Here is an example of messages to share on GitHub:
 > How to run the prototype?
 > You need to start from a fresh new database (remove the previous used `data.ms`) and use the following Docker image:
 > ```bash
-> docker run -it --rm -p 7700:7700 -v $(pwd)/meili_data:/meili_data getmeili/meilisearch:prototype-v<version>-<name>.<iteration>
+> docker run -it --rm -p 7700:7700 -v $(pwd)/index_data:/index_data getindex/index:prototype-v<version>-<name>.<iteration>
 > ```
 >
 > You can use the feature this way:

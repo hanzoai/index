@@ -27,7 +27,7 @@ async fn error_feature() {
     snapshot!(code, @"400 Bad Request");
     snapshot!(json_string!(response), @r###"
     {
-      "message": "Performing a remote federated search requires enabling the `network` experimental feature. See https://github.com/orgs/meilisearch/discussions/805",
+      "message": "Performing a remote federated search requires enabling the `network` experimental feature. See https://github.com/orgs/index/discussions/805",
       "code": "feature_not_enabled",
       "type": "invalid_request",
       "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
@@ -49,7 +49,7 @@ async fn error_feature() {
     snapshot!(code, @"400 Bad Request");
     snapshot!(json_string!(response), @r###"
     {
-      "message": "Using `federationOptions.queryPosition` requires enabling the `network` experimental feature. See https://github.com/orgs/meilisearch/discussions/805",
+      "message": "Using `federationOptions.queryPosition` requires enabling the `network` experimental feature. See https://github.com/orgs/index/discussions/805",
       "code": "feature_not_enabled",
       "type": "invalid_request",
       "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
@@ -178,9 +178,9 @@ async fn remote_sharding() {
     let ms1 = Arc::new(ms1);
     let ms2 = Arc::new(ms2);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
-    let rms2 = LocalMeili::new(ms2.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
+    let rms2 = LocalIndex::new(ms2.clone()).await;
 
     // set network
     let network = json!({"remotes": {
@@ -497,9 +497,9 @@ async fn remote_sharding_auto_search() {
     let (task, _status_code) = index2.add_documents(json!(documents[3..5]), None).await;
     ms2.wait_task(task.uid()).await.succeeded();
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
-    let rms2 = LocalMeili::new(ms2.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
+    let rms2 = LocalIndex::new(ms2.clone()).await;
 
     // set network
     let network = json!({"remotes": {
@@ -809,8 +809,8 @@ async fn remote_search_filters_out_pinned_documents_excluded_by_filters() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
 
     let network = json!({"remotes": {
         "ms0": {
@@ -920,8 +920,8 @@ async fn remote_search_keeps_remote_pins() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
 
     let network = json!({"remotes": {
         "ms0": {
@@ -1011,8 +1011,8 @@ async fn remote_search_pagination_counts_pins_that_miss_query() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
 
     let network = json!({"remotes": {
         "ms0": {
@@ -1128,8 +1128,8 @@ async fn remote_search_pumps_pins_when_organic_results_run_out() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
 
     let network = json!({"remotes": {
         "ms0": {
@@ -1322,8 +1322,8 @@ async fn remote_search_distinct_deduplicates_pinned_documents() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
 
     let network = json!({"remotes": {
         "ms0": {
@@ -1457,8 +1457,8 @@ async fn remote_search_facet_distribution_counts_pins_that_miss_query() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
 
     let network = json!({"remotes": {
         "ms0": {
@@ -1599,9 +1599,9 @@ async fn remote_sharding_federated_auto_search() {
     let ms1 = Arc::new(ms1);
     let ms2 = Arc::new(ms2);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
-    let rms2 = LocalMeili::new(ms2.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
+    let rms2 = LocalIndex::new(ms2.clone()).await;
 
     // set network
     let network = json!({"remotes": {
@@ -1948,9 +1948,9 @@ async fn remote_sharding_retrieve_vectors() {
     let ms1 = Arc::new(ms1);
     let ms2 = Arc::new(ms2);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
-    let rms2 = LocalMeili::new(ms2.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
+    let rms2 = LocalIndex::new(ms2.clone()).await;
 
     // set network
     let network = json!({"remotes": {
@@ -2400,8 +2400,8 @@ async fn error_unregistered_remote() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
 
     // set network
     let network = json!({"remotes": {
@@ -2524,10 +2524,10 @@ async fn error_no_weighted_score() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::with_params(
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::with_params(
         ms1.clone(),
-        LocalMeiliParams { gobble_headers: true, ..Default::default() },
+        LocalIndexParams { gobble_headers: true, ..Default::default() },
     )
     .await;
 
@@ -2664,10 +2664,10 @@ async fn error_bad_response() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::with_params(
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::with_params(
         ms1.clone(),
-        LocalMeiliParams {
+        LocalIndexParams {
             override_response_body: Some("<html>Returning an HTML page</html>".into()),
             ..Default::default()
         },
@@ -2808,8 +2808,8 @@ async fn error_bad_request() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
 
     // set network
     let network = json!({"remotes": {
@@ -2946,8 +2946,8 @@ async fn error_bad_request_facets_by_index() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
 
     // set network
     let network = json!({"remotes": {
@@ -3097,8 +3097,8 @@ async fn error_bad_request_facets_by_index_facet() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
 
     // set network
     let network = json!({"remotes": {
@@ -3246,8 +3246,8 @@ async fn error_remote_does_not_answer() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
 
     // set network
     let network = json!({"remotes": {
@@ -3454,8 +3454,8 @@ async fn error_remote_404() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
 
     // set network
     let network = json!({"remotes": {
@@ -3659,8 +3659,8 @@ async fn error_remote_sharding_auth() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
 
     // set network
     let network = json!({"remotes": {
@@ -3825,8 +3825,8 @@ async fn remote_sharding_auth() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
 
     // set network
     let network = json!({"remotes": {
@@ -3986,10 +3986,10 @@ async fn error_remote_500() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::with_params(
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::with_params(
         ms1.clone(),
-        LocalMeiliParams { fails: FailurePolicy::Always, ..Default::default() },
+        LocalIndexParams { fails: FailurePolicy::Always, ..Default::default() },
     )
     .await;
 
@@ -4173,10 +4173,10 @@ async fn error_remote_500_once() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::with_params(
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::with_params(
         ms1.clone(),
-        LocalMeiliParams { fails: FailurePolicy::Once, ..Default::default() },
+        LocalIndexParams { fails: FailurePolicy::Once, ..Default::default() },
     )
     .await;
 
@@ -4219,7 +4219,7 @@ async fn error_remote_500_once() {
         ]
     });
 
-    // Meilisearch is tolerant to a single failure
+    // Hanzo Index is tolerant to a single failure
     let (response, _status_code) = ms0.multi_search(request.clone()).await;
     snapshot!(code, @"200 OK");
     snapshot!(json_string!(response, { ".processingTimeMs" => "[time]", ".requestUid" => "[uuid]" }), @r###"
@@ -4360,10 +4360,10 @@ async fn error_remote_timeout() {
     let ms0 = Arc::new(ms0);
     let ms1 = Arc::new(ms1);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::with_params(
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::with_params(
         ms1.clone(),
-        LocalMeiliParams { delay: Some(std::time::Duration::from_secs(31)), ..Default::default() },
+        LocalIndexParams { delay: Some(std::time::Duration::from_secs(31)), ..Default::default() },
     )
     .await;
 
@@ -4503,9 +4503,9 @@ pub enum FailurePolicy {
     Always,
 }
 
-/// Parameters to change the behavior of the [`LocalMeili`] server.
+/// Parameters to change the behavior of the [`LocalIndex`] server.
 #[derive(Default)]
-pub struct LocalMeiliParams {
+pub struct LocalIndexParams {
     /// delay the response by the specified duration
     pub delay: Option<std::time::Duration>,
     pub fails: FailurePolicy,
@@ -4515,16 +4515,16 @@ pub struct LocalMeiliParams {
 }
 
 /// A server that exploits [`MockServer`] to provide an URL for testing network and the network.
-pub struct LocalMeili {
+pub struct LocalIndex {
     mock_server: &'static MockServer,
 }
 
-impl LocalMeili {
+impl LocalIndex {
     pub async fn new(server: Arc<Server>) -> Self {
         Self::with_params(server, Default::default()).await
     }
 
-    pub async fn with_params(server: Arc<Server>, params: LocalMeiliParams) -> Self {
+    pub async fn with_params(server: Arc<Server>, params: LocalIndexParams) -> Self {
         let mock_server = Box::leak(Box::new(MockServer::start().await));
 
         // tokio won't let us execute asynchronous code from a sync function inside of an async test,
@@ -4633,9 +4633,9 @@ async fn remote_auto_sharding() {
     let ms1 = Arc::new(ms1);
     let ms2 = Arc::new(ms2);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
-    let rms2 = LocalMeili::new(ms2.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
+    let rms2 = LocalIndex::new(ms2.clone()).await;
 
     // set network
     let network = json!(
@@ -5097,9 +5097,9 @@ async fn remote_auto_sharding_distinct() {
     let ms1 = Arc::new(ms1);
     let ms2 = Arc::new(ms2);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
-    let rms2 = LocalMeili::new(ms2.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
+    let rms2 = LocalIndex::new(ms2.clone()).await;
 
     // set network
     let network = json!(
@@ -5441,9 +5441,9 @@ async fn remote_auto_sharding_auto_search() {
     let ms1 = Arc::new(ms1);
     let ms2 = Arc::new(ms2);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
-    let rms2 = LocalMeili::new(ms2.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
+    let rms2 = LocalIndex::new(ms2.clone()).await;
 
     // set network
     let network = json!(
@@ -5970,7 +5970,7 @@ async fn sharding_not_enterprise() {
     snapshot!(code, @"451 Unavailable For Legal Reasons");
     snapshot!(json_string!(response), @r###"
     {
-      "message": "Meilisearch Enterprise Edition is required to set `network.leader`",
+      "message": "Hanzo Index Enterprise Edition is required to set `network.leader`",
       "code": "requires_enterprise_edition",
       "type": "invalid_request",
       "link": "https://docs.hanzo.ai/errors#requires_enterprise_edition"
@@ -6002,9 +6002,9 @@ async fn remote_auto_sharding_with_custom_metadata() {
     let ms1 = Arc::new(ms1);
     let ms2 = Arc::new(ms2);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
-    let rms2 = LocalMeili::new(ms2.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
+    let rms2 = LocalIndex::new(ms2.clone()).await;
 
     // set network
     let network = json!({
@@ -6330,9 +6330,9 @@ async fn remote_auto_sharding_auto_facet_search() {
     let ms1 = Arc::new(ms1);
     let ms2 = Arc::new(ms2);
 
-    let rms0 = LocalMeili::new(ms0.clone()).await;
-    let rms1 = LocalMeili::new(ms1.clone()).await;
-    let rms2 = LocalMeili::new(ms2.clone()).await;
+    let rms0 = LocalIndex::new(ms0.clone()).await;
+    let rms1 = LocalIndex::new(ms1.clone()).await;
+    let rms2 = LocalIndex::new(ms2.clone()).await;
 
     // set network
     let network = json!(

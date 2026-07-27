@@ -34,9 +34,9 @@ use crate::Opt;
 )]
 pub struct ExportApi;
 
-/// Export to a remote Meilisearch
+/// Export to a remote Hanzo Index
 ///
-/// Trigger an export that sends documents and settings from this instance to a remote Meilisearch server. Configure the remote URL and optional API key in the request body.
+/// Trigger an export that sends documents and settings from this instance to a remote index server. Configure the remote URL and optional API key in the request body.
 #[routes::path(
     request_body = Export,
     security(("Bearer" = ["export", "*"])),
@@ -104,14 +104,14 @@ async fn export(
     Ok(HttpResponse::Ok().json(task))
 }
 
-/// Request body for exporting data to a remote Meilisearch instance
+/// Request body for exporting data to a remote index instance
 #[derive(Debug, Deserr, ToSchema, Serialize)]
 #[deserr(error = DeserrJsonError, rename_all = camelCase, deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 #[schema(rename_all = "camelCase")]
 pub struct Export {
-    /// URL of the destination Meilisearch instance
-    #[schema(required = false, value_type = Option<String>, example = json!("https://ms-1234.heaven.meilisearch.com"))]
+    /// URL of the destination index instance
+    #[schema(required = false, value_type = Option<String>, example = json!("https://ms-1234.heaven.hanzo.ai"))]
     #[serde(default)]
     #[deserr(default, error = DeserrJsonError<InvalidExportUrl>)]
     pub url: String,

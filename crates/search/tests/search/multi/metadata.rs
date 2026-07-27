@@ -16,7 +16,7 @@ async fn federated_search_with_metadata_header() {
             {"indexUid" : index.uid, "q": "batman"},
             {"indexUid": index.uid, "q": "batman returns"},
             ]}),
-            vec![("Meili-Include-Metadata", "true")],
+            vec![("Index-Include-Metadata", "true")],
         )
         .await;
     snapshot!(code, @"200 OK");

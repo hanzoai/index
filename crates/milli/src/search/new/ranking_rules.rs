@@ -61,7 +61,7 @@ pub trait RankingRule<'ctx, Query: RankingRuleQueryTrait> {
     /// Return the next bucket of this ranking rule, if doing so can be done without blocking
     ///
     /// Even if the time budget is exceeded, when getting the next bucket is a fast operation, this should return `true`
-    /// to allow Meilisearch to collect the results.
+    /// to allow Hanzo Index to collect the results.
     ///
     /// Default implementation conservatively returns that it would block.
     fn non_blocking_next_bucket(

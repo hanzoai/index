@@ -751,7 +751,7 @@ fn replace_documents_external_ids_and_soft_deletion_check() {
 
 #[test]
 fn bug_3021_first() {
-    // https://github.com/meilisearch/meilisearch/issues/3021
+    // https://github.com/hanzoai/index/issues/3021
     let mut index = TempIndex::new();
     index.index_documents_config.update_method = IndexDocumentsMethod::ReplaceDocuments;
 
@@ -882,7 +882,7 @@ fn simple_delete() {
 
 #[test]
 fn bug_3021_second() {
-    // https://github.com/meilisearch/meilisearch/issues/3021
+    // https://github.com/hanzoai/index/issues/3021
     let mut index = TempIndex::new();
     index.index_documents_config.update_method = IndexDocumentsMethod::UpdateDocuments;
 
@@ -994,7 +994,7 @@ fn bug_3021_second() {
 
 #[test]
 fn bug_3021_third() {
-    // https://github.com/meilisearch/meilisearch/issues/3021
+    // https://github.com/hanzoai/index/issues/3021
     let mut index = TempIndex::new();
     index.index_documents_config.update_method = IndexDocumentsMethod::UpdateDocuments;
 
@@ -1055,7 +1055,7 @@ fn bug_3021_third() {
 
 #[test]
 fn bug_3021_fourth() {
-    // https://github.com/meilisearch/meilisearch/issues/3021
+    // https://github.com/hanzoai/index/issues/3021
     let mut index = TempIndex::new();
     index.index_documents_config.update_method = IndexDocumentsMethod::UpdateDocuments;
 
@@ -1180,7 +1180,7 @@ fn bug_3021_fourth() {
 
 #[test]
 fn bug_3007() {
-    // https://github.com/meilisearch/meilisearch/issues/3007
+    // https://github.com/hanzoai/index/issues/3007
 
     use crate::error::{GeoError, UserError};
     let index = TempIndex::new();
@@ -1256,7 +1256,7 @@ fn unexpected_extra_fields_in_geo_field() {
 
 #[test]
 fn swapping_searchable_attributes() {
-    // See https://github.com/meilisearch/meilisearch/issues/4484
+    // See https://github.com/hanzoai/index/issues/4484
 
     let index = TempIndex::new();
 
@@ -1308,7 +1308,7 @@ fn swapping_searchable_attributes() {
 
 #[test]
 fn attribute_weights_after_swapping_searchable_attributes() {
-    // See https://github.com/meilisearch/meilisearch/issues/4484
+    // See https://github.com/hanzoai/index/issues/4484
 
     let index = TempIndex::new();
 

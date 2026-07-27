@@ -17,7 +17,7 @@ use uuid::Uuid;
 
 #[derive(Debug, thiserror::Error)]
 #[allow(clippy::large_enum_variant)]
-pub enum MeilisearchHttpError {
+pub enum Hanzo IndexHttpError {
     #[error("A Content-Type header is missing. Accepted values for the Content-Type header are: {}",
             .0.iter().map(|s| format!("`{}`", s)).collect::<Vec<_>>().join(", "))]
     MissingContentType(Vec<String>),
@@ -159,90 +159,90 @@ if_remote=if let Some(remote) = remote {
     DistinctInFederatedQueryAndFederation(usize),
 }
 
-impl MeilisearchHttpError {
+impl Hanzo IndexHttpError {
     pub(crate) fn from_milli(error: milli::Error, index_name: Option<String>) -> Self {
         Self::Milli { error, index_name }
     }
 }
 
-impl ErrorCode for MeilisearchHttpError {
+impl ErrorCode for Hanzo IndexHttpError {
     fn error_code(&self) -> Code {
         match self {
-            MeilisearchHttpError::MissingContentType(_) => Code::MissingContentType,
-            MeilisearchHttpError::AlreadyUsedLogRoute => Code::BadRequest,
-            MeilisearchHttpError::CsvDelimiterWithWrongContentType(_) => Code::InvalidContentType,
-            MeilisearchHttpError::MissingPayload(_) => Code::MissingPayload,
-            MeilisearchHttpError::InvalidContentType(_, _) => Code::InvalidContentType,
-            MeilisearchHttpError::DocumentNotFound(_) => Code::DocumentNotFound,
-            MeilisearchHttpError::EmptyFilter => Code::InvalidDocumentFilter,
-            MeilisearchHttpError::InvalidExpression(_, _) => Code::InvalidSearchFilter,
-            MeilisearchHttpError::PayloadTooLarge(_) => Code::PayloadTooLarge,
-            MeilisearchHttpError::TooManySearchRequests(_) => Code::TooManySearchRequests,
-            MeilisearchHttpError::SearchLimiterIsDown => Code::Internal,
-            MeilisearchHttpError::SwapIndexPayloadWrongLength(_) => Code::InvalidSwapIndexes,
-            MeilisearchHttpError::IndexUid(e) => e.error_code(),
-            MeilisearchHttpError::SerdeJson(_) => Code::Internal,
-            MeilisearchHttpError::HeedError(_) => Code::Internal,
-            MeilisearchHttpError::IndexScheduler(e) => e.error_code(),
-            MeilisearchHttpError::RemoteIndexScheduler { error, .. } => error.error_code(),
-            MeilisearchHttpError::Milli { error, .. } => error.error_code(),
-            MeilisearchHttpError::Payload(e) => e.error_code(),
-            MeilisearchHttpError::FileStore(_) => Code::Internal,
-            MeilisearchHttpError::DocumentFormat(e) => e.error_code(),
-            MeilisearchHttpError::Join(_) => Code::Internal,
-            MeilisearchHttpError::MissingSearchHybrid => Code::MissingSearchHybrid,
-            MeilisearchHttpError::MediaAndVector => Code::InvalidSearchMediaAndVector,
-            MeilisearchHttpError::FederationOptionsInNonFederatedRequest(_)
-            | MeilisearchHttpError::RemoteAndUseNetwork(_) => {
+            Hanzo IndexHttpError::MissingContentType(_) => Code::MissingContentType,
+            Hanzo IndexHttpError::AlreadyUsedLogRoute => Code::BadRequest,
+            Hanzo IndexHttpError::CsvDelimiterWithWrongContentType(_) => Code::InvalidContentType,
+            Hanzo IndexHttpError::MissingPayload(_) => Code::MissingPayload,
+            Hanzo IndexHttpError::InvalidContentType(_, _) => Code::InvalidContentType,
+            Hanzo IndexHttpError::DocumentNotFound(_) => Code::DocumentNotFound,
+            Hanzo IndexHttpError::EmptyFilter => Code::InvalidDocumentFilter,
+            Hanzo IndexHttpError::InvalidExpression(_, _) => Code::InvalidSearchFilter,
+            Hanzo IndexHttpError::PayloadTooLarge(_) => Code::PayloadTooLarge,
+            Hanzo IndexHttpError::TooManySearchRequests(_) => Code::TooManySearchRequests,
+            Hanzo IndexHttpError::SearchLimiterIsDown => Code::Internal,
+            Hanzo IndexHttpError::SwapIndexPayloadWrongLength(_) => Code::InvalidSwapIndexes,
+            Hanzo IndexHttpError::IndexUid(e) => e.error_code(),
+            Hanzo IndexHttpError::SerdeJson(_) => Code::Internal,
+            Hanzo IndexHttpError::HeedError(_) => Code::Internal,
+            Hanzo IndexHttpError::IndexScheduler(e) => e.error_code(),
+            Hanzo IndexHttpError::RemoteIndexScheduler { error, .. } => error.error_code(),
+            Hanzo IndexHttpError::Milli { error, .. } => error.error_code(),
+            Hanzo IndexHttpError::Payload(e) => e.error_code(),
+            Hanzo IndexHttpError::FileStore(_) => Code::Internal,
+            Hanzo IndexHttpError::DocumentFormat(e) => e.error_code(),
+            Hanzo IndexHttpError::Join(_) => Code::Internal,
+            Hanzo IndexHttpError::MissingSearchHybrid => Code::MissingSearchHybrid,
+            Hanzo IndexHttpError::MediaAndVector => Code::InvalidSearchMediaAndVector,
+            Hanzo IndexHttpError::FederationOptionsInNonFederatedRequest(_)
+            | Hanzo IndexHttpError::RemoteAndUseNetwork(_) => {
                 Code::InvalidMultiSearchFederationOptions
             }
-            MeilisearchHttpError::PaginationInFederatedQuery(_, _) => {
+            Hanzo IndexHttpError::PaginationInFederatedQuery(_, _) => {
                 Code::InvalidMultiSearchQueryPagination
             }
-            MeilisearchHttpError::DistinctInFederatedQueryAndFederation(..) => {
+            Hanzo IndexHttpError::DistinctInFederatedQueryAndFederation(..) => {
                 Code::InvalidMultiSearchDistinct
             }
-            MeilisearchHttpError::FacetsInFederatedQuery(..) => Code::InvalidMultiSearchQueryFacets,
-            MeilisearchHttpError::InconsistentFacetOrder { .. } => {
+            Hanzo IndexHttpError::FacetsInFederatedQuery(..) => Code::InvalidMultiSearchQueryFacets,
+            Hanzo IndexHttpError::InconsistentFacetOrder { .. } => {
                 Code::InvalidMultiSearchFacetOrder
             }
-            MeilisearchHttpError::PersonalizationInFederatedQuery(_) => {
+            Hanzo IndexHttpError::PersonalizationInFederatedQuery(_) => {
                 Code::InvalidMultiSearchQueryPersonalization
             }
-            MeilisearchHttpError::ShowPerformanceDetailsInFederatedQuery(_) => {
+            Hanzo IndexHttpError::ShowPerformanceDetailsInFederatedQuery(_) => {
                 Code::InvalidMultiSearchQueryShowPerformanceDetails
             }
-            MeilisearchHttpError::InconsistentOriginHeaders { .. }
-            | MeilisearchHttpError::InconsistentImportHeaders { .. }
-            | MeilisearchHttpError::InconsistentImportMetadataHeaders { .. }
-            | MeilisearchHttpError::InconsistentTaskNetworkHeaders { .. } => {
+            Hanzo IndexHttpError::InconsistentOriginHeaders { .. }
+            | Hanzo IndexHttpError::InconsistentImportHeaders { .. }
+            | Hanzo IndexHttpError::InconsistentImportMetadataHeaders { .. }
+            | Hanzo IndexHttpError::InconsistentTaskNetworkHeaders { .. } => {
                 Code::InconsistentDocumentChangeHeaders
             }
-            MeilisearchHttpError::InvalidHeaderValue { .. } => Code::InvalidHeaderValue,
-            MeilisearchHttpError::NotLeader { .. } => Code::NotLeader,
-            MeilisearchHttpError::RenamedSelf { .. } => Code::InvalidNetworkSelf,
-            MeilisearchHttpError::UnexpectedNetworkPreviousRemotes => {
+            Hanzo IndexHttpError::InvalidHeaderValue { .. } => Code::InvalidHeaderValue,
+            Hanzo IndexHttpError::NotLeader { .. } => Code::NotLeader,
+            Hanzo IndexHttpError::RenamedSelf { .. } => Code::InvalidNetworkSelf,
+            Hanzo IndexHttpError::UnexpectedNetworkPreviousRemotes => {
                 Code::UnexpectedNetworkPreviousRemotes
             }
-            MeilisearchHttpError::NetworkVersionTooOld { .. } => Code::NetworkVersionTooOld,
-            MeilisearchHttpError::UnprocessedNetworkTask { .. } => Code::UnprocessedNetworkTask,
+            Hanzo IndexHttpError::NetworkVersionTooOld { .. } => Code::NetworkVersionTooOld,
+            Hanzo IndexHttpError::UnprocessedNetworkTask { .. } => Code::UnprocessedNetworkTask,
         }
     }
 }
 
-impl From<MeilisearchHttpError> for aweb::Error {
-    fn from(other: MeilisearchHttpError) -> Self {
+impl From<Hanzo IndexHttpError> for aweb::Error {
+    fn from(other: Hanzo IndexHttpError) -> Self {
         aweb::Error::from(ResponseError::from(other))
     }
 }
 
-impl From<aweb::error::PayloadError> for MeilisearchHttpError {
+impl From<aweb::error::PayloadError> for Hanzo IndexHttpError {
     fn from(error: aweb::error::PayloadError) -> Self {
         match error {
-            aweb::error::PayloadError::Incomplete(_) => MeilisearchHttpError::Payload(
+            aweb::error::PayloadError::Incomplete(_) => Hanzo IndexHttpError::Payload(
                 PayloadError::Payload(ActixPayloadError::IncompleteError),
             ),
-            _ => MeilisearchHttpError::Payload(PayloadError::Payload(
+            _ => Hanzo IndexHttpError::Payload(PayloadError::Payload(
                 ActixPayloadError::OtherError(error),
             )),
         }
@@ -250,7 +250,7 @@ impl From<aweb::error::PayloadError> for MeilisearchHttpError {
 }
 
 impl<T: search_types::tasks::network::headers::GetHeader>
-    From<search_types::tasks::network::headers::DecodeError<T>> for MeilisearchHttpError
+    From<search_types::tasks::network::headers::DecodeError<T>> for Hanzo IndexHttpError
 {
     fn from(value: search_types::tasks::network::headers::DecodeError<T>) -> Self {
         Self::InvalidHeaderValue { header_name: value.header(), msg: value.to_string() }

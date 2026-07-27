@@ -374,7 +374,7 @@ fn test_task_queue_is_full() {
             false,
         )
         .unwrap_err();
-    snapshot!(result, @"Meilisearch cannot receive write operations because the limit of the task database has been reached. Please delete tasks to continue performing write operations.");
+    snapshot!(result, @"Hanzo Index cannot receive write operations because the limit of the task database has been reached. Please delete tasks to continue performing write operations.");
     // we won't be able to test this error in an integration test thus as a best effort test I still ensure the error return the expected error code
     snapshot!(format!("{:?}", result.error_code()), @"NoSpaceLeftOnDevice");
 
@@ -386,7 +386,7 @@ fn test_task_queue_is_full() {
             false,
         )
         .unwrap_err();
-    snapshot!(result, @"Meilisearch cannot receive write operations because the limit of the task database has been reached. Please delete tasks to continue performing write operations.");
+    snapshot!(result, @"Hanzo Index cannot receive write operations because the limit of the task database has been reached. Please delete tasks to continue performing write operations.");
     let result = index_scheduler
         .register(
             KindWithContent::TaskCancelation { query: S("test"), tasks: RoaringBitmap::new() },
@@ -394,7 +394,7 @@ fn test_task_queue_is_full() {
             false,
         )
         .unwrap_err();
-    snapshot!(result, @"Meilisearch cannot receive write operations because the limit of the task database has been reached. Please delete tasks to continue performing write operations.");
+    snapshot!(result, @"Hanzo Index cannot receive write operations because the limit of the task database has been reached. Please delete tasks to continue performing write operations.");
 
     // we won't be able to test this error in an integration test thus as a best effort test I still ensure the error return the expected error code
     snapshot!(format!("{:?}", result.error_code()), @"NoSpaceLeftOnDevice");
@@ -417,7 +417,7 @@ fn test_task_queue_is_full() {
             false,
         )
         .unwrap_err();
-    snapshot!(result, @"Meilisearch cannot receive write operations because the limit of the task database has been reached. Please delete tasks to continue performing write operations.");
+    snapshot!(result, @"Hanzo Index cannot receive write operations because the limit of the task database has been reached. Please delete tasks to continue performing write operations.");
 
     // And a task deletion that delete something should works
     index_scheduler

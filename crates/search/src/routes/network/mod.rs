@@ -22,7 +22,7 @@ use tracing::debug;
 use utoipa::ToSchema;
 
 use crate::analytics::{Aggregate, Analytics};
-use crate::error::MeilisearchHttpError;
+use crate::error::Hanzo IndexHttpError;
 use crate::extractors::authentication::policies::ActionPolicy;
 use crate::extractors::authentication::GuardedData;
 
@@ -44,7 +44,7 @@ use enterprise_edition as current_edition;
     tag = "Experimental features",
     tags((
         name = "Network",
-        description = "The `/network` route allows you to describe the topology of a network of Meilisearch instances.
+        description = "The `/network` route allows you to describe the topology of a network of index instances.
 
 This route is **synchronous**. This means that no task object will be returned, and any change to the network will be made available immediately.",
     )),
@@ -53,7 +53,7 @@ pub struct NetworkApi;
 
 /// Get network topology
 ///
-/// Return the list of Meilisearch instances currently known to this node (self and remotes).
+/// Return the list of index instances currently known to this node (self and remotes).
 #[routes::path(
     security(("Bearer" = ["network.get", "*"])),
     responses(
@@ -86,7 +86,7 @@ async fn get_network(
     Ok(HttpResponse::Ok().json(network))
 }
 
-/// Configuration for a remote Meilisearch instance
+/// Configuration for a remote index instance
 #[derive(Clone, Debug, Deserr, ToSchema, Serialize)]
 #[deserr(error = DeserrJsonError<InvalidNetworkRemotes>, rename_all = camelCase, deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
@@ -96,7 +96,7 @@ pub struct Remote {
     ///
     /// - If the URL of the remote instance is resolving to a non-global IP, make sure that
     ///   `--experimental-allowed-ip-networks` allows it. For details on how use this parameter,
-    ///   refer to [this documentation](https://docs.hanzo.ai/index/learn/self_hosted/configure_meilisearch_at_launch#allow-requests-to-private-networks).
+    ///   refer to [this documentation](https://docs.hanzo.ai/index/learn/self_hosted/configure_index_at_launch#allow-requests-to-private-networks).
     #[schema(value_type = Option<String>, example = "http://localhost:7700")]
     #[deserr(default, error = DeserrJsonError<InvalidNetworkUrl>)]
     #[serde(default)]
@@ -171,7 +171,7 @@ impl Shard {
     }
 }
 
-/// Network topology configuration for distributed Meilisearch
+/// Network topology configuration for distributed Hanzo Index
 #[derive(Clone, Debug, Deserr, ToSchema, Serialize)]
 #[deserr(error = DeserrJsonError, rename_all = camelCase, deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
@@ -207,7 +207,7 @@ pub struct Network {
     pub shards: Setting<BTreeMap<String, Option<Shard>>>,
     /// Previous shard configurations
     ///
-    /// This field should not be passed by end-users. It is used in internal communications between Meilisearch instances
+    /// This field should not be passed by end-users. It is used in internal communications between index instances
     #[schema(required = false, value_type = Option<BTreeMap<String, Shard>>, example = json!({
         "shard-00": {
             "remotes": ["ms-00", "ms-01"]
@@ -228,7 +228,7 @@ pub struct Network {
     pub leader: Setting<String>,
     /// Previous remote configurations
     ///
-    /// This field should not be passed by end-users. It is used in internal communications between Meilisearch instances
+    /// This field should not be passed by end-users. It is used in internal communications between index instances
     #[schema(required = false, value_type = Option<BTreeMap<String, Remote>>, example = json!({
         "ms-00": {
             "url": "http://localhost:7700"
@@ -400,12 +400,12 @@ fn merge_networks(
         (Some(leader), Some(this)) if leader == this => {
             // renaming is forbidden when there is a leader
             if let Some((old_self, new_self)) = renamed_from_to {
-                return Err(MeilisearchHttpError::RenamedSelf { old_self, new_self }.into());
+                return Err(Hanzo IndexHttpError::RenamedSelf { old_self, new_self }.into());
             }
         }
         // 3. Any other change is disallowed
         (Some(leader), _) => {
-            return Err(MeilisearchHttpError::NotLeader { leader: leader.to_string() }.into())
+            return Err(Hanzo IndexHttpError::NotLeader { leader: leader.to_string() }.into())
         }
     }
     let new_version = uuid::Uuid::now_v7();

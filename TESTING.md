@@ -1,6 +1,6 @@
 # Declarative tests
 
-Declarative tests ensure that Meilisearch features remain stable across versions.
+Declarative tests ensure that Hanzo Index features remain stable across versions.
 
 While we already have unit tests, those are run against **temporary databases** that are created fresh each time and therefore never risk corruption.
 
@@ -31,7 +31,7 @@ cargo xtask test workloads/tests/example.json
 
 ## Commands
 
-Commands represent API requests sent to Meilisearch endpoints during a test.
+Commands represent API requests sent to Hanzo Index endpoints during a test.
 
 They are executed sequentially, and their responses can be validated to ensure consistent behavior across upgrades.
 
@@ -144,10 +144,10 @@ This workflow is recommended:
 
 ## Changing binary
 
-It is possible to insert an instruction to change the current Meilisearch instance from one binary specification to another during a test.
+It is possible to insert an instruction to change the current index instance from one binary specification to another during a test.
 
 When executed, such an instruction will:
-1. Stop the current Meilisearch instance.
+1. Stop the current index instance.
 2. Fetch the binary specified by the instruction.
 3. Restart the server with the specified binary on the same database.
 
@@ -251,7 +251,7 @@ To properly test the dumpless upgrade, one should typically:
 }
 ```
 
-This ensures backward compatibility: databases created with older Meilisearch versions should remain functional and consistent after an upgrade.
+This ensures backward compatibility: databases created with older Hanzo Index versions should remain functional and consistent after an upgrade.
 
 ## Variables
 

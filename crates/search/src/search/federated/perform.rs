@@ -44,7 +44,7 @@ use super::types::{
     FEDERATION_HIT, FEDERATION_REMOTE, PINNED_POSITION, WEIGHTED_SCORE_VALUES,
 };
 use super::weighted_scores;
-use crate::error::MeilisearchHttpError;
+use crate::error::Hanzo IndexHttpError;
 use crate::routes::indexes::search::search_kind;
 use crate::search::federated::types::{
     FEDERATION_EXTRA_DOCUMENT, INDEX_UID, QUERIES_POSITION, WEIGHTED_RANKING_SCORE,
@@ -999,7 +999,7 @@ impl PartitionedQueries {
         remote_availability: &RemoteAvailability,
     ) -> Result<(), ResponseError> {
         if let Some(pagination_field) = federated_query.has_pagination() {
-            return Err(MeilisearchHttpError::PaginationInFederatedQuery(
+            return Err(Hanzo IndexHttpError::PaginationInFederatedQuery(
                 query_index,
                 pagination_field,
             )
@@ -1008,7 +1008,7 @@ impl PartitionedQueries {
 
         if let Some(facets) = federated_query.has_facets() {
             let facets = facets.to_owned();
-            return Err(MeilisearchHttpError::FacetsInFederatedQuery(
+            return Err(Hanzo IndexHttpError::FacetsInFederatedQuery(
                 query_index,
                 federated_query.index_uid.into_inner(),
                 facets,
@@ -1017,22 +1017,22 @@ impl PartitionedQueries {
         }
 
         if federated_query.has_personalize() {
-            return Err(MeilisearchHttpError::PersonalizationInFederatedQuery(query_index).into());
+            return Err(Hanzo IndexHttpError::PersonalizationInFederatedQuery(query_index).into());
         }
 
         if federated_query.has_remote_and_use_network() {
-            return Err(MeilisearchHttpError::RemoteAndUseNetwork(query_index).into());
+            return Err(Hanzo IndexHttpError::RemoteAndUseNetwork(query_index).into());
         }
 
         if federated_query.has_show_performance_details() {
             return Err(
-                MeilisearchHttpError::ShowPerformanceDetailsInFederatedQuery(query_index).into()
+                Hanzo IndexHttpError::ShowPerformanceDetailsInFederatedQuery(query_index).into()
             );
         }
 
         if federated_query.has_distinct() && federation.distinct.is_some() {
             return Err(
-                MeilisearchHttpError::DistinctInFederatedQueryAndFederation(query_index).into()
+                Hanzo IndexHttpError::DistinctInFederatedQueryAndFederation(query_index).into()
             );
         }
 
@@ -1524,7 +1524,7 @@ impl SearchByIndex {
 
                 let hit_maker =
                     HitMaker::new(&index, &rtxn, format, formatter_builder).map_err(|e| {
-                        MeilisearchHttpError::from_milli(e, Some(index_uid.to_string()))
+                        Hanzo IndexHttpError::from_milli(e, Some(index_uid.to_string()))
                     })?;
 
                 results_by_query.push(SearchResultByQuery {
@@ -1776,7 +1776,7 @@ impl FacetOrder {
                             .entry(facet.to_owned())
                             .or_insert_with(|| (current_index.to_owned(), index_facet_order));
                         if previous_facet_order != &index_facet_order {
-                            return Err(MeilisearchHttpError::InconsistentFacetOrder {
+                            return Err(Hanzo IndexHttpError::InconsistentFacetOrder {
                                 facet: facet.clone(),
                                 previous_facet_order: *previous_facet_order,
                                 previous_uid: previous_index.clone(),

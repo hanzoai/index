@@ -13,7 +13,7 @@ use serde_json::Value;
 use super::types::{FederatedSearch, FederatedSearchResult, Federation};
 use crate::search::{SearchQueryWithIndex, INCLUDE_METADATA_HEADER};
 
-pub const PROXY_SEARCH_HEADER: &str = "Meili-Proxy-Search";
+pub const PROXY_SEARCH_HEADER: &str = "Index-Proxy-Search";
 pub const PROXY_SEARCH_HEADER_VALUE: &str = "true";
 
 mod error {
@@ -104,7 +104,7 @@ pub struct ProxySearchParams {
 
 impl ProxySearchParams {
     pub fn new_with_deadline_from_env(client: http_client::reqwest::Client) -> Self {
-        let timeout = std::env::var("MEILI_EXPERIMENTAL_REMOTE_SEARCH_TIMEOUT_SECONDS")
+        let timeout = std::env::var("INDEX_EXPERIMENTAL_REMOTE_SEARCH_TIMEOUT_SECONDS")
             .ok()
             .map(|p| p.parse().unwrap())
             .unwrap_or(25);

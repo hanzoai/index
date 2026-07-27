@@ -11,7 +11,7 @@ use actix_web::http::StatusCode;
 use byte_unit::{Byte, Unit};
 use clap::Parser;
 use search::option::{IndexerOpts, MaxMemory, MaxThreads, Opt};
-use search::setup_meilisearch;
+use search::setup_index;
 use once_cell::sync::Lazy;
 use tempfile::TempDir;
 use tokio::sync::OnceCell;
@@ -50,7 +50,7 @@ impl Server<Owned> {
 
         let options = default_settings(dir.path());
         let handle = tokio::runtime::Handle::current();
-        let (index_scheduler, auth) = setup_meilisearch(&options, handle).unwrap();
+        let (index_scheduler, auth) = setup_index(&options, handle).unwrap();
         let service = Service { index_scheduler, auth, options, api_key: None };
 
         Server { service, _dir: Some(dir), _marker: PhantomData }
@@ -67,7 +67,7 @@ impl Server<Owned> {
 
         let handle = tokio::runtime::Handle::current();
 
-        let (index_scheduler, auth) = setup_meilisearch(&options, handle).unwrap();
+        let (index_scheduler, auth) = setup_index(&options, handle).unwrap();
         let service = Service { index_scheduler, auth, options, api_key: None };
 
         Server { service, _dir: Some(dir), _marker: PhantomData }
@@ -82,7 +82,7 @@ impl Server<Owned> {
     pub async fn new_with_options(options: Opt) -> Result<Self, anyhow::Error> {
         let handle = tokio::runtime::Handle::current();
 
-        let (index_scheduler, auth) = setup_meilisearch(&options, handle)?;
+        let (index_scheduler, auth) = setup_index(&options, handle)?;
         let service = Service { index_scheduler, auth, options, api_key: None };
 
         Ok(Server { service, _dir: None, _marker: PhantomData })
@@ -259,7 +259,7 @@ impl Server<Shared> {
         let options = default_settings(dir.path());
         let handle = tokio::runtime::Handle::current();
 
-        let (index_scheduler, auth) = setup_meilisearch(&options, handle).unwrap();
+        let (index_scheduler, auth) = setup_index(&options, handle).unwrap();
         let service = Service { index_scheduler, auth, api_key: None, options };
 
         Server { service, _dir: Some(dir), _marker: PhantomData }
@@ -547,7 +547,7 @@ pub fn default_settings(dir: impl AsRef<Path>) -> Opt {
             // Having 2 threads makes the tests way faster
             max_indexing_threads: MaxThreads::from_str("2").unwrap(),
             experimental_no_edition_2024_for_settings: std::env::var_os(
-                "MEILI_EXPERIMENTAL_NO_EDITION_2024_FOR_SETTINGS",
+                "INDEX_EXPERIMENTAL_NO_EDITION_2024_FOR_SETTINGS",
             )
             .map(|x| FromStr::from_str(&x.into_string().unwrap()).unwrap())
             .unwrap_or(false),

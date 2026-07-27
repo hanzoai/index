@@ -32,7 +32,7 @@ ret=0
 toml_tag="$(cat Cargo.toml | read_version)"
 check_tag "$current_tag" "$toml_tag" Cargo.toml || ret=1
 
-lock_tag=$(grep -A 1 '^name = "meilisearch-auth"' Cargo.lock | read_version)
+lock_tag=$(grep -A 1 '^name = "index-auth"' Cargo.lock | read_version)
 check_tag "$current_tag" "$lock_tag" Cargo.lock || ret=1
 
 if (( ret == 0 )); then

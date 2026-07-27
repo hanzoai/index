@@ -7,7 +7,7 @@ use serde_json::{json, Value};
 
 use crate::aggregate_methods;
 use crate::analytics::{Aggregate, AggregateMethod};
-use crate::metrics::MEILISEARCH_PERSONALIZED_SEARCH_REQUESTS;
+use crate::metrics::INDEX_PERSONALIZED_SEARCH_REQUESTS;
 use crate::search::{
     SearchQuery, SearchResult, DEFAULT_CROP_LENGTH, DEFAULT_CROP_MARKER,
     DEFAULT_HIGHLIGHT_POST_TAG, DEFAULT_HIGHLIGHT_PRE_TAG, DEFAULT_SEARCH_LIMIT,
@@ -217,7 +217,7 @@ impl<Method: AggregateMethod> SearchAggregator<Method> {
         // personalization
         if personalize.is_some() {
             ret.total_personalized = 1;
-            MEILISEARCH_PERSONALIZED_SEARCH_REQUESTS.inc();
+            INDEX_PERSONALIZED_SEARCH_REQUESTS.inc();
         }
 
         if use_network.unwrap_or_default() {

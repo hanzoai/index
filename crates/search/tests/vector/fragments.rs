@@ -34,7 +34,7 @@ async fn experimental_feature_not_enabled() {
     snapshot!(code, @"400 Bad Request");
     snapshot!(response, @r#"
     {
-      "message": "setting `indexingFragments` requires enabling the `multimodal` experimental feature. See https://github.com/orgs/meilisearch/discussions/846",
+      "message": "setting `indexingFragments` requires enabling the `multimodal` experimental feature. See https://github.com/orgs/index/discussions/846",
       "code": "feature_not_enabled",
       "type": "invalid_request",
       "link": "https://docs.hanzo.ai/errors#feature_not_enabled"

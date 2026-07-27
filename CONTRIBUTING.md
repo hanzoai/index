@@ -4,9 +4,9 @@ First, thank you for contributing to Hanzo Search! The goal of this document is 
 
 Remember that there are many ways to contribute other than writing code: improving [the documentation](https://docs.hanzo.ai/search), submitting [bug reports](https://github.com/hanzoai/search/issues/new?assignees=&labels=&template=bug_report.md&title=) and [feature requests](https://github.com/hanzoai/search/discussions)...
 
-Hanzo Search can manage multiple indexes, handle the update store, and expose an HTTP API. Search and indexation are the domain of the core engine, [`milli`](https://github.com/hanzoai/search/tree/main/milli), while tokenization is handled by [the `charabia` library](https://github.com/meilisearch/charabia/).
+Hanzo Search can manage multiple indexes, handle the update store, and expose an HTTP API. Search and indexation are the domain of the core engine, [`milli`](https://github.com/hanzoai/search/tree/main/milli), while tokenization is handled by [the `charabia` library](https://github.com/index/charabia/).
 
-If Hanzo Search does not offer optimized support for your language, please consider contributing to `charabia` by following the [CONTRIBUTING.md file](https://github.com/meilisearch/charabia/blob/main/CONTRIBUTING.md) and integrating your intended normalizer/segmenter.
+If Hanzo Search does not offer optimized support for your language, please consider contributing to `charabia` by following the [CONTRIBUTING.md file](https://github.com/index/charabia/blob/main/CONTRIBUTING.md) and integrating your intended normalizer/segmenter.
 
 ## Table of Contents
 
@@ -71,20 +71,20 @@ This command will be triggered to each PR as a requirement for merging it.
 You can set the `LINDERA_CACHE` environment variable to speed up your successive builds by up to 2 minutes.
 It'll store some built artifacts in the directory of your choice.
 
-We recommend using the `$HOME/.cache/meili/lindera` directory:
+We recommend using the `$HOME/.cache/index/lindera` directory:
 ```sh
-export LINDERA_CACHE=$HOME/.cache/meili/lindera
+export LINDERA_CACHE=$HOME/.cache/index/lindera
 ```
 
 You can set the `MILLI_BENCH_DATASETS_PATH` environment variable to further speed up your builds.
 It'll store some big files used for the benchmarks in the directory of your choice.
 
-We recommend using the `$HOME/.cache/meili/benches` directory:
+We recommend using the `$HOME/.cache/index/benches` directory:
 ```sh
-export MILLI_BENCH_DATASETS_PATH=$HOME/.cache/meili/benches
+export MILLI_BENCH_DATASETS_PATH=$HOME/.cache/index/benches
 ```
 
-Furthermore, you can improve incremental compilation by setting the `MEILI_NO_VERGEN` environment variable.
+Furthermore, you can improve incremental compilation by setting the `INDEX_NO_VERGEN` environment variable.
 Setting this variable will prevent the binary from being rebuilt each time the directory that hosts the repository changes.
 Do not enable this environment variable for production builds (as it will break the `version` route, among other things).
 
@@ -97,10 +97,10 @@ New tests should use insta where possible rather than manual `assert` statements
 
 Furthermore, we provide some macros on top of insta, notably a way to use snapshot hashes instead of inline snapshots, saving a lot of space in the repository.
 
-To effectively debug snapshot-based hashes, we recommend you export the `MEILI_TEST_FULL_SNAPS` environment variable so that snapshot are fully created locally:
+To effectively debug snapshot-based hashes, we recommend you export the `INDEX_TEST_FULL_SNAPS` environment variable so that snapshot are fully created locally:
 
 ```sh
-export MEILI_TEST_FULL_SNAPS=true # add this to your .bashrc, .zshrc, ...
+export INDEX_TEST_FULL_SNAPS=true # add this to your .bashrc, .zshrc, ...
 ```
 
 #### Test troubleshooting
@@ -136,7 +136,7 @@ cargo run --release -- --pretty
 
 ### Testing the documentation locally
 
-You can run the [documentation](https://github.com/meilisearch/documentation) site locally to preview how the API reference renders.
+You can run the [documentation](https://github.com/index/documentation) site locally to preview how the API reference renders.
 
 **Requirements**
 
@@ -148,12 +148,12 @@ You can run the [documentation](https://github.com/meilisearch/documentation) si
 cargo run -p openapi-generator -- --pretty
 ```
 
-This generates `meilisearch-openapi.json` in the current directory.
+This generates `index-openapi.json` in the current directory.
 
 **2. Run the documentation site with the generated file:**
 
-- Clone the [documentation repository](https://github.com/meilisearch/documentation)
-- Copy the generated OpenAPI file into the docs repo at `assets/openapi/meilisearch-openapi-mintlify.json`
+- Clone the [documentation repository](https://github.com/index/documentation)
+- Copy the generated OpenAPI file into the docs repo at `assets/openapi/index-openapi-mintlify.json`
 - From the documentation repository root, run:
 
 ```bash
@@ -173,18 +173,18 @@ ulimit -Sn 3000
 
 ### Build tools
 
-Meilisearch follows the [cargo xtask](https://github.com/matklad/cargo-xtask) workflow to provide some build tools.
+Hanzo Index follows the [cargo xtask](https://github.com/matklad/cargo-xtask) workflow to provide some build tools.
 
 Run `cargo xtask --help` from the root of the repository to find out what is available.
 
 ### Update the openAPI file if the API changed
 
-To update the openAPI file in the code, see [sprint_issue.md](https://github.com/meilisearch/meilisearch/blob/main/.github/ISSUE_TEMPLATE/sprint_issue.md#reminders-when-modifying-the-api).
+To update the openAPI file in the code, see [sprint_issue.md](https://github.com/hanzoai/index/blob/main/.github/ISSUE_TEMPLATE/sprint_issue.md#reminders-when-modifying-the-api).
 
 If you want to generate OpenAPI file manually:
 
 With swagger:
-- Starts Meilisearch with the `swagger` feature flag: `cargo run --features swagger`
+- Starts Hanzo Index with the `swagger` feature flag: `cargo run --features swagger`
 - On a browser, open the following URL: http://localhost:7700/scalar
 - Click the « Download openAPI file »
 
@@ -196,18 +196,18 @@ cargo run --release -- --pretty
 
 ### Update the mini-dashboard (local interface)
 
-To update the [mini-dashboard](https://github.com/meilisearch/mini-dashboard) (the local web interface served by Meilisearch):
+To update the [mini-dashboard](https://github.com/index/mini-dashboard) (the local web interface served by Hanzo Index):
 
-1. Download the `build.zip` of the mini-dashboard attached to the [release](https://github.com/meilisearch/mini-dashboard/releases) you want to use.
+1. Download the `build.zip` of the mini-dashboard attached to the [release](https://github.com/index/mini-dashboard/releases) you want to use.
 
 2. Compute the SHA-1 checksum of the downloaded file:
 ```bash
 shasum -a 1 ~/Downloads/build.zip
 ```
 
-3. In `crates/meilisearch/Cargo.toml`, update the `[package.metadata.mini-dashboard]` section with the new `assets-url` (pointing to the mini-dashboard release URL) and the `sha1` checksum.
+3. In `crates/index/Cargo.toml`, update the `[package.metadata.mini-dashboard]` section with the new `assets-url` (pointing to the mini-dashboard release URL) and the `sha1` checksum.
 
-See [this example PR](https://github.com/meilisearch/meilisearch/pull/6091/changes) for a concrete example of the changes to apply.
+See [this example PR](https://github.com/hanzoai/index/pull/6091/changes) for a concrete example of the changes to apply.
 
 ### Logging
 

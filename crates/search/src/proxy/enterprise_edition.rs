@@ -1,5 +1,5 @@
-// Copyright © 2025 Meilisearch Some Rights Reserved
-// This file is part of Meilisearch Enterprise Edition (EE).
+// Copyright © 2025 Hanzo Index Some Rights Reserved
+// This file is part of Hanzo Index Enterprise Edition (EE).
 // Use of this source code is governed by the Business Source License 1.1,
 // as found in the LICENSE-EE file or at <https://mariadb.com/bsl11>
 
@@ -22,7 +22,7 @@ use serde::de::DeserializeOwned;
 use serde_json::Value;
 use uuid::Uuid;
 
-use crate::error::MeilisearchHttpError;
+use crate::error::Hanzo IndexHttpError;
 use crate::proxy::{Body, Endpoint, ProxyError, ReqwestErrorWithoutUrl};
 use crate::routes::SummarizedTaskView;
 
@@ -30,13 +30,13 @@ mod timeouts {
     use std::sync::LazyLock;
 
     pub static CONNECT_SECONDS: LazyLock<u64> =
-        LazyLock::new(|| fetch_or_default("MEILI_EXPERIMENTAL_PROXY_CONNECT_TIMEOUT_SECONDS", 3));
+        LazyLock::new(|| fetch_or_default("INDEX_EXPERIMENTAL_PROXY_CONNECT_TIMEOUT_SECONDS", 3));
 
     pub static BACKOFF_SECONDS: LazyLock<u64> =
-        LazyLock::new(|| fetch_or_default("MEILI_EXPERIMENTAL_PROXY_BACKOFF_TIMEOUT_SECONDS", 25));
+        LazyLock::new(|| fetch_or_default("INDEX_EXPERIMENTAL_PROXY_BACKOFF_TIMEOUT_SECONDS", 25));
 
     pub static REQUEST_SECONDS: LazyLock<u64> =
-        LazyLock::new(|| fetch_or_default("MEILI_EXPERIMENTAL_PROXY_REQUEST_TIMEOUT_SECONDS", 30));
+        LazyLock::new(|| fetch_or_default("INDEX_EXPERIMENTAL_PROXY_REQUEST_TIMEOUT_SECONDS", 30));
 
     fn fetch_or_default(key: &str, default: u64) -> u64 {
         match std::env::var(key) {
@@ -112,22 +112,22 @@ where
 
 /// Parses the header to determine if this task is a duplicate and originates with a remote.
 ///
-/// If not, checks whether this remote is the leader and return `MeilisearchHttpError::NotLeader` if not.
+/// If not, checks whether this remote is the leader and return `Hanzo IndexHttpError::NotLeader` if not.
 ///
 /// If there is no leader, returns `Ok(None)`
 ///
 /// # Errors
 ///
-/// - `MeiliearchHttpError::NotLeader`: if the following are true simultaneously:
+/// - `IndexearchHttpError::NotLeader`: if the following are true simultaneously:
 ///     1. The task originates with the current node
 ///     2. There's a declared `leader`
 ///     3. The declared leader is **not** the current node
-/// - `MeilisearchHttpError::InvalidHeaderValue`: if headers cannot be parsed as a task network.
-/// - `MeilisearchHttpError::InconsistentTaskNetwork`: if only some of the headers are present.
+/// - `Hanzo IndexHttpError::InvalidHeaderValue`: if headers cannot be parsed as a task network.
+/// - `Hanzo IndexHttpError::InconsistentTaskNetwork`: if only some of the headers are present.
 pub fn task_network_and_check_leader_and_version(
     req: &HttpRequest,
     network: &search_types::network::Network,
-) -> Result<Option<TaskNetwork>, MeilisearchHttpError> {
+) -> Result<Option<TaskNetwork>, Hanzo IndexHttpError> {
     let task_network =
         match (origin_from_req(req)?, import_data_from_req(req)?, import_metadata_from_req(req)?) {
             (Some(network_change), Some(import_from), Some(metadata)) => {
@@ -142,7 +142,7 @@ pub fn task_network_and_check_leader_and_version(
                     (Some(leader), Some(this)) if leader == this => (),
                     // 3. Any other change is disallowed
                     (Some(leader), _) => {
-                        return Err(MeilisearchHttpError::NotLeader { leader: leader.to_string() })
+                        return Err(Hanzo IndexHttpError::NotLeader { leader: leader.to_string() })
                     }
                 }
 
@@ -153,7 +153,7 @@ pub fn task_network_and_check_leader_and_version(
             }
             // all good cases were matched, so this is always an error
             (origin, import_from, metadata) => {
-                return Err(MeilisearchHttpError::InconsistentTaskNetworkHeaders {
+                return Err(Hanzo IndexHttpError::InconsistentTaskNetworkHeaders {
                     is_missing_origin: origin.is_none(),
                     is_missing_import: import_from.is_none(),
                     is_missing_import_metadata: metadata.is_none(),
@@ -162,7 +162,7 @@ pub fn task_network_and_check_leader_and_version(
         };
 
     if task_network.network_version() < network.version {
-        return Err(MeilisearchHttpError::NetworkVersionTooOld {
+        return Err(Hanzo IndexHttpError::NetworkVersionTooOld {
             received: task_network.network_version(),
             expected_at_least: network.version,
         });
@@ -193,7 +193,7 @@ pub async fn proxy<T, F, E: Endpoint>(
     network: search_types::network::Network,
     body: Body<T, F>,
     task: &Task,
-) -> Result<Task, MeilisearchHttpError>
+) -> Result<Task, Hanzo IndexHttpError>
 where
     T: serde::Serialize,
     F: FnMut(&str, &Remote, &mut T),
@@ -227,7 +227,7 @@ where
         for (body, (node_name, node)) in body
             .into_bytes_iter(network.remotes.into_iter().filter(|(name, _)| name.as_str() != this))
             .map_err(|err| {
-                MeilisearchHttpError::from_milli(err, index_uid.map(ToOwned::to_owned))
+                Hanzo IndexHttpError::from_milli(err, index_uid.map(ToOwned::to_owned))
             })?
         {
             tracing::trace!(node_name, "proxying task to remote");
@@ -547,7 +547,7 @@ impl<'a> search_types::tasks::network::headers::GetHeader for ResponseWrapper<'a
     }
 }
 
-pub fn origin_from_req(req: &HttpRequest) -> Result<Option<Origin>, MeilisearchHttpError> {
+pub fn origin_from_req(req: &HttpRequest) -> Result<Option<Origin>, Hanzo IndexHttpError> {
     let req = ResponseWrapper(req);
     let (remote_name, task_uid, network_version) = match (
         req.get_origin_remote()?,
@@ -556,10 +556,10 @@ pub fn origin_from_req(req: &HttpRequest) -> Result<Option<Origin>, MeilisearchH
     ) {
         (None, None, _) => return Ok(None),
         (None, Some(_), _) => {
-            return Err(MeilisearchHttpError::InconsistentOriginHeaders { is_remote_missing: true })
+            return Err(Hanzo IndexHttpError::InconsistentOriginHeaders { is_remote_missing: true })
         }
         (Some(_), None, _) => {
-            return Err(MeilisearchHttpError::InconsistentOriginHeaders {
+            return Err(Hanzo IndexHttpError::InconsistentOriginHeaders {
                 is_remote_missing: false,
             })
         }
@@ -573,7 +573,7 @@ pub fn origin_from_req(req: &HttpRequest) -> Result<Option<Origin>, MeilisearchH
     Ok(Some(Origin { remote_name: remote_name.into_owned(), task_uid, network_version }))
 }
 
-pub fn import_data_from_req(req: &HttpRequest) -> Result<Option<ImportData>, MeilisearchHttpError> {
+pub fn import_data_from_req(req: &HttpRequest) -> Result<Option<ImportData>, Hanzo IndexHttpError> {
     let req = ResponseWrapper(req);
     let (remote_name, index_name, document_count) =
         match (req.get_import_remote()?, req.get_import_index()?, req.get_import_docs()?) {
@@ -583,7 +583,7 @@ pub fn import_data_from_req(req: &HttpRequest) -> Result<Option<ImportData>, Mei
             }
             // catch-all pattern that has to contain an inconsistency since we already matched (None, None, None) and (Some, Some, Some)
             (remote_name, index_name, documents) => {
-                return Err(MeilisearchHttpError::InconsistentImportHeaders {
+                return Err(Hanzo IndexHttpError::InconsistentImportHeaders {
                     is_remote_missing: remote_name.is_none(),
                     is_index_missing: index_name.is_none(),
                     is_docs_missing: documents.is_none(),
@@ -600,7 +600,7 @@ pub fn import_data_from_req(req: &HttpRequest) -> Result<Option<ImportData>, Mei
 
 pub fn import_metadata_from_req(
     req: &HttpRequest,
-) -> Result<Option<ImportMetadata>, MeilisearchHttpError> {
+) -> Result<Option<ImportMetadata>, Hanzo IndexHttpError> {
     let req = ResponseWrapper(req);
     let (index_count, task_key, total_index_documents) = match (
         req.get_import_index_count()?,
@@ -613,7 +613,7 @@ pub fn import_metadata_from_req(
         }
         // catch-all pattern that has to contain an inconsistency since we already matched (None, None, None) and (Some, Some, Some)
         (index_count, task_key, total_index_documents) => {
-            return Err(MeilisearchHttpError::InconsistentImportMetadataHeaders {
+            return Err(Hanzo IndexHttpError::InconsistentImportMetadataHeaders {
                 is_index_count_missing: index_count.is_none(),
                 is_task_key_missing: task_key.is_none(),
                 is_total_index_documents_missing: total_index_documents.is_none(),

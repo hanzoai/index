@@ -10,7 +10,7 @@ pub const VERSION_FILE_NAME: &str = "VERSION";
 
 pub use milli::constants::{VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH};
 
-/// Persists the version of the current Meilisearch binary to a VERSION file
+/// Persists the version of the current Hanzo Index binary to a VERSION file
 pub fn create_current_version_file(db_path: &Path) -> anyhow::Result<()> {
     create_version_file(db_path, VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH)
 }
@@ -72,20 +72,20 @@ pub fn parse_version(version: &str) -> Result<(u32, u32, u32), VersionFileError>
 #[derive(thiserror::Error, Debug)]
 pub enum VersionFileError {
     #[error(
-        "Meilisearch (v{}) failed to infer the version of the database.
-        To update Meilisearch please follow our guide on https://docs.hanzo.ai/index/learn/update_and_migration/updating.",
+        "Hanzo Index (v{}) failed to infer the version of the database.
+        To update Hanzo Index please follow our guide on https://docs.hanzo.ai/index/learn/update_and_migration/updating.",
         env!("CARGO_PKG_VERSION").to_string()
     )]
     MissingVersionFile,
-    #[error("Version file is corrupted and thus Meilisearch is unable to determine the version of the database. {context}")]
+    #[error("Version file is corrupted and thus Hanzo Index is unable to determine the version of the database. {context}")]
     MalformedVersionFile { context: String },
     #[error(
         "Your database version ({major}.{minor}.{patch}) is incompatible with your current engine version ({}).\n\
-        To migrate data between Meilisearch versions, please follow our guide on https://docs.hanzo.ai/index/learn/update_and_migration/updating.",
+        To migrate data between Hanzo Index versions, please follow our guide on https://docs.hanzo.ai/index/learn/update_and_migration/updating.",
         env!("CARGO_PKG_VERSION").to_string()
     )]
     VersionMismatch { major: u32, minor: u32, patch: u32 },
-    #[error("Database version {major}.{minor}.{patch} is higher than the Meilisearch version {VERSION_MAJOR}.{VERSION_MINOR}.{VERSION_PATCH}. Downgrade is not supported")]
+    #[error("Database version {major}.{minor}.{patch} is higher than the Hanzo Index version {VERSION_MAJOR}.{VERSION_MINOR}.{VERSION_PATCH}. Downgrade is not supported")]
     DowngradeNotSupported { major: u32, minor: u32, patch: u32 },
     #[error("Database version {major}.{minor}.{patch} is too old for the experimental dumpless upgrade feature. Please generate a dump using the v{major}.{minor}.{patch} and import it in the v{VERSION_MAJOR}.{VERSION_MINOR}.{VERSION_PATCH}")]
     TooOldForAutomaticUpgrade { major: u32, minor: u32, patch: u32 },

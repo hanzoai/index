@@ -7,7 +7,7 @@ fn main() {
         std::io::BufReader::new(std::fs::File::open(&input_file).expect("could not open <INPUT>"));
     let trace = tracing_trace::TraceReader::new(input);
     let profile =
-        tracing_trace::processor::firefox_profiler::to_firefox_profile(trace, "Meilisearch")
+        tracing_trace::processor::firefox_profiler::to_firefox_profile(trace, "Hanzo Index")
             .unwrap();
     let mut output_file = OsString::new();
     output_file.push("firefox-");

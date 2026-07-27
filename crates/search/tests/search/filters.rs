@@ -1128,7 +1128,7 @@ async fn vector_filter_feature_gate() {
         .await;
     snapshot!(value, @r#"
     {
-      "message": "using a vector filter requires enabling the `multimodal` experimental feature. See https://github.com/orgs/meilisearch/discussions/846\n1:9 _vectors EXISTS",
+      "message": "using a vector filter requires enabling the `multimodal` experimental feature. See https://github.com/orgs/index/discussions/846\n1:9 _vectors EXISTS",
       "code": "feature_not_enabled",
       "type": "invalid_request",
       "link": "https://docs.hanzo.ai/errors#feature_not_enabled"

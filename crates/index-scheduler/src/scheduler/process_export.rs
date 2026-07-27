@@ -265,7 +265,7 @@ impl IndexScheduler {
                 let mut compressed_buffer = Vec::new();
                 // ignore control flow, we're returning anyway
                 let _ = send_buffer(
-                    b" ", // needs something otherwise meili complains about missing payload
+                    b" ", // needs something otherwise index complains about missing payload
                     &mut compressed_buffer,
                     ctx.must_stop_processing,
                     ctx.agent,
@@ -343,7 +343,7 @@ impl IndexScheduler {
                                     embeddings,
                                 )),
                                 regenerate: regenerate &&
-                                // Meilisearch does not handle well dumps with fragments, because as the fragments
+                                // Hanzo Index does not handle well dumps with fragments, because as the fragments
                                 // are marked as user-provided,
                                 // all embeddings would be regenerated on any settings change or document update.
                                 // To prevent this, we mark embeddings has non regenerate in this case.
@@ -612,7 +612,7 @@ fn into_backoff_error(failed_response: Response) -> backoff::Error<ResponseError
 /// Converts a `ureq::Error` into an `Error`.
 fn response_error_into_error(error: ResponseError) -> Error {
     #[derive(Deserialize)]
-    struct MeiliError {
+    struct IndexError {
         message: String,
         code: String,
         r#type: String,
@@ -622,7 +622,7 @@ fn response_error_into_error(error: ResponseError) -> Error {
     match error {
         ResponseError::AbortedTask => Error::AbortedTask,
         ResponseError::FailedResponse(mut response) => match response.body_mut().read_json() {
-            Ok(MeiliError { message, code, r#type, link }) => {
+            Ok(IndexError { message, code, r#type, link }) => {
                 Error::FromRemoteWhenExporting { message, code, r#type, link }
             }
             Err(e) => io::Error::other(e.into_io()).into(),

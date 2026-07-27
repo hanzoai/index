@@ -318,12 +318,12 @@ fn create_or_open_index(
 
     // You can find more details about this experimental
     // environment variable on the following GitHub discussion:
-    // <https://github.com/orgs/meilisearch/discussions/806>
-    let max_readers = match std::env::var("MEILI_EXPERIMENTAL_INDEX_MAX_READERS") {
+    // <https://github.com/orgs/index/discussions/806>
+    let max_readers = match std::env::var("INDEX_EXPERIMENTAL_INDEX_MAX_READERS") {
         Ok(value) => u32::from_str(&value).unwrap(),
         Err(VarError::NotPresent) => 1024,
         Err(VarError::NotUnicode(value)) => panic!(
-            "Invalid unicode for the `MEILI_EXPERIMENTAL_INDEX_MAX_READERS` env var: {value:?}"
+            "Invalid unicode for the `INDEX_EXPERIMENTAL_INDEX_MAX_READERS` env var: {value:?}"
         ),
     };
     options.max_readers(max_readers);

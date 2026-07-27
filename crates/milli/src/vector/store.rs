@@ -20,10 +20,10 @@ mod hnsw_params {
     use std::sync::LazyLock;
 
     pub static LINEAR_BELOW: LazyLock<usize> =
-        LazyLock::new(|| env_var_or("MEILI_EXPERIMENTAL_HNSW_LINEAR_BELOW", 300_000));
+        LazyLock::new(|| env_var_or("INDEX_EXPERIMENTAL_HNSW_LINEAR_BELOW", 300_000));
 
     pub static LINEAR_BELOW_RATIO: LazyLock<f32> = LazyLock::new(|| {
-        env_var_or("MEILI_EXPERIMENTAL_HNSW_LINEAR_BELOW_RATIO", 0.1 /* 10% */)
+        env_var_or("INDEX_EXPERIMENTAL_HNSW_LINEAR_BELOW_RATIO", 0.1 /* 10% */)
     });
 
     /// Retrieve the content of an env variable or use a default value if not present.

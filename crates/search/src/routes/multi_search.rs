@@ -15,7 +15,7 @@ use uuid::Uuid;
 
 use super::multi_search_analytics::MultiSearchAggregator;
 use crate::analytics::Analytics;
-use crate::error::MeilisearchHttpError;
+use crate::error::Hanzo IndexHttpError;
 use crate::extractors::authentication::policies::ActionPolicy;
 use crate::extractors::authentication::{AuthenticationError, GuardedData};
 use crate::routes::parse_include_metadata_header;
@@ -255,7 +255,7 @@ pub async fn multi_search_with_post(
 
                     if federation_options.is_some() {
                         return Err((
-                            MeilisearchHttpError::FederationOptionsInNonFederatedRequest(
+                            Hanzo IndexHttpError::FederationOptionsInNonFederatedRequest(
                                 query_index,
                             )
                             .into(),

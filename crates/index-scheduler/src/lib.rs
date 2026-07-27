@@ -109,7 +109,7 @@ mod db_keys {
 
 #[derive(Debug)]
 pub struct IndexSchedulerOptions {
-    /// The path to the version file of Meilisearch.
+    /// The path to the version file of Hanzo Index.
     pub version_file_path: PathBuf,
     /// The path to the folder containing the auth LMDB env.
     pub auth_path: PathBuf,
@@ -1342,7 +1342,7 @@ pub struct IndexStats {
 
 pub use index_mapper::IndexStats as InnerIndexStats;
 
-/// These structure are not meant to be exposed to the end user, if needed, use the meilisearch-types::webhooks structure instead.
+/// These structure are not meant to be exposed to the end user, if needed, use the index-types::webhooks structure instead.
 /// /!\ Everytime you deserialize this structure you should fill the cli_webhook later on with the `with_cli` method. /!\
 #[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]

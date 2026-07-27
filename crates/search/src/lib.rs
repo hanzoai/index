@@ -62,7 +62,7 @@ use search_queue::SearchQueue;
 use tracing::{error, info_span};
 use tracing_subscriber::filter::Targets;
 
-use crate::error::MeilisearchHttpError;
+use crate::error::Hanzo IndexHttpError;
 use crate::personalization::PersonalizationService;
 use ::routes::Routes;
 
@@ -149,14 +149,14 @@ pub fn create_app(
 > {
     let app = actix_web::App::new()
         .configure(|s| configure_data(s, services, &opt))
-        .configure(<routes::MeilisearchApi as Routes>::configure)
+        .configure(<routes::Hanzo IndexApi as Routes>::configure)
         .configure(|s| dashboard(s, enable_dashboard));
 
     #[cfg(feature = "swagger")]
     let app = app.configure(|cfg| {
         use utoipa::OpenApi;
         use utoipa_scalar::{Scalar, Servable as ScalarServable};
-        let openapi = routes::MeilisearchApi::openapi();
+        let openapi = routes::Hanzo IndexApi::openapi();
         cfg.service(Scalar::with_url("/scalar", openapi.clone()));
     });
 
@@ -217,7 +217,7 @@ enum OnFailure {
     KeepDb,
 }
 
-pub fn setup_meilisearch(
+pub fn setup_index(
     opt: &Opt,
     handle: tokio::runtime::Handle,
 ) -> anyhow::Result<(Arc<IndexScheduler>, Arc<AuthController>)> {
@@ -413,7 +413,7 @@ fn open_or_create_database_unchecked(
     }
 }
 
-/// Ensures Meilisearch version is compatible with the database, returns an error in case of version mismatch.
+/// Ensures Hanzo Index version is compatible with the database, returns an error in case of version mismatch.
 /// Returns the version that was contained in the version file
 fn check_version(
     opt: &Opt,
@@ -444,7 +444,7 @@ fn check_version(
     Ok((db_major, db_minor, db_patch))
 }
 
-/// Persists the version of the current Meilisearch binary to a VERSION file
+/// Persists the version of the current Hanzo Index binary to a VERSION file
 pub fn update_version_file_for_dumpless_upgrade(
     opt: &Opt,
     index_scheduler_opt: &IndexSchedulerOptions,
@@ -475,7 +475,7 @@ pub fn update_version_file_for_dumpless_upgrade(
     // In the case of v1.12, the index-scheduler didn't store its internal version at the time.
     // => We must write it immediately **in the index-scheduler** otherwise we'll update the version file
     //    there is a risk of DB corruption if a restart happens after writing the version file but before
-    //    writing the version in the index-scheduler. See <https://github.com/meilisearch/meilisearch/issues/5280>
+    //    writing the version in the index-scheduler. See <https://github.com/hanzoai/index/issues/5280>
     if from_major == 1 && from_minor == 12 {
         let env = unsafe {
             heed::EnvOpenOptions::new()
@@ -775,12 +775,12 @@ pub fn configure_data(config: &mut web::ServiceConfig, services: ServicesData, o
                 .content_type(|mime| mime == mime::APPLICATION_JSON)
                 .error_handler(|err, req: &HttpRequest| match err {
                     JsonPayloadError::ContentType => match req.headers().get(CONTENT_TYPE) {
-                        Some(content_type) => MeilisearchHttpError::InvalidContentType(
+                        Some(content_type) => Hanzo IndexHttpError::InvalidContentType(
                             content_type.to_str().unwrap_or("unknown").to_string(),
                             vec![mime::APPLICATION_JSON.to_string()],
                         )
                         .into(),
-                        None => MeilisearchHttpError::MissingContentType(vec![
+                        None => Hanzo IndexHttpError::MissingContentType(vec![
                             mime::APPLICATION_JSON.to_string(),
                         ])
                         .into(),

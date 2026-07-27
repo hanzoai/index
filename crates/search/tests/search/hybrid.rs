@@ -820,7 +820,7 @@ async fn query_combination() {
     snapshot!(response["semanticHitCount"], @"0");
 }
 
-// see <https://github.com/meilisearch/meilisearch/issues/5526>
+// see <https://github.com/hanzoai/index/issues/5526>
 #[actix_rt::test]
 async fn distinct_is_applied() {
     let server = Server::new_shared();

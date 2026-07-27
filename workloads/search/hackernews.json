@@ -178,7 +178,7 @@
       "method": "POST",
       "body": {
         "inline": {
-          "q": "rust meilisearch",
+          "q": "rust index",
           "limit": 100,
           "filter": "by = tpayet",
           "sort": [
@@ -194,7 +194,7 @@
       "method": "POST",
       "body": {
         "inline": {
-          "q": "rust meilisearch",
+          "q": "rust index",
           "limit": 100,
           "filter": "NOT by = tpayet",
           "sort": [
@@ -210,7 +210,7 @@
       "method": "POST",
       "body": {
         "inline": {
-          "q": "meilisearch",
+          "q": "index",
           "limit": 100,
           "sort": [
             "score:desc",

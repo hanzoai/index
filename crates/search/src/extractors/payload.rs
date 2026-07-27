@@ -6,7 +6,7 @@ use actix_web::{dev, web, FromRequest, HttpRequest};
 use futures::future::{ready, Ready};
 use futures::Stream;
 
-use crate::error::MeilisearchHttpError;
+use crate::error::Hanzo IndexHttpError;
 
 pub struct Payload {
     payload: Decompress<dev::Payload>,
@@ -31,7 +31,7 @@ impl Default for PayloadConfig {
 }
 
 impl FromRequest for Payload {
-    type Error = MeilisearchHttpError;
+    type Error = Hanzo IndexHttpError;
 
     type Future = Ready<Result<Payload, Self::Error>>;
 
@@ -50,7 +50,7 @@ impl FromRequest for Payload {
 }
 
 impl Stream for Payload {
-    type Item = Result<web::Bytes, MeilisearchHttpError>;
+    type Item = Result<web::Bytes, Hanzo IndexHttpError>;
 
     #[inline]
     fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
@@ -62,12 +62,12 @@ impl Stream for Payload {
                         Poll::Ready(Some(Ok(bytes)))
                     }
                     None => {
-                        Poll::Ready(Some(Err(MeilisearchHttpError::PayloadTooLarge(self.limit))))
+                        Poll::Ready(Some(Err(Hanzo IndexHttpError::PayloadTooLarge(self.limit))))
                     }
                 },
-                x => Poll::Ready(Some(x.map_err(MeilisearchHttpError::from))),
+                x => Poll::Ready(Some(x.map_err(Hanzo IndexHttpError::from))),
             },
-            otherwise => otherwise.map(|o| o.map(|o| o.map_err(MeilisearchHttpError::from))),
+            otherwise => otherwise.map(|o| o.map(|o| o.map_err(Hanzo IndexHttpError::from))),
         }
     }
 }

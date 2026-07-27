@@ -11,7 +11,7 @@ fn test_valid_opt() {
 #[ignore]
 fn test_meilli_config_file_path_valid() {
     temp_env::with_vars(
-        vec![("MEILI_CONFIG_FILE_PATH", Some("../config.toml"))], // Relative path in search package
+        vec![("INDEX_CONFIG_FILE_PATH", Some("../config.toml"))], // Relative path in search package
         || {
             assert!(Opt::try_build().is_ok());
         },
@@ -21,7 +21,7 @@ fn test_meilli_config_file_path_valid() {
 #[test]
 #[ignore]
 fn test_meilli_config_file_path_invalid() {
-    temp_env::with_vars(vec![("MEILI_CONFIG_FILE_PATH", Some("../configgg.toml"))], || {
+    temp_env::with_vars(vec![("INDEX_CONFIG_FILE_PATH", Some("../configgg.toml"))], || {
         let possible_error_messages = [
                 "unable to open or read the \"../configgg.toml\" configuration file: No such file or directory (os error 2).",
                 "unable to open or read the \"../configgg.toml\" configuration file: The system cannot find the file specified. (os error 2).", // Windows

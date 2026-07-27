@@ -1,4 +1,4 @@
-//! Tests ollama embedders with the server at the location described by `MEILI_TEST_OLLAMA_SERVER` environment variable.
+//! Tests ollama embedders with the server at the location described by `INDEX_TEST_OLLAMA_SERVER` environment variable.
 
 use std::env::VarError;
 
@@ -48,11 +48,11 @@ fn create_ollama_config_with_template(
     model: Model,
     endpoint: Endpoint,
 ) -> Option<Value> {
-    let ollama_base_url = match std::env::var("MEILI_TEST_OLLAMA_SERVER") {
+    let ollama_base_url = match std::env::var("INDEX_TEST_OLLAMA_SERVER") {
         Ok(ollama_base_url) => ollama_base_url,
         Err(VarError::NotPresent) => return None,
         Err(VarError::NotUnicode(s)) => panic!(
-            "`MEILI_TEST_OLLAMA_SERVER` was not properly utf-8, `{:?}`",
+            "`INDEX_TEST_OLLAMA_SERVER` was not properly utf-8, `{:?}`",
             s.as_encoded_bytes()
         ),
     };
@@ -71,7 +71,7 @@ async fn test_both_apis() {
     let Some(embed_settings) =
         create_ollama_config_with_template(DOGGO_TEMPLATE, Model::AllMinilm, Endpoint::Embed)
     else {
-        panic!("Missing `MEILI_TEST_OLLAMA_SERVER` environment variable, skipping `test_both_apis` test.");
+        panic!("Missing `INDEX_TEST_OLLAMA_SERVER` environment variable, skipping `test_both_apis` test.");
     };
 
     let Some(embeddings_settings) =

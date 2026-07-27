@@ -44,9 +44,9 @@ async fn search_with_metadata_header() {
     let (task, _code) = index.add_documents(documents, None).await;
     server.wait_task(task.uid()).await.succeeded();
 
-    // Test with Meili-Include-Metadata header
+    // Test with Index-Include-Metadata header
     let (response, code) = index
-        .search_with_headers(json!({"q": "glass"}), vec![("Meili-Include-Metadata", "true")])
+        .search_with_headers(json!({"q": "glass"}), vec![("Index-Include-Metadata", "true")])
         .await;
 
     snapshot!(code, @"200 OK");
@@ -86,9 +86,9 @@ async fn search_with_metadata_header_and_primary_key() {
     let (task, _code) = index.add_documents(documents, Some("id")).await;
     server.wait_task(task.uid()).await.succeeded();
 
-    // Test with Meili-Include-Metadata header
+    // Test with Index-Include-Metadata header
     let (response, code) = index
-        .search_with_headers(json!({"q": "glass"}), vec![("Meili-Include-Metadata", "true")])
+        .search_with_headers(json!({"q": "glass"}), vec![("Index-Include-Metadata", "true")])
         .await;
 
     snapshot!(code, @"200 OK");
@@ -203,7 +203,7 @@ async fn multi_search_with_metadata_header() {
                     {"indexUid": index.uid, "q": "dragon"}
                 ]
             }),
-            vec![("Meili-Include-Metadata", "true")],
+            vec![("Index-Include-Metadata", "true")],
         )
         .await;
 
@@ -275,7 +275,7 @@ async fn search_metadata_header_false_value() {
 
     // Test with header set to false
     let (response, code) = index
-        .search_with_headers(json!({"q": "glass"}), vec![("Meili-Include-Metadata", "false")])
+        .search_with_headers(json!({"q": "glass"}), vec![("Index-Include-Metadata", "false")])
         .await;
 
     snapshot!(code, @"200 OK");
@@ -311,7 +311,7 @@ async fn search_metadata_uuid_format() {
     server.wait_task(task.uid()).await.succeeded();
 
     let (response, code) = index
-        .search_with_headers(json!({"q": "glass"}), vec![("Meili-Include-Metadata", "true")])
+        .search_with_headers(json!({"q": "glass"}), vec![("Index-Include-Metadata", "true")])
         .await;
 
     snapshot!(code, @"200 OK");
@@ -354,7 +354,7 @@ async fn search_metadata_consistency_across_requests() {
     // Make multiple requests and check that metadata is consistent
     for _i in 0..3 {
         let (response, code) = index
-            .search_with_headers(json!({"q": "glass"}), vec![("Meili-Include-Metadata", "true")])
+            .search_with_headers(json!({"q": "glass"}), vec![("Index-Include-Metadata", "true")])
             .await;
 
         snapshot!(code, @"200 OK");

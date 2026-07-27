@@ -1,6 +1,6 @@
 [package]
 name = "filter-parser"
-description = "The parser for the Meilisearch filter syntax"
+description = "The parser for the Hanzo Index filter syntax"
 publish = false
 
 version.workspace = true

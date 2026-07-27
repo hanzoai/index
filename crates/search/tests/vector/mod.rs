@@ -704,7 +704,7 @@ async fn clear_documents() {
 
 #[actix_rt::test]
 async fn add_remove_one_vector_4588() {
-    // https://github.com/meilisearch/meilisearch/issues/4588
+    // https://github.com/hanzoai/index/issues/4588
     let server = Server::new().await;
     let index = server.index("doggo");
 

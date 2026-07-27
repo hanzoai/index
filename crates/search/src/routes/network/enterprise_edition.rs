@@ -1,5 +1,5 @@
-// Copyright © 2025 Meilisearch Some Rights Reserved
-// This file is part of Meilisearch Enterprise Edition (EE).
+// Copyright © 2025 Hanzo Index Some Rights Reserved
+// This file is part of Hanzo Index Enterprise Edition (EE).
 // Use of this source code is governed by the Business Source License 1.1,
 // as found in the LICENSE-EE file or at <https://mariadb.com/bsl11>
 
@@ -27,7 +27,7 @@ use tracing::debug;
 
 use super::{merge_networks, Network, PatchNetworkAnalytics, Remote, Shard};
 use crate::analytics::Analytics;
-use crate::error::MeilisearchHttpError;
+use crate::error::Hanzo IndexHttpError;
 use crate::extractors::authentication::policies::ActionPolicy;
 use crate::extractors::authentication::GuardedData;
 use crate::proxy::{self, proxy, Body, ProxyError};
@@ -60,7 +60,7 @@ pub async fn patch_network(
                 .map_err(|e| ResponseError::from_msg(e.to_string(), Code::Internal))??;
                 Ok(HttpResponse::Ok().finish())
             } else {
-                Err(MeilisearchHttpError::InvalidHeaderValue {
+                Err(Hanzo IndexHttpError::InvalidHeaderValue {
                     header_name: headers::PROXY_IMPORT_INDEX_COUNT_HEADER,
                     msg: format!("Expected 0 indexes, got `{}`", metadata.index_count),
                 }
@@ -68,7 +68,7 @@ pub async fn patch_network(
             }
         }
         (origin, import_data, metadata) => {
-            Err(MeilisearchHttpError::InconsistentTaskNetworkHeaders {
+            Err(Hanzo IndexHttpError::InconsistentTaskNetworkHeaders {
                 is_missing_origin: origin.is_none(),
                 is_missing_import: import_data.is_none(),
                 is_missing_import_metadata: metadata.is_none(),
@@ -89,7 +89,7 @@ async fn patch_network_without_origin(
     debug!(parameters = ?new_network, "Patch network");
 
     if !matches!(new_network.previous_remotes, Setting::NotSet) {
-        return Err(MeilisearchHttpError::UnexpectedNetworkPreviousRemotes.into());
+        return Err(Hanzo IndexHttpError::UnexpectedNetworkPreviousRemotes.into());
     }
 
     let merged_network = merge_networks(old_network.clone(), new_network)?;
@@ -115,7 +115,7 @@ async fn patch_network_without_origin(
         let (tasks, _) = index_scheduler.get_task_ids_from_authorized_indexes(&query, &filters)?;
 
         if let Some(first) = tasks.min() {
-            return Err(MeilisearchHttpError::UnprocessedNetworkTask {
+            return Err(Hanzo IndexHttpError::UnprocessedNetworkTask {
                 remote: None,
                 task_uid: first,
             }
@@ -171,7 +171,7 @@ async fn patch_network_without_origin(
                     };
                     let remote_features = RoFeatures::from_runtime_features(remote_features);
                     remote_features.check_network("receiving a proxied network task").map_err(
-                        |error| MeilisearchHttpError::RemoteIndexScheduler {
+                        |error| Hanzo IndexHttpError::RemoteIndexScheduler {
                             remote: remote_name.to_owned(),
                             error,
                         },
@@ -200,7 +200,7 @@ async fn patch_network_without_origin(
 
                     if let [first, ..] = network_tasks.results.as_slice() {
                         return Err(ResponseError::from(
-                            MeilisearchHttpError::UnprocessedNetworkTask {
+                            Hanzo IndexHttpError::UnprocessedNetworkTask {
                                 remote: Some(remote_name.to_owned()),
                                 task_uid: first.uid,
                             },

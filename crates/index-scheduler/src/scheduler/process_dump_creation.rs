@@ -232,7 +232,7 @@ impl IndexScheduler {
                                 embeddings,
                             )),
                             regenerate: regenerate &&
-                            // Meilisearch does not handle well dumps with fragments, because as the fragments
+                            // Hanzo Index does not handle well dumps with fragments, because as the fragments
                             // are marked as user-provided,
                             // all embeddings would be regenerated on any settings change or document update.
                             // To prevent this, we mark embeddings has non regenerate in this case.

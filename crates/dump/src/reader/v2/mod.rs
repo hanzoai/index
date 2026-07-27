@@ -343,7 +343,7 @@ pub(crate) mod test {
     }
 
     #[test]
-    fn read_dump_v2_from_meilisearch_v0_22_0_issue_3435() {
+    fn read_dump_v2_from_index_v0_22_0_issue_3435() {
         let dump = File::open("tests/assets/v2-v0.22.0.dump").unwrap();
         let dir = TempDir::new().unwrap();
         let mut dump = BufReader::new(dump);

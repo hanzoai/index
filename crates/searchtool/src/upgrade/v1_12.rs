@@ -1,5 +1,5 @@
 //! The breaking changes that happened between the v1.11 and the v1.12 are:
-//! - The new indexer changed the update files format from OBKV to ndjson. https://github.com/meilisearch/meilisearch/pull/4900
+//! - The new indexer changed the update files format from OBKV to ndjson. https://github.com/hanzoai/index/pull/4900
 
 use std::borrow::Cow;
 use std::io::BufWriter;

@@ -110,9 +110,9 @@ mod webhooks;
     tags(
         (name = "Stats", description = "Stats gives extended information and metrics about indexes and the database."),
         (name = "Health", description = "The health check endpoint enables you to periodically test the health of your index instance."),
-        (name = "Version", description = "Returns the version of the running Meilisearch instance."),
-        (name = "Backups", description = "Meilisearch offers two types of backups: snapshots and dumps. Snapshots are mainly intended as a safeguard, while dumps are useful when migrating Meilisearch."),
-        (name = "Export", description = "Export documents and settings from this instance to a remote Meilisearch server."),
+        (name = "Version", description = "Returns the version of the running index instance."),
+        (name = "Backups", description = "Hanzo Index offers two types of backups: snapshots and dumps. Snapshots are mainly intended as a safeguard, while dumps are useful when migrating Hanzo Index."),
+        (name = "Export", description = "Export documents and settings from this instance to a remote index server."),
         (name = "Async task management", description = "Routes for listing and managing batches and tasks (asynchronous operations)."),
     ),
     modifiers(&OpenApiAuth),
@@ -122,7 +122,7 @@ mod webhooks;
     )),
     components(schemas(PaginationView<KeyView>, PaginationView<IndexView>, IndexView, DocumentDeletionByFilter, AllBatches, BatchStats, ProgressStepView, ProgressView, BatchView, RuntimeTogglableFeatures, SwapIndexesPayload, DocumentEditionByFunction, MergeFacets, FederationOptions, SearchQueryWithIndex, Federation, FederatedSearch, FederatedSearchResult, SearchResults, SearchResultWithIndex, SimilarQuery, SimilarResult, PaginationView<serde_json::Value>, BrowseQuery, UpdateIndexRequest, IndexUid, IndexCreateRequest, KeyView, Action, CreateApiKey, UpdateStderrLogs, LogMode, GetLogs, IndexStats, Stats, HealthStatus, HealthResponse, VersionResponse, Code, ErrorType, AllTasks, TaskView, Status, DetailsView, ResponseError, Settings<Unchecked>, Settings<Checked>, TypoSettings, MinWordSizeTyposSetting, FacetingSettings, PaginationSettings, SummarizedTaskView, Kind, Network, Remote, Shard, FilterableAttributesRule, FilterableAttributesPatterns, AttributePatterns, FilterableAttributesFeatures, FilterFeatures, Export, WebhookSettings, WebhookResults, WebhookWithMetadataRedactedAuthorization, search_types::milli::vector::VectorStoreBackend, ListFields, ListFieldsFilter, SizeFormat))
 )]
-pub struct MeilisearchApi;
+pub struct Hanzo IndexApi;
 
 pub fn get_task_id(req: &HttpRequest, opt: &Opt) -> Result<Option<TaskId>, ResponseError> {
     if !opt.experimental_replication_parameters {
@@ -174,7 +174,7 @@ pub fn is_dry_run(req: &HttpRequest, opt: &Opt) -> Result<bool, ResponseError> {
         .is_some_and(|s| s.to_lowercase() == "true"))
 }
 
-/// Parse the `Meili-Include-Metadata` header from an HTTP request.
+/// Parse the `Index-Include-Metadata` header from an HTTP request.
 ///
 /// Returns `true` if the header is present and set to "true" or "1"
 /// (case-insensitive).
@@ -408,14 +408,14 @@ impl IndexUpdateResponse {
 /// Always return a 200 with:
 /// ```json
 /// {
-///     "status": "Meilisearch is running"
+///     "status": "Hanzo Index is running"
 /// }
 /// ```
 pub async fn running() -> HttpResponse {
-    HttpResponse::Ok().json(serde_json::json!({ "status": "Meilisearch is running" }))
+    HttpResponse::Ok().json(serde_json::json!({ "status": "Hanzo Index is running" }))
 }
 
-/// Global statistics for the Meilisearch instance
+/// Global statistics for the index instance
 #[derive(Serialize, Debug, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Stats {
@@ -434,7 +434,7 @@ pub struct Stats {
 
 /// Get stats of all indexes
 ///
-/// Return statistics for the Meilisearch instance and for each index. Includes database size, last update time, document counts, and indexing status per index.
+/// Return statistics for the index instance and for each index. Includes database size, last update time, document counts, and indexing status per index.
 #[routes::path(
     override_tag = "Stats",
     security(("Bearer" = ["stats.get", "stats.*", "*"])),
@@ -502,7 +502,7 @@ pub fn create_all_stats(
     for index_uid in index_scheduler.index_names()? {
         // Accumulate the size of all indexes, even unauthorized ones, so
         // as to return a database_size representative of the correct database size on disk.
-        // See <https://github.com/meilisearch/meilisearch/pull/3541#discussion_r1126747643> for context.
+        // See <https://github.com/hanzoai/index/pull/3541#discussion_r1126747643> for context.
         let stats = index_scheduler.index_stats(&index_uid)?;
         database_size += stats.inner_stats.database_size;
         used_database_size += stats.inner_stats.used_database_size;
@@ -535,17 +535,17 @@ pub fn create_all_stats(
 #[derive(Serialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 struct VersionResponse {
-    /// The commit used to compile this build of Meilisearch.
+    /// The commit used to compile this build of Hanzo Index.
     commit_sha: String,
     /// The date of this build.
     commit_date: String,
-    /// The version of Meilisearch.
+    /// The version of Hanzo Index.
     pkg_version: String,
 }
 
 /// Get version
 ///
-/// Return the current Meilisearch version, including the commit SHA and build date.
+/// Return the current Hanzo Index version, including the commit SHA and build date.
 #[routes::path(
     override_tag = "Version",
     security(("Bearer" = ["version", "*"])),

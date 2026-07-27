@@ -50,7 +50,7 @@ async fn run_inner(args: TestArgs) -> anyhow::Result<()> {
         Some(Duration::from_secs(3600)), // 1h
     )?);
 
-    let meili_client = Arc::new(Client::new(
+    let index_client = Arc::new(Client::new(
         Some("http://127.0.0.1:7700".into()),
         Some("masterKey"),
         Some(Duration::from_secs(args.common.tasks_queue_timeout_secs)),
@@ -76,7 +76,7 @@ async fn run_inner(args: TestArgs) -> anyhow::Result<()> {
         }
 
         let name = workload.name.clone();
-        match workload.run(&args, &assets_client, &meili_client, asset_folder).await {
+        match workload.run(&args, &assets_client, &index_client, asset_folder).await {
             Ok(_) => match args.update_responses || args.add_missing_responses {
                 true => println!(
                     "🛠️ Workload {name} was updated, please check the output and restart the test"

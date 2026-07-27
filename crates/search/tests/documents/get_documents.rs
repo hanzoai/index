@@ -1408,7 +1408,7 @@ async fn test_fetch_documents_pagination_with_sorting() {
     "###);
 }
 
-// <https://github.com/meilisearch/meilisearch/issues/5998>
+// <https://github.com/hanzoai/index/issues/5998>
 #[actix_rt::test]
 async fn get_document_sort_field_not_in_any_document() {
     let server = Server::new_shared();

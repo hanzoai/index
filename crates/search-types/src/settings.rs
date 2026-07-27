@@ -149,7 +149,7 @@ pub struct FacetingSettings {
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 #[deserr(rename_all = camelCase, deny_unknown_fields)]
 pub struct PaginationSettings {
-    /// Maximum number of search results Meilisearch can return. Limit and offset cannot go beyond this value.
+    /// Maximum number of search results Hanzo Index can return. Limit and offset cannot go beyond this value.
     #[serde(default, skip_serializing_if = "Setting::is_not_set")]
     #[deserr(default)]
     #[schema(value_type = Option<usize>, default = 1000, example = json!(1000))]
@@ -273,7 +273,7 @@ pub struct Settings<T> {
     #[schema(value_type = Option<Vec<String>>, default = json!([]), example = json!(["|"]))]
     pub separator_tokens: Setting<BTreeSet<String>>,
 
-    /// Strings Meilisearch parses as a single term. Useful for names or domain terms.
+    /// Strings Hanzo Index parses as a single term. Useful for names or domain terms.
     #[serde(default, skip_serializing_if = "Setting::is_not_set")]
     #[deserr(default, error = DeserrJsonError<InvalidSettingsDictionary>)]
     #[schema(value_type = Option<Vec<String>>, default = json!([]), example = json!(["J. R. R."]))]
@@ -1336,7 +1336,7 @@ pub(crate) mod test {
         hide_secret(&mut secret, 0);
         assert_eq!(secret, "12345XXXXXX...");
 
-        // related to https://linear.app/meilisearch/issue/SP-1771
+        // related to https://linear.app/index/issue/SP-1771
         let mut secret = String::from("ひらがな6789012345678901234567890");
         hide_secret(&mut secret, 0);
         assert_eq!(secret, "ひらXXXXXX...");

@@ -99,13 +99,13 @@ impl From<TaskNetwork> for DbTaskNetwork {
     }
 }
 
-/// Information about the origin of a task in a distributed Meilisearch
+/// Information about the origin of a task in a distributed Hanzo Index
 /// deployment. This tracks where a task was originally created before being
 /// replicated to other nodes.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Origin {
-    /// The name of the remote Meilisearch instance where this task originated.
+    /// The name of the remote index instance where this task originated.
     /// This corresponds to a remote defined in the network configuration.
     pub remote_name: String,
     /// The unique task identifier on the originating remote. This allows
@@ -143,13 +143,13 @@ pub struct ImportMetadata {
     pub total_index_documents: u64,
 }
 
-/// Represents a task that was replicated to a remote Meilisearch instance.
+/// Represents a task that was replicated to a remote index instance.
 /// Contains either the remote task UID on success, or an error if
 /// replication failed.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoteTask {
-    /// The unique task identifier assigned by the remote Meilisearch instance.
+    /// The unique task identifier assigned by the remote index instance.
     /// Present when the task was successfully replicated to the remote.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schema(value_type = Option<u32>)]
@@ -552,7 +552,7 @@ impl InRemote {
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 enum ImportState {
-    /// Initially Meilisearch doesn't know how many documents it should expect
+    /// Initially Hanzo Index doesn't know how many documents it should expect
     /// from a remote. Any task from each remote contains the information of
     /// how many indexes will be imported, and the number of documents to
     /// import for the index of the task.
@@ -887,15 +887,15 @@ pub mod headers {
         }
     }
 
-    pub const PROXY_ORIGIN_REMOTE_HEADER: &str = "X-Meili-Proxy-Origin-Remote";
-    pub const PROXY_ORIGIN_TASK_UID_HEADER: &str = "X-Meili-Proxy-Origin-TaskUid";
-    pub const PROXY_ORIGIN_NETWORK_VERSION_HEADER: &str = "X-Meili-Proxy-Origin-Network-Version";
-    pub const PROXY_IMPORT_REMOTE_HEADER: &str = "X-Meili-Proxy-Import-Remote";
-    pub const PROXY_IMPORT_INDEX_COUNT_HEADER: &str = "X-Meili-Proxy-Import-Index-Count";
-    pub const PROXY_IMPORT_INDEX_HEADER: &str = "X-Meili-Proxy-Import-Index";
-    pub const PROXY_IMPORT_TASK_KEY_HEADER: &str = "X-Meili-Proxy-Import-Task-Key";
-    pub const PROXY_IMPORT_DOCS_HEADER: &str = "X-Meili-Proxy-Import-Docs";
-    pub const PROXY_IMPORT_TOTAL_INDEX_DOCS_HEADER: &str = "X-Meili-Proxy-Import-Total-Index-Docs";
+    pub const PROXY_ORIGIN_REMOTE_HEADER: &str = "X-Index-Proxy-Origin-Remote";
+    pub const PROXY_ORIGIN_TASK_UID_HEADER: &str = "X-Index-Proxy-Origin-TaskUid";
+    pub const PROXY_ORIGIN_NETWORK_VERSION_HEADER: &str = "X-Index-Proxy-Origin-Network-Version";
+    pub const PROXY_IMPORT_REMOTE_HEADER: &str = "X-Index-Proxy-Import-Remote";
+    pub const PROXY_IMPORT_INDEX_COUNT_HEADER: &str = "X-Index-Proxy-Import-Index-Count";
+    pub const PROXY_IMPORT_INDEX_HEADER: &str = "X-Index-Proxy-Import-Index";
+    pub const PROXY_IMPORT_TASK_KEY_HEADER: &str = "X-Index-Proxy-Import-Task-Key";
+    pub const PROXY_IMPORT_DOCS_HEADER: &str = "X-Index-Proxy-Import-Docs";
+    pub const PROXY_IMPORT_TOTAL_INDEX_DOCS_HEADER: &str = "X-Index-Proxy-Import-Total-Index-Docs";
 
     fn get_header_and_legacy<'a, T: GetHeader>(
         t: &'a T,

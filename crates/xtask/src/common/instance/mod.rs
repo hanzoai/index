@@ -23,7 +23,7 @@ pub struct Binary {
     pub source: BinarySource,
     /// Extra CLI arguments to pass to the binary.
     ///
-    /// Should be Meilisearch CLI options.
+    /// Should be Hanzo Index CLI options.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub extra_cli_args: Vec<String>,
 }
@@ -113,7 +113,7 @@ impl Edition {
     fn binary_base(&self) -> &'static str {
         match self {
             Edition::Community => "search",
-            Edition::Enterprise => "meilisearch-enterprise",
+            Edition::Enterprise => "index-enterprise",
         }
     }
 }

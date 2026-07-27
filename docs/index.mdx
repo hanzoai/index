@@ -40,7 +40,7 @@ per tenant.
 
 ```
 +------------------------------------------------------------------+
-|                        HANZO SEARCH                               |
+|                        HANZO INDEX                                |
 +------------------------------------------------------------------+
 |                                                                    |
 |  +------------------------------+  +----------------------------+ |
@@ -153,27 +153,32 @@ print(resp.json()["hits"])
 
 ### JavaScript / TypeScript
 
-```typescript
-import { HanzoSearch } from '@hanzo/search'
+There is no JavaScript SDK; the API is JSON over HTTP, so `fetch` is the client.
 
-const client = new HanzoSearch({
-  host: 'http://localhost:7700',
-  apiKey: 'YOUR_MASTER_KEY',
-})
+```typescript
+const BASE = 'http://localhost:7700'
+const headers = {
+  Authorization: 'Bearer YOUR_MASTER_KEY',
+  'Content-Type': 'application/json',
+}
 
 // Index documents
-const index = client.index('products')
-await index.addDocuments([
-  { id: 1, title: 'Hanzo Agent SDK', category: 'AI' },
-  { id: 2, title: 'Hanzo MCP Server', category: 'Infrastructure' },
-])
+await fetch(`${BASE}/indexes/products/documents`, {
+  method: 'POST',
+  headers,
+  body: JSON.stringify([
+    { id: 1, title: 'Hanzo Agent SDK', category: 'AI' },
+    { id: 2, title: 'Hanzo MCP Server', category: 'Infrastructure' },
+  ]),
+})
 
 // Search
-const results = await index.search('agent', {
-  limit: 10,
-  attributesToHighlight: ['title'],
+const res = await fetch(`${BASE}/indexes/products/search`, {
+  method: 'POST',
+  headers,
+  body: JSON.stringify({ q: 'agent', limit: 10, attributesToHighlight: ['title'] }),
 })
-console.log(results.hits)
+console.log((await res.json()).hits)
 ```
 
 ## Indexing
@@ -191,7 +196,7 @@ curl -X POST 'http://localhost:7700/indexes' \
 
 ### Add Documents
 
-Documents are JSON objects. Hanzo Search accepts arrays, NDJSON, and CSV formats. The maximum payload size defaults to 100 MB.
+Documents are JSON objects. Hanzo Index accepts arrays, NDJSON, and CSV formats. The maximum payload size defaults to 100 MB.
 
 ```bash
 # JSON array
@@ -354,7 +359,7 @@ curl -X POST 'http://localhost:7700/indexes/products/search' \
 
 ### Chat Completions
 
-Hanzo Search includes an OpenAI-compatible chat completions endpoint. The LLM automatically searches your indexes to answer questions, with streaming SSE responses:
+Hanzo Index includes an OpenAI-compatible chat completions endpoint. The LLM automatically searches your indexes to answer questions, with streaming SSE responses:
 
 ```bash
 curl -X POST 'http://localhost:7700/chats/default/chat/completions' \

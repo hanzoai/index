@@ -5,7 +5,7 @@
 # Checks if the current tag ($GITHUB_REF) corresponds to the latest release tag on GitHub
 # Returns "true" or "false" (as a string).
 
-GITHUB_API='https://api.github.com/repos/hanzoai/search/releases'
+GITHUB_API='https://api.github.com/repos/hanzoai/index/releases'
 PNAME='search'
 
 # FUNCTIONS

@@ -1,4 +1,4 @@
 {
-  "title": "Hanzo Search",
+  "title": "Hanzo Index",
   "description": "AI-powered search engine built in Rust with sub-50ms response times, hybrid semantic/full-text search, faceted filtering, geo search, chat completions, and multi-language support."
 }

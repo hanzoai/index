@@ -1,6 +1,6 @@
 <p align="center"><img src=".github/hero.svg" alt="search" width="880"></p>
 
-<h1 align="center">Hanzo Search</h1>
+<h1 align="center">Hanzo Index</h1>
 
 <h4 align="center">
   <a href="https://hanzo.ai">Website</a> |
@@ -8,17 +8,17 @@
 </h4>
 
 <p align="center">
-  <a href="https://deps.rs/repo/github/hanzoai/search"><img src="https://deps.rs/repo/github/hanzoai/search/status.svg" alt="Dependency status"></a>
+  <a href="https://deps.rs/repo/github/hanzoai/index"><img src="https://deps.rs/repo/github/hanzoai/index/status.svg" alt="Dependency status"></a>
   <a href="./LICENSE-MIT"><img src="https://img.shields.io/badge/license-MIT-informational" alt="License"></a>
 </p>
 
 <p align="center">⚡ A lightning-fast search engine that fits effortlessly into your apps, websites, and workflow 🔍</p>
 
-Hanzo Search helps you shape a delightful search experience in a snap, offering features that work out of the box to speed up your workflow.
+Hanzo Index helps you shape a delightful search experience in a snap, offering features that work out of the box to speed up your workflow.
 
 Forked from [hanzoai/index](https://github.com/hanzoai/index) (MIT AND BUSL-1.1).
 
-> **License:** Hanzo Search is distributed under the MIT License (see [`LICENSE-MIT`](./LICENSE-MIT)). This distribution uses **only** the MIT-licensed core; it does **not** include or use the Business Source License 1.1 (BUSL-1.1) Enterprise Edition code ([`LICENSE-EE`](./LICENSE-EE)). See [License](#-license) below.
+> **License:** Hanzo Index is distributed under the MIT License (see [`LICENSE-MIT`](./LICENSE-MIT)). This distribution uses **only** the MIT-licensed core; it does **not** include or use the Business Source License 1.1 (BUSL-1.1) Enterprise Edition code ([`LICENSE-EE`](./LICENSE-EE)). See [License](#-license) below.
 
 ## ✨ Features
 - **Hybrid search:** Combine the best of both semantic & full-text search to get the most relevant results
@@ -31,8 +31,8 @@ Forked from [hanzoai/index](https://github.com/hanzoai/index) (MIT AND BUSL-1.1)
 - **Extensive language support:** search datasets in any language, with optimized support for Chinese, Japanese, Hebrew, and languages using the Latin alphabet
 - **Security management:** control which users can access what data with API keys that allow fine-grained permissions handling
 - **Multi-Tenancy:** personalize search results for any number of application tenants
-- **Highly Customizable:** customize Hanzo Search to your specific needs or use our out-of-the-box and hassle-free presets
-- **RESTful API:** integrate Hanzo Search in your technical stack with our plugins and SDKs
+- **Highly Customizable:** customize Hanzo Index to your specific needs or use our out-of-the-box and hassle-free presets
+- **RESTful API:** integrate Hanzo Index in your technical stack with our plugins and SDKs
 - **Conversational search:** let users ask questions in natural language and get AI-generated answers grounded in your search results
 - **Personalization:** tailor search results to individual users based on their preferences and behavior
 - **Search rules:** define custom rules to dynamically adjust search behavior based on context
@@ -43,15 +43,15 @@ Forked from [hanzoai/index](https://github.com/hanzoai/index) (MIT AND BUSL-1.1)
 
 ## 📖 Documentation
 
-You can consult the Hanzo Search documentation at [docs.hanzo.ai](https://docs.hanzo.ai).
+You can consult the Hanzo Index documentation at [docs.hanzo.ai](https://docs.hanzo.ai).
 
 ## 🚀 Getting started
 
-For basic instructions on how to set up Hanzo Search, add documents to an index, and search for documents, take a look at our [documentation](https://docs.hanzo.ai) guide.
+For basic instructions on how to set up Hanzo Index, add documents to an index, and search for documents, take a look at our [documentation](https://docs.hanzo.ai) guide.
 
 ## 🧰 SDKs & integration tools
 
-Install one of our SDKs in your project for seamless integration between Hanzo Search and your favorite language or framework.
+Install one of our SDKs in your project for seamless integration between Hanzo Index and your favorite language or framework.
 
 Take a look at the complete integration list in the [documentation](https://docs.hanzo.ai).
 
@@ -59,13 +59,13 @@ Take a look at the complete integration list in the [documentation](https://docs
 
 Experienced users will want to keep the [API Reference](https://docs.hanzo.ai) close at hand.
 
-We also offer a wide range of dedicated guides to all Hanzo Search features, such as filtering, sorting, geosearch, API keys, and tenant tokens.
+We also offer a wide range of dedicated guides to all Hanzo Index features, such as filtering, sorting, geosearch, API keys, and tenant tokens.
 
 Finally, for more in-depth information, refer to our articles explaining fundamental concepts such as documents and indexes.
 
 ## 🧾 License
 
-Hanzo Search is distributed under the [MIT License](./LICENSE-MIT).
+Hanzo Index is distributed under the [MIT License](./LICENSE-MIT).
 
 This distribution uses **only** the MIT-licensed core search engine: fast and relevant full-text, semantic, or hybrid search, free to use for anyone, including commercial usage.
 
@@ -73,7 +73,7 @@ It does **not** include or use the upstream Business Source License 1.1 (BUSL-1.
 
 ### 📦 Upstream attribution
 
-Hanzo Search is based on [Hanzo Index](https://github.com/hanzoai/index), a search engine created by Index SAS, available under the MIT License. The upstream copyright and license notices are retained in [`LICENSE`](./LICENSE) and [`LICENSE-MIT`](./LICENSE-MIT).
+Hanzo Index is a fork of [Meilisearch](https://github.com/meilisearch/meilisearch), a search engine created by Meili SAS, available under the MIT License. The upstream copyright and license notices are retained in [`LICENSE`](./LICENSE) and [`LICENSE-MIT`](./LICENSE-MIT).
 
 ### 📦 External crates
 
@@ -84,15 +84,15 @@ This project vendors the following MIT-licensed external crates with code modifi
 
 ## 📊 Telemetry
 
-Hanzo Search collects **anonymized** usage data to help improve the product. You can deactivate this whenever you want; refer to the telemetry configuration in the [documentation](https://docs.hanzo.ai).
+Hanzo Index collects **anonymized** usage data to help improve the product. You can deactivate this whenever you want; refer to the telemetry configuration in the [documentation](https://docs.hanzo.ai).
 
 ## 👩‍💻 Contributing
 
-Hanzo Search is, and will always be, open-source. If you want to contribute to the project, please look at [our contribution guidelines](CONTRIBUTING.md).
+Hanzo Index is, and will always be, open-source. If you want to contribute to the project, please look at [our contribution guidelines](CONTRIBUTING.md).
 
 ## 📦 Versioning
 
-Hanzo Search releases and their associated binaries are available on the project's [releases page](https://github.com/hanzoai/search/releases).
+Hanzo Index releases and their associated binaries are available on the project's [releases page](https://github.com/hanzoai/index/releases).
 
 The binaries are versioned following [SemVer conventions](https://semver.org/). To know more, read our [versioning policy](./documentation/versioning-policy.md).
 

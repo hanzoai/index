@@ -23,7 +23,7 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Hanzo Search version:**
+**Hanzo Index version:**
 [e.g. v1.36.0]
 
 **Additional context**

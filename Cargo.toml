@@ -31,9 +31,9 @@ version = "1.45.2"
 authors = [
     "Hanzo AI <dev@hanzo.ai>",
 ]
-description = "Hanzo Search -- lightning-fast search engine for AI workloads"
+description = "Hanzo Index -- lightning-fast search engine for AI workloads"
 homepage = "https://hanzo.ai"
-repository = "https://github.com/hanzoai/search"
+repository = "https://github.com/hanzoai/index"
 readme = "README.md"
 edition = "2021"
 license = "MIT"

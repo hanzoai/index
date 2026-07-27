@@ -6,7 +6,7 @@ If you believe you have found a security vulnerability in any Hanzo-owned reposi
 
 ## Supported versions
 
-As long as we are pre-v1.0, only the latest version of Hanzo Search will be supported with security updates.
+As long as we are pre-v1.0, only the latest version of Hanzo Index will be supported with security updates.
 
 ## Reporting security issues
 

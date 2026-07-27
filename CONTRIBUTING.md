@@ -1,12 +1,12 @@
 # Contributing
 
-First, thank you for contributing to Hanzo Search! The goal of this document is to provide everything you need to start contributing.
+First, thank you for contributing to Hanzo Index! The goal of this document is to provide everything you need to start contributing.
 
-Remember that there are many ways to contribute other than writing code: improving [the documentation](https://docs.hanzo.ai/search), submitting [bug reports](https://github.com/hanzoai/search/issues/new?assignees=&labels=&template=bug_report.md&title=) and [feature requests](https://github.com/hanzoai/search/discussions)...
+Remember that there are many ways to contribute other than writing code: improving [the documentation](https://docs.hanzo.ai/index), submitting [bug reports](https://github.com/hanzoai/index/issues/new?assignees=&labels=&template=bug_report.md&title=) and [feature requests](https://github.com/hanzoai/index/discussions)...
 
-Hanzo Search can manage multiple indexes, handle the update store, and expose an HTTP API. Search and indexation are the domain of the core engine, [`milli`](https://github.com/hanzoai/search/tree/main/milli), while tokenization is handled by [the `charabia` library](https://github.com/meilisearch/charabia/).
+Hanzo Index can manage multiple indexes, handle the update store, and expose an HTTP API. Search and indexation are the domain of the core engine, [`milli`](https://github.com/hanzoai/index/tree/main/milli), while tokenization is handled by [the `charabia` library](https://github.com/meilisearch/charabia/).
 
-If Hanzo Search does not offer optimized support for your language, please consider contributing to `charabia` by following the [CONTRIBUTING.md file](https://github.com/meilisearch/charabia/blob/main/CONTRIBUTING.md) and integrating your intended normalizer/segmenter.
+If Hanzo Index does not offer optimized support for your language, please consider contributing to `charabia` by following the [CONTRIBUTING.md file](https://github.com/meilisearch/charabia/blob/main/CONTRIBUTING.md) and integrating your intended normalizer/segmenter.
 
 ## Table of Contents
 
@@ -34,13 +34,13 @@ In particular, in generated contributions:
 ## Assumptions
 
 1. **You're familiar with [GitHub](https://github.com) and the [Pull Requests (PR)](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests) workflow.**
-2. **You've read the Hanzo Search [documentation](https://docs.hanzo.ai/search).**
+2. **You've read the Hanzo Index [documentation](https://docs.hanzo.ai/index).**
 3. **You know about the [Hanzo community on Discord](https://discord.gg/hanzo).**
 
 ## How to Contribute
 
 1. Ensure your change has an issue! Find an
-   [existing issue](https://github.com/hanzoai/search/issues/) or [open a new issue](https://github.com/hanzoai/search/issues/new).
+   [existing issue](https://github.com/hanzoai/index/issues/) or [open a new issue](https://github.com/hanzoai/index/issues/new).
    * This is where you can get a feel if the change will be accepted or not.
 2. Once approved, [fork the repository](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) in your own GitHub account.
 3. [Create a new Git branch](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-and-deleting-branches-within-your-repository)
@@ -50,7 +50,7 @@ In particular, in generated contributions:
 
 ## Development Workflow
 
-### Setup and run Hanzo Search
+### Setup and run Hanzo Index
 
 ```bash
 cargo run --release
@@ -113,13 +113,13 @@ ulimit -Sn 3000
 
 #### Build tools
 
-Hanzo Search follows the [cargo xtask](https://github.com/matklad/cargo-xtask) workflow to provide some build tools.
+Hanzo Index follows the [cargo xtask](https://github.com/matklad/cargo-xtask) workflow to provide some build tools.
 
 Run `cargo xtask --help` from the root of the repository to find out what is available.
 
 #### Update the openAPI file if the API changed
 
-To update the openAPI file in the code, see [sprint_issue.md](https://github.com/hanzoai/search/blob/main/.github/ISSUE_TEMPLATE/sprint_issue.md#reminders-when-modifying-the-api).
+To update the openAPI file in the code, see [sprint_issue.md](https://github.com/hanzoai/index/blob/main/.github/ISSUE_TEMPLATE/sprint_issue.md#reminders-when-modifying-the-api).
 
 If you want to generate OpenAPI file manually:
 
@@ -211,7 +211,7 @@ See [this example PR](https://github.com/meilisearch/meilisearch/pull/6091/chang
 
 ### Logging
 
-Hanzo Search uses [`tracing`](https://lib.rs/crates/tracing) for logging purposes. Tracing logs are structured and can be displayed as JSON to the end user, so prefer passing arguments as fields rather than interpolating them in the message.
+Hanzo Index uses [`tracing`](https://lib.rs/crates/tracing) for logging purposes. Tracing logs are structured and can be displayed as JSON to the end user, so prefer passing arguments as fields rather than interpolating them in the message.
 
 Refer to the [documentation](https://docs.rs/tracing/0.1.40/tracing/index.html#using-the-macros) for the syntax of the spans and events.
 
@@ -270,11 +270,11 @@ Before merging a PR, the maintainer should ensure the following requirements are
 - If some tests cannot be automated, manual rigorous tests should be applied.
 - If there is a change in the DB: it's mandatory to manually test the `--experimental-dumpless-upgrade` on a DB of the previous minor version.
 - If necessary, the feature has been tested in the production environment (with [prototypes](./documentation/prototypes.md)).
-- If necessary, the [documentation](https://docs.hanzo.ai/search) related to the implemented feature in the PR is ready.
+- If necessary, the [documentation](https://docs.hanzo.ai/index) related to the implemented feature in the PR is ready.
 
 ## Publish Process (for internal team only)
 
-Hanzo Search follows the [Semantic Versioning Convention](https://semver.org/).
+Hanzo Index follows the [Semantic Versioning Convention](https://semver.org/).
 
 ### How to publish a new release
 

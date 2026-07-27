@@ -1,10 +1,10 @@
 contact_links:
   - name: Support questions & other
-    url: https://github.com/hanzoai/search/discussions/new
+    url: https://github.com/hanzoai/index/discussions/new
     about: For any other question, open a discussion in this repository
   - name: Feature request & feedback
-    url: https://github.com/hanzoai/search/discussions/categories/feedback-feature-proposal
+    url: https://github.com/hanzoai/index/discussions/categories/feedback-feature-proposal
     about: Feature requests and feedback. Please open a discussion or upvote an existing one.
   - name: Documentation issue
-    url: https://github.com/hanzoai/search/issues/new
+    url: https://github.com/hanzoai/index/issues/new
     about: For documentation issues, open an issue or a PR in this repository

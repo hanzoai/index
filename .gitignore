@@ -25,10 +25,10 @@
 .tmp*
 
 # Database snapshot
-crates/meilisearch/db.snapshot
+crates/search/db.snapshot
 
 # Fuzzcheck data for the facet indexing fuzz test
 crates/milli/fuzz/update::facet::incremental::fuzz::fuzz/
 
 # OpenAPI generator
-**/meilisearch-openapi.json
+**/index-openapi.json

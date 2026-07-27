@@ -1,16 +1,23 @@
 ---
-title: Hanzo Search
-description: AI-powered search engine built in Rust with sub-50ms response times, hybrid semantic/full-text search, faceted filtering, geo search, chat completions, and multi-language support.
+title: Hanzo Index
+description: Search index written in Rust — documents in, ranked results out. Hybrid semantic and full-text retrieval, faceted filtering, geo search, chat completions, and multi-language tokenization.
 ---
 
-# Hanzo Search
+# Hanzo Index
 
-Hanzo Search is a high-performance, AI-powered search engine built in Rust. It delivers sub-50ms query responses with typo tolerance, hybrid semantic and full-text search, faceted filtering, geo search, and built-in chat completions powered by LLMs.
+Hanzo Index is a search index written in Rust: you put documents in and get ranked
+results out. It does typo-tolerant full-text search, vector search, and the hybrid of
+the two, plus faceted filtering, geo search, and chat completions grounded in your own
+indexes.
 
-**Endpoint:** `search.hanzo.ai`
-**Gateway:** `api.hanzo.ai/v1/search/*`
-**Default Port:** `7700`
-**Source:** [github.com/hanzoai/search](https://github.com/hanzoai/search)
+One instance holds one tenant's indexes behind one master key, so a deployment is
+per tenant.
+
+**Default port:** `7700`
+**Image:** `ghcr.io/hanzoai/index`
+**Source:** [github.com/hanzoai/index](https://github.com/hanzoai/index)
+
+`search.hanzo.ai` is Hanzo's own instance, serving the docs corpus.
 
 ## Features
 
@@ -66,32 +73,37 @@ Hanzo Search is a high-performance, AI-powered search engine built in Rust. It d
 ```
 
 **Core crates:**
-- `hanzo-search` -- HTTP server, routes, authentication, search queue
+- `search` -- HTTP server, routes, authentication, search queue
 - `milli` -- Core search engine: indexing, ranking, filtering, vector search, hybrid search
 - `index-scheduler` -- Asynchronous task scheduling and batch processing
-- `hanzo-search-auth` -- API key management and tenant token validation
+- `search-auth` -- API key management and tenant token validation
 - `filter-parser` -- Filter expression parser for faceted search
-- `hanzo-search-types` -- Shared types, settings, and error codes
+- `search-types` -- Shared types, settings, and error codes
+- `searchtool` -- Command-line companion for dumps, snapshots, and database inspection
 
 ## Quick Start
 
 ### Docker
 
+The container's WORKDIR is `/data`, so that is where a volume belongs.
+
 ```bash
 docker run -d \
-  --name hanzo-search \
+  --name index \
   -p 7700:7700 \
-  -v hanzo_search_data:/meili_data \
-  hanzoai/search:latest \
-  hanzo-search --master-key="YOUR_MASTER_KEY"
+  -v index_data:/data \
+  ghcr.io/hanzoai/index:latest \
+  /bin/search --master-key="YOUR_MASTER_KEY"
 ```
 
 ### From Source
 
+`cargo build` emits binaries named after the crates, so the server is `search`.
+
 ```bash
-git clone https://github.com/hanzoai/search.git && cd search
+git clone https://github.com/hanzoai/index.git && cd index
 cargo build --release
-./target/release/hanzo-search --master-key="YOUR_MASTER_KEY"
+./target/release/search --master-key="YOUR_MASTER_KEY"
 ```
 
 ### curl
@@ -431,16 +443,16 @@ Reduce vector storage by enabling quantization on embedders:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `MEILI_DB_PATH` | `./data.ms` | Database storage directory |
-| `MEILI_HTTP_ADDR` | `localhost:7700` | Bind address and port |
-| `MEILI_MASTER_KEY` | -- | Master API key (required in production) |
-| `MEILI_ENV` | `development` | `development` or `production` |
-| `MEILI_HTTP_PAYLOAD_SIZE_LIMIT` | `100 MB` | Maximum request payload size |
-| `MEILI_LOG_LEVEL` | `INFO` | Log level: OFF, ERROR, WARN, INFO, DEBUG, TRACE |
-| `MEILI_NO_ANALYTICS` | `false` | Disable telemetry |
-| `MEILI_SCHEDULE_SNAPSHOT` | `false` | Enable periodic snapshots |
-| `MEILI_SNAPSHOT_DIR` | `snapshots/` | Snapshot storage directory |
-| `MEILI_DUMP_DIR` | `dumps/` | Dump storage directory |
+| `INDEX_DB_PATH` | `./data.ms` | Database storage directory |
+| `INDEX_HTTP_ADDR` | `localhost:7700` | Bind address and port |
+| `INDEX_MASTER_KEY` | -- | Master API key (required in production) |
+| `INDEX_ENV` | `development` | `development` or `production` |
+| `INDEX_HTTP_PAYLOAD_SIZE_LIMIT` | `100 MB` | Maximum request payload size |
+| `INDEX_LOG_LEVEL` | `INFO` | Log level: OFF, ERROR, WARN, INFO, DEBUG, TRACE |
+| `INDEX_NO_ANALYTICS` | `false` | Disable telemetry |
+| `INDEX_SCHEDULE_SNAPSHOT` | `false` | Enable periodic snapshots |
+| `INDEX_SNAPSHOT_DIR` | `snapshots/` | Snapshot storage directory |
+| `INDEX_DUMP_DIR` | `dumps/` | Dump storage directory |
 
 ### S3 Snapshot Configuration
 
@@ -448,11 +460,11 @@ Stream snapshots to S3-compatible storage (Hanzo S3, AWS S3):
 
 | Variable | Description |
 |----------|-------------|
-| `MEILI_S3_BUCKET_URL` | S3 endpoint URL |
-| `MEILI_S3_BUCKET_REGION` | Bucket region |
-| `MEILI_S3_BUCKET_NAME` | Bucket name |
-| `MEILI_S3_ACCESS_KEY` | Access key |
-| `MEILI_S3_SECRET_KEY` | Secret key |
+| `INDEX_S3_BUCKET_URL` | S3 endpoint URL |
+| `INDEX_S3_BUCKET_REGION` | Bucket region |
+| `INDEX_S3_BUCKET_NAME` | Bucket name |
+| `INDEX_S3_ACCESS_KEY` | Access key |
+| `INDEX_S3_SECRET_KEY` | Secret key |
 
 ### Index Settings
 
@@ -499,10 +511,16 @@ curl -X POST 'http://localhost:7700/keys' \
 
 | Language | Package | Repository |
 |----------|---------|------------|
-| JavaScript / TypeScript | `@hanzo/search` | [hanzoai/search-js](https://github.com/hanzoai/search-js) |
-| Python | `hanzo-search` | [hanzoai/search-python](https://github.com/hanzoai/search-python) |
 | Go | `github.com/hanzoai/search-go` | [hanzoai/search-go](https://github.com/hanzoai/search-go) |
-| Rust | `hanzo-search` | [hanzoai/search-rust](https://github.com/hanzoai/search-rust) |
+
+Every route is plain JSON over HTTP with a bearer token, so any HTTP client works. For
+languages without an SDK, generate one from the OpenAPI document:
+
+```bash
+cargo run -p openapi-generator          # writes index-openapi.json
+```
+
+A build with `--features swagger` also serves it interactively at `/scalar`.
 
 ## API Reference
 

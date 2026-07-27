@@ -389,7 +389,7 @@ async fn geo_bounding_box() {
 
 #[actix_rt::test]
 async fn bug_5904() {
-    // https://github.com/hanzoai/index/issues/5904
+    // https://github.com/meilisearch/meilisearch/issues/5904
 
     let server = Server::new_shared();
     let index = server.unique_index();

@@ -74,7 +74,7 @@ async fn geo_bounding_box_with_string_and_number() {
 
 #[actix_rt::test]
 async fn bug_4640() {
-    // https://github.com/hanzoai/index/issues/4640
+    // https://github.com/meilisearch/meilisearch/issues/4640
     let index = shared_index_with_geo_documents().await;
 
     // Sort the document with the second one first

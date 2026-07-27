@@ -159,7 +159,7 @@ async fn experimental_feature_metrics() {
     search_snap::snapshot!(code, @"400 Bad Request");
     search_snap::snapshot!(search_snap::json_string!(response), @r###"
     {
-      "message": "Getting metrics requires enabling the `metrics` experimental feature. See https://github.com/index/product/discussions/625",
+      "message": "Getting metrics requires enabling the `metrics` experimental feature. See https://github.com/meilisearch/product/discussions/625",
       "code": "feature_not_enabled",
       "type": "invalid_request",
       "link": "https://docs.hanzo.ai/errors#feature_not_enabled"

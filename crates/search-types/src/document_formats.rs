@@ -55,7 +55,7 @@ impl Display for DocumentFormatError {
                         _ => se.to_string(),
                     };
 
-                    // https://github.com/hanzoai/index/issues/2107
+                    // https://github.com/meilisearch/meilisearch/issues/2107
                     // The user input maybe insanely long. We need to truncate it.
                     let ellipsis = "...";
                     let trim_input_prefix_len = 50;

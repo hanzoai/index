@@ -1,5 +1,5 @@
 //! The breaking changes that happened between the v1.10 and the v1.11 are:
-//! - Arroy went from the v0.4.0 to the v0.5.0, see this release note to get the whole context: https://github.com/index/arroy/releases/tag/v0.5.0
+//! - Arroy went from the v0.4.0 to the v0.5.0, see this release note to get the whole context: https://github.com/meilisearch/arroy/releases/tag/v0.5.0
 //!   - The `angular` distance has been renamed to `cosine` => We only need to update the string in the metadata.
 //!   - Reorganize the `NodeId` to make the appending of vectors work => We'll have to update the keys of almost all items in the DB.
 //!   - Store the list of updated IDs directly in LMDB instead of a roaring bitmap => This shouldn't be an issue since we are never supposed to commit this roaring bitmap, but it's not forbidden by arroy so ensuring it works is probably better than anything.

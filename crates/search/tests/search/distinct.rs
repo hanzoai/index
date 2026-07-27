@@ -143,7 +143,7 @@ static NESTED_DOCUMENTS: Lazy<Value> = Lazy::new(|| {
 static DOCUMENT_PRIMARY_KEY: &str = "id";
 static DOCUMENT_DISTINCT_KEY: &str = "product_id";
 
-/// testing: https://github.com/hanzoai/index/issues/4078
+/// testing: https://github.com/meilisearch/meilisearch/issues/4078
 #[actix_rt::test]
 async fn distinct_search_with_offset_no_ranking() {
     let server = Server::new_shared();
@@ -202,7 +202,7 @@ async fn distinct_search_with_offset_no_ranking() {
     snapshot!(response["estimatedTotalHits"], @"6");
 }
 
-/// testing: https://github.com/hanzoai/index/issues/4130
+/// testing: https://github.com/meilisearch/meilisearch/issues/4130
 #[actix_rt::test]
 async fn distinct_search_with_pagination_no_ranking() {
     let server = Server::new_shared();

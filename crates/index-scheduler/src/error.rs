@@ -184,7 +184,7 @@ pub enum Error {
         index_scheduler_version: (u32, u32, u32),
         package_version: (u32, u32, u32),
     },
-    #[error("Index `{index}` is in version v{}.{}.{}, but Hanzo Index is in version v{}.{}.{}.\n  - note: this is an internal error, please consider filing a bug report: <https://github.com/hanzoai/index/issues/new?template=bug_report.md>",
+    #[error("Index `{index}` is in version v{}.{}.{}, but Hanzo Index is in version v{}.{}.{}.\n  - note: this is an internal error, please consider filing a bug report: <https://github.com/meilisearch/meilisearch/issues/new?template=bug_report.md>",
     index_version.0, index_version.1, index_version.2, package_version.0, package_version.1, package_version.2)]
     IndexVersionMismatch {
         index: String,

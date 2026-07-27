@@ -820,7 +820,7 @@ mod tests {
 
     #[test]
     fn format_highlight_crop_phrase_query() {
-        //! testing: https://github.com/hanzoai/index/issues/3975
+        //! testing: https://github.com/meilisearch/meilisearch/issues/3975
         let temp_index = TempIndex::new();
 
         let text = "The groundbreaking invention had the power to split the world between those who embraced progress and those who resisted change!";
@@ -909,7 +909,7 @@ mod tests {
 
     #[test]
     fn smaller_crop_size() {
-        //! testing: https://github.com/index/specifications/pull/120#discussion_r836536295
+        //! testing: https://github.com/meilisearch/specifications/pull/120#discussion_r836536295
         let temp_index = temp_index_with_documents();
         let rtxn = temp_index.read_txn().unwrap();
         let builder = MatcherBuilder::new_test(&rtxn, &temp_index, "split the world");

@@ -144,7 +144,12 @@ tempfile = { version = "3.23.0", optional = true }
 zip = { version = "6.0.0", optional = true }
 
 [features]
-default = ["search-types/all-tokenizations", "mini-dashboard"]
+# mini-dashboard is NOT default: it vendors a prebuilt UI from the upstream
+# release below, and that UI carries upstream's branding. `--env development`
+# would then serve it at `/` to exactly the audience that should not see it.
+# Without it `/` answers with the same JSON status in every environment. The
+# feature stays for anyone who wants it explicitly.
+default = ["search-types/all-tokenizations"]
 swagger = ["utoipa-scalar"]
 test-ollama = []
 mini-dashboard = [

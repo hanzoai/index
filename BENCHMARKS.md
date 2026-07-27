@@ -13,7 +13,7 @@ The newer "bench" benchmarks are **integration** benchmarks, in the sense that t
 
 Since this is prone to fluctuating, the benchmarks regain a bit of precision by measuring the runtime of the individual spans using the [logging machinery](./CONTRIBUTING.md#logging) of Hanzo Index.
 
-A span roughly translates to a function call. The benchmark runner collects all the spans by name using the [logs route](https://github.com/orgs/index/discussions/721) and sums their runtime. The processed results are then sent to the [benchmark dashboard](https://bench.index.dev), which is in charge of storing and presenting the data.
+A span roughly translates to a function call. The benchmark runner collects all the spans by name using the [logs route](https://github.com/orgs/meilisearch/discussions/721) and sums their runtime. The processed results are then sent to the [benchmark dashboard](https://bench.meilisearch.dev), which is in charge of storing and presenting the data.
 
 ## Running the benchmarks
 
@@ -84,7 +84,7 @@ We have dedicated runners to run workloads on CI. Currently, there are three way
 
 ### On the dashboard
 
-Results are available on the global dashboard used by CI at <https://bench.index.dev> or on your [local dashboard](#with-a-local-benchmark-dashboard).
+Results are available on the global dashboard used by CI at <https://bench.meilisearch.dev> or on your [local dashboard](#with-a-local-benchmark-dashboard).
 
 The dashboard homepage presents three sections:
 
@@ -357,7 +357,7 @@ Assets reside in our DigitalOcean S3 space. Assuming you have team access to the
    1. if your dataset is a single file, upload that single file using the "upload" button,
    2. otherwise, create a folder using the "create folder" button, then inside that folder upload your individual files.
 
-## Upgrading `https://bench.index.dev`
+## Upgrading `https://bench.meilisearch.dev`
 
 The URL of the server is in our password manager (look for "benchboard").
 
@@ -390,4 +390,4 @@ The URL of the server is in our password manager (look for "benchboard").
   ```
   systemctl status benchboard
   ```
-9. Check the availability of the service by going to <https://bench.index.dev> on your browser.
+9. Check the availability of the service by going to <https://bench.meilisearch.dev> on your browser.

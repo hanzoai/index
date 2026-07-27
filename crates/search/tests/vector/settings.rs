@@ -437,7 +437,7 @@ async fn composite_checks() {
     snapshot!(code, @"400 Bad Request");
     snapshot!(response, @r###"
     {
-      "message": "using `\"composite\"` as source requires enabling the `composite embedders` experimental feature. See https://github.com/orgs/index/discussions/816",
+      "message": "using `\"composite\"` as source requires enabling the `composite embedders` experimental feature. See https://github.com/orgs/meilisearch/discussions/816",
       "code": "feature_not_enabled",
       "type": "invalid_request",
       "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
@@ -471,7 +471,7 @@ async fn composite_checks() {
     snapshot!(code, @"400 Bad Request");
     snapshot!(response, @r###"
     {
-      "message": "setting `searchEmbedder` requires enabling the `composite embedders` experimental feature. See https://github.com/orgs/index/discussions/816",
+      "message": "setting `searchEmbedder` requires enabling the `composite embedders` experimental feature. See https://github.com/orgs/meilisearch/discussions/816",
       "code": "feature_not_enabled",
       "type": "invalid_request",
       "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
@@ -505,7 +505,7 @@ async fn composite_checks() {
     snapshot!(code, @"400 Bad Request");
     snapshot!(response, @r###"
     {
-      "message": "setting `indexingEmbedder` requires enabling the `composite embedders` experimental feature. See https://github.com/orgs/index/discussions/816",
+      "message": "setting `indexingEmbedder` requires enabling the `composite embedders` experimental feature. See https://github.com/orgs/meilisearch/discussions/816",
       "code": "feature_not_enabled",
       "type": "invalid_request",
       "link": "https://docs.hanzo.ai/errors#feature_not_enabled"

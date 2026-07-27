@@ -318,7 +318,7 @@ fn create_or_open_index(
 
     // You can find more details about this experimental
     // environment variable on the following GitHub discussion:
-    // <https://github.com/orgs/index/discussions/806>
+    // <https://github.com/orgs/meilisearch/discussions/806>
     let max_readers = match std::env::var("INDEX_EXPERIMENTAL_INDEX_MAX_READERS") {
         Ok(value) => u32::from_str(&value).unwrap(),
         Err(VarError::NotPresent) => 1024,

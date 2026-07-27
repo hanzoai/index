@@ -11,7 +11,7 @@ async fn routes_are_disabled_by_default() {
     snapshot!(code, @"400 Bad Request");
     snapshot!(json_string!(value), @r#"
     {
-      "message": "Using the `/dynamic-search-rules` routes requires enabling the `dynamic search rules` experimental feature. See https://github.com/orgs/index/discussions/884",
+      "message": "Using the `/dynamic-search-rules` routes requires enabling the `dynamic search rules` experimental feature. See https://github.com/orgs/meilisearch/discussions/884",
       "code": "feature_not_enabled",
       "type": "invalid_request",
       "link": "https://docs.hanzo.ai/errors#feature_not_enabled"

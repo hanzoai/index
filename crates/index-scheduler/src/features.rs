@@ -68,7 +68,7 @@ impl RoFeatures {
             Err(FeatureNotEnabledError {
                 disabled_action: "Modifying logs through the `/logs/*` routes",
                 feature: "logs route",
-                issue_link: "https://github.com/orgs/index/discussions/721",
+                issue_link: "https://github.com/orgs/meilisearch/discussions/721",
             }
             .into())
         }
@@ -81,7 +81,7 @@ impl RoFeatures {
             Err(FeatureNotEnabledError {
                 disabled_action,
                 feature: "edit documents by function",
-                issue_link: "https://github.com/orgs/index/discussions/762",
+                issue_link: "https://github.com/orgs/meilisearch/discussions/762",
             }
             .into())
         }
@@ -94,7 +94,7 @@ impl RoFeatures {
             Err(FeatureNotEnabledError {
                 disabled_action: "Using `CONTAINS` in a filter",
                 feature: "contains filter",
-                issue_link: "https://github.com/orgs/index/discussions/763",
+                issue_link: "https://github.com/orgs/meilisearch/discussions/763",
             }
             .into())
         }
@@ -107,7 +107,7 @@ impl RoFeatures {
             Err(FeatureNotEnabledError {
                 disabled_action,
                 feature: "dynamic search rules",
-                issue_link: "https://github.com/orgs/index/discussions/884",
+                issue_link: "https://github.com/orgs/meilisearch/discussions/884",
             }
             .into())
         }
@@ -120,7 +120,7 @@ impl RoFeatures {
             Err(FeatureNotEnabledError {
                 disabled_action,
                 feature: "network",
-                issue_link: "https://github.com/orgs/index/discussions/805",
+                issue_link: "https://github.com/orgs/meilisearch/discussions/805",
             }
             .into())
         }
@@ -133,7 +133,7 @@ impl RoFeatures {
             Err(FeatureNotEnabledError {
                 disabled_action: "Getting the documents of an enqueued task",
                 feature: "get task documents route",
-                issue_link: "https://github.com/orgs/index/discussions/808",
+                issue_link: "https://github.com/orgs/meilisearch/discussions/808",
             }
             .into())
         }
@@ -146,7 +146,7 @@ impl RoFeatures {
             Err(FeatureNotEnabledError {
                 disabled_action: "Using the /tasks/compact route",
                 feature: "task queue compaction route",
-                issue_link: "https://github.com/orgs/index/discussions/883",
+                issue_link: "https://github.com/orgs/meilisearch/discussions/883",
             }
             .into())
         }
@@ -159,7 +159,7 @@ impl RoFeatures {
             Err(FeatureNotEnabledError {
                 disabled_action,
                 feature: "composite embedders",
-                issue_link: "https://github.com/orgs/index/discussions/816",
+                issue_link: "https://github.com/orgs/meilisearch/discussions/816",
             }
             .into())
         }
@@ -172,7 +172,7 @@ impl RoFeatures {
             Err(FeatureNotEnabledError {
                 disabled_action,
                 feature: "chat completions",
-                issue_link: "https://github.com/orgs/index/discussions/835",
+                issue_link: "https://github.com/orgs/meilisearch/discussions/835",
             }
             .into())
         }
@@ -185,7 +185,7 @@ impl RoFeatures {
             Err(FeatureNotEnabledError {
                 disabled_action,
                 feature: "multimodal",
-                issue_link: "https://github.com/orgs/index/discussions/846",
+                issue_link: "https://github.com/orgs/meilisearch/discussions/846",
             }
             .into())
         }
@@ -198,7 +198,7 @@ impl RoFeatures {
             Err(FeatureNotEnabledError {
                 disabled_action,
                 feature: "foreign_keys",
-                issue_link: "https://github.com/orgs/index/discussions/873",
+                issue_link: "https://github.com/orgs/meilisearch/discussions/873",
             }
             .into())
         }

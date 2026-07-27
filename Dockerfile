@@ -1,5 +1,11 @@
 # Compile
-FROM    rust:1.89-alpine3.22 AS compiler
+# rust:1.91 — rust-toolchain.toml pins `channel = "1.91.1"`. On the 1.89 image
+# the cargo step died in 13 seconds, far too fast for a Meilisearch release
+# build: rustup has to fetch the pinned toolchain before compiling and that is
+# where it stops. Third instance of this shape today — golang:1.23 vs go 1.26.4
+# in hanzoai/search-fts5, node:20 vs pnpm@11 in hanzoai/world. The base image
+# must satisfy the toolchain the repo declares.
+FROM    rust:1.91-alpine3.22 AS compiler
 
 RUN     apk add -q --no-cache build-base openssl-dev
 

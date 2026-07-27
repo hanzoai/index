@@ -1724,7 +1724,7 @@ async fn error_access_api_key_routes_no_master_key_set() {
     let (response, code) = server.add_api_key(json!({})).await;
     search_snap::snapshot!(search_snap::json_string!(response, { ".createdAt" => "[ignored]", ".updatedAt" => "[ignored]" }), @r###"
     {
-      "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
+      "message": "This instance is running without a master key. To access this API endpoint, you must have set a master key at launch.",
       "code": "missing_master_key",
       "type": "auth",
       "link": "https://docs.hanzo.ai/errors#missing_master_key"
@@ -1735,7 +1735,7 @@ async fn error_access_api_key_routes_no_master_key_set() {
     let (response, code) = server.patch_api_key("content", json!({})).await;
     search_snap::snapshot!(search_snap::json_string!(response, { ".createdAt" => "[ignored]", ".updatedAt" => "[ignored]" }), @r###"
     {
-      "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
+      "message": "This instance is running without a master key. To access this API endpoint, you must have set a master key at launch.",
       "code": "missing_master_key",
       "type": "auth",
       "link": "https://docs.hanzo.ai/errors#missing_master_key"
@@ -1746,7 +1746,7 @@ async fn error_access_api_key_routes_no_master_key_set() {
     let (response, code) = server.get_api_key("content").await;
     search_snap::snapshot!(search_snap::json_string!(response, { ".createdAt" => "[ignored]", ".updatedAt" => "[ignored]" }), @r###"
     {
-      "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
+      "message": "This instance is running without a master key. To access this API endpoint, you must have set a master key at launch.",
       "code": "missing_master_key",
       "type": "auth",
       "link": "https://docs.hanzo.ai/errors#missing_master_key"
@@ -1757,7 +1757,7 @@ async fn error_access_api_key_routes_no_master_key_set() {
     let (response, code) = server.list_api_keys("").await;
     search_snap::snapshot!(search_snap::json_string!(response, { ".createdAt" => "[ignored]", ".updatedAt" => "[ignored]" }), @r###"
     {
-      "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
+      "message": "This instance is running without a master key. To access this API endpoint, you must have set a master key at launch.",
       "code": "missing_master_key",
       "type": "auth",
       "link": "https://docs.hanzo.ai/errors#missing_master_key"
@@ -1770,7 +1770,7 @@ async fn error_access_api_key_routes_no_master_key_set() {
     let (response, code) = server.add_api_key(json!({})).await;
     search_snap::snapshot!(search_snap::json_string!(response, { ".createdAt" => "[ignored]", ".updatedAt" => "[ignored]" }), @r###"
     {
-      "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
+      "message": "This instance is running without a master key. To access this API endpoint, you must have set a master key at launch.",
       "code": "missing_master_key",
       "type": "auth",
       "link": "https://docs.hanzo.ai/errors#missing_master_key"
@@ -1781,7 +1781,7 @@ async fn error_access_api_key_routes_no_master_key_set() {
     let (response, code) = server.patch_api_key("content", json!({})).await;
     search_snap::snapshot!(search_snap::json_string!(response, { ".createdAt" => "[ignored]", ".updatedAt" => "[ignored]" }), @r###"
     {
-      "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
+      "message": "This instance is running without a master key. To access this API endpoint, you must have set a master key at launch.",
       "code": "missing_master_key",
       "type": "auth",
       "link": "https://docs.hanzo.ai/errors#missing_master_key"
@@ -1792,7 +1792,7 @@ async fn error_access_api_key_routes_no_master_key_set() {
     let (response, code) = server.get_api_key("content").await;
     search_snap::snapshot!(search_snap::json_string!(response, { ".createdAt" => "[ignored]", ".updatedAt" => "[ignored]" }), @r###"
     {
-      "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
+      "message": "This instance is running without a master key. To access this API endpoint, you must have set a master key at launch.",
       "code": "missing_master_key",
       "type": "auth",
       "link": "https://docs.hanzo.ai/errors#missing_master_key"
@@ -1803,7 +1803,7 @@ async fn error_access_api_key_routes_no_master_key_set() {
     let (response, code) = server.list_api_keys("").await;
     search_snap::snapshot!(search_snap::json_string!(response, { ".createdAt" => "[ignored]", ".updatedAt" => "[ignored]" }), @r###"
     {
-      "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
+      "message": "This instance is running without a master key. To access this API endpoint, you must have set a master key at launch.",
       "code": "missing_master_key",
       "type": "auth",
       "link": "https://docs.hanzo.ai/errors#missing_master_key"

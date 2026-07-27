@@ -2601,7 +2601,7 @@ async fn error_no_weighted_score() {
       "requestUid": "[uuid]",
       "remoteErrors": {
         "ms1": {
-          "message": "remote hit does not contain `._federation.weightedScoreValues`\n  - hint: check that the remote instance is a Meilisearch instance running the same version",
+          "message": "remote hit does not contain `._federation.weightedScoreValues`\n  - hint: check that the remote instance runs the same version",
           "code": "remote_bad_response",
           "type": "system",
           "link": "https://docs.hanzo.ai/errors#remote_bad_response"
@@ -2745,7 +2745,7 @@ async fn error_bad_response() {
       "requestUid": "[uuid]",
       "remoteErrors": {
         "ms1": {
-          "message": "could not parse response from the remote host as a federated search response:\n  - response from remote: <html>Returning an HTML page</html>\n  - hint: check that the remote instance is a Meilisearch instance running the same version",
+          "message": "could not parse response from the remote host as a federated search response:\n  - response from remote: <html>Returning an HTML page</html>\n  - hint: check that the remote instance runs the same version",
           "code": "remote_bad_response",
           "type": "system",
           "link": "https://docs.hanzo.ai/errors#remote_bad_response"

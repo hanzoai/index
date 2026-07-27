@@ -44,7 +44,7 @@ use crate::search_queue::SearchQueue;
 - A POST route: this is the preferred route when using API authentication, as it allows [preflight request](https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request) caching and better performance.
 - A GET route: the usage of this route is discouraged, unless you have good reason to do otherwise (specific caching abilities for example)",
             external_docs(
-                url = "https://www.meilisearch.com/docs/reference/api/search",
+                url = "https://docs.hanzo.ai/index/reference/api/search",
                 description = "Search API reference",
             ),
         ),
@@ -60,11 +60,11 @@ pub struct SearchQueryGet {
     ///
     /// Meilisearch returns documents that match this query.
     ///
-    /// The query supports [prefix search](https://www.meilisearch.com/docs/learn/engine/prefix) and [typo tolerance](https://www.meilisearch.com/docs/learn/relevancy/typo_tolerance_settings).
+    /// The query supports [prefix search](https://docs.hanzo.ai/index/learn/engine/prefix) and [typo tolerance](https://docs.hanzo.ai/index/learn/relevancy/typo_tolerance_settings).
     ///
     /// Meilisearch only considers the first ten words; terms are normalized (lowercase, accents ignored).
     ///
-    /// Omit or leave empty for a placeholder search: no query terms are applied, so Meilisearch returns all searchable documents in the index, ordered by [ranking rules](https://www.meilisearch.com/docs/learn/relevancy/ranking_rules).
+    /// Omit or leave empty for a placeholder search: no query terms are applied, so Meilisearch returns all searchable documents in the index, ordered by [ranking rules](https://docs.hanzo.ai/index/learn/relevancy/ranking_rules).
     ///
     /// Enclose terms in double quotes (`"`) for phrase search: only documents containing that exact sequence of words are returned (e.g. `"Winter Feast"`).
     ///
@@ -74,7 +74,7 @@ pub struct SearchQueryGet {
     q: Option<String>,
     /// Number of documents to skip at the start of the results.
     ///
-    /// Use together with `limit` for [pagination](https://www.meilisearch.com/docs/guides/front_end/pagination) (e.g. offset=20 and limit=20 returns results 21–40).
+    /// Use together with `limit` for [pagination](https://docs.hanzo.ai/index/guides/front_end/pagination) (e.g. offset=20 and limit=20 returns results 21–40).
     ///
     /// This parameter is ignored when `page` or `hitsPerPage` is set; in that case the response includes `totalHits` and `totalPages` instead of `estimatedTotalHits`.
     #[deserr(default = Param(DEFAULT_SEARCH_OFFSET()), error = DeserrQueryParamError<InvalidSearchOffset>)]
@@ -82,11 +82,11 @@ pub struct SearchQueryGet {
     offset: Param<usize>,
     /// Maximum number of documents to return in the response.
     ///
-    /// Use with `offset` for [pagination](https://www.meilisearch.com/docs/guides/front_end/pagination).
+    /// Use with `offset` for [pagination](https://docs.hanzo.ai/index/guides/front_end/pagination).
     ///
     /// This parameter is ignored when `page` or `hitsPerPage` is set.
     ///
-    /// The value cannot exceed the index [maxTotalHits](https://www.meilisearch.com/docs/reference/api/settings/update-pagination#body-max-total-hits-one-of-0) setting.
+    /// The value cannot exceed the index [maxTotalHits](https://docs.hanzo.ai/index/reference/api/settings/update-pagination#body-max-total-hits-one-of-0) setting.
     #[deserr(default = Param(DEFAULT_SEARCH_LIMIT()), error = DeserrQueryParamError<InvalidSearchLimit>)]
     #[param(required = false, value_type = usize, default = DEFAULT_SEARCH_LIMIT)]
     limit: Param<usize>,
@@ -100,7 +100,7 @@ pub struct SearchQueryGet {
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchPage>)]
     #[param(required = false, value_type = Option<usize>)]
     page: Option<Param<usize>>,
-    /// Maximum number of documents per page for [pagination](https://www.meilisearch.com/docs/guides/front_end/pagination).
+    /// Maximum number of documents per page for [pagination](https://docs.hanzo.ai/index/guides/front_end/pagination).
     ///
     /// This value determines `totalPages`; use it together with `page`.
     ///
@@ -112,9 +112,9 @@ pub struct SearchQueryGet {
     hits_per_page: Option<Param<usize>>,
     /// List of attributes to include in each returned document.
     ///
-    /// Use `["*"]` to return all attributes; if not set, the index [displayed attributes](https://www.meilisearch.com/docs/learn/relevancy/displayed_searchable_attributes) list is used.
+    /// Use `["*"]` to return all attributes; if not set, the index [displayed attributes](https://docs.hanzo.ai/index/learn/relevancy/displayed_searchable_attributes) list is used.
     ///
-    /// Attributes that are not in [displayedAttributes](https://www.meilisearch.com/docs/reference/api/settings/update-all-settings#body-displayed-attributes-one-of-0) are omitted from the response.
+    /// Attributes that are not in [displayedAttributes](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-displayed-attributes-one-of-0) are omitted from the response.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchAttributesToRetrieve>)]
     #[param(required = false, value_type = Vec<String>, explode = false)]
     attributes_to_retrieve: Option<CS<String>>,
@@ -134,7 +134,7 @@ pub struct SearchQueryGet {
     ///
     /// This parameter only applies when `attributesToCrop` is set.
     ///
-    /// Both query terms and [stop words](https://www.meilisearch.com/docs/reference/api/settings/update-all-settings#body-stop-words-one-of-0) count toward this length.
+    /// Both query terms and [stop words](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-stop-words-one-of-0) count toward this length.
     #[deserr(default = Param(DEFAULT_CROP_LENGTH()), error = DeserrQueryParamError<InvalidSearchCropLength>)]
     #[param(required = false, value_type = usize, default = DEFAULT_CROP_LENGTH)]
     crop_length: Param<usize>,
@@ -154,7 +154,7 @@ pub struct SearchQueryGet {
     ///
     /// By default, matches are wrapped in `<em>` and `</em>`; you can override this with `highlightPreTag` and `highlightPostTag`.
     ///
-    /// Highlighting also applies to [synonyms](https://www.meilisearch.com/docs/learn/relevancy/synonyms) and [stop words](https://www.meilisearch.com/docs/reference/api/settings/update-all-settings#body-stop-words-one-of-0).
+    /// Highlighting also applies to [synonyms](https://docs.hanzo.ai/index/learn/relevancy/synonyms) and [stop words](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-stop-words-one-of-0).
     ///
     /// Supported value types are string, number, array, and object.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchAttributesToHighlight>)]
@@ -182,13 +182,13 @@ pub struct SearchQueryGet {
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchShowMatchesPosition>)]
     #[param(required = false, value_type = bool)]
     show_matches_position: Param<bool>,
-    /// A [filter](https://www.meilisearch.com/docs/learn/filtering_and_sorting/filter_search_results) expression to narrow results.
+    /// A [filter](https://docs.hanzo.ai/index/learn/filtering_and_sorting/filter_search_results) expression to narrow results.
     ///
-    /// All attributes used in the expression must be in [filterableAttributes](https://www.meilisearch.com/docs/reference/api/settings/update-all-settings#body-filterable-attributes-one-of-0).
+    /// All attributes used in the expression must be in [filterableAttributes](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-filterable-attributes-one-of-0).
     ///
     /// Pass a string (e.g. `"(genres = horror OR genres = mystery) AND director = 'Jordan Peele'"`).
     ///
-    /// For [geo search](https://www.meilisearch.com/docs/learn/filtering_and_sorting/geosearch), use `_geoRadius(lat, lng, distance_in_meters)`, `_geoBoundingBox([lat,lng],[lat,lng])`, or `_geoPolygon([lat,lng], ...)` (GeoJSON only for polygon).
+    /// For [geo search](https://docs.hanzo.ai/index/learn/filtering_and_sorting/geosearch), use `_geoRadius(lat, lng, distance_in_meters)`, `_geoBoundingBox([lat,lng],[lat,lng])`, or `_geoPolygon([lat,lng], ...)` (GeoJSON only for polygon).
     ///
     /// GET route accepts a string only; the value must be URL-encoded.
     #[param(required = false)]
@@ -196,23 +196,23 @@ pub struct SearchQueryGet {
     filter: Option<String>,
     /// Sort results by one or more attributes and their order.
     ///
-    /// Use the format `["attribute:asc", "attribute:desc"]`; only attributes in [sortableAttributes](https://www.meilisearch.com/docs/reference/api/settings/update-all-settings#body-sortable-attributes-one-of-0) can be used.
+    /// Use the format `["attribute:asc", "attribute:desc"]`; only attributes in [sortableAttributes](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-sortable-attributes-one-of-0) can be used.
     ///
-    /// For [geo search](https://www.meilisearch.com/docs/learn/filtering_and_sorting/geosearch), use `_geoPoint(lat,lng):asc` or `:desc`; the response then includes `_geoDistance` in meters.
+    /// For [geo search](https://docs.hanzo.ai/index/learn/filtering_and_sorting/geosearch), use `_geoPoint(lat,lng):asc` or `:desc`; the response then includes `_geoDistance` in meters.
     ///
     /// The first attribute in the list has precedence.
     ///
-    /// See [sorting search results](https://www.meilisearch.com/docs/learn/filtering_and_sorting/sort_search_results).
+    /// See [sorting search results](https://docs.hanzo.ai/index/learn/filtering_and_sorting/sort_search_results).
     #[param(required = false)]
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchSort>)]
     sort: Option<String>,
     /// Return only one document per distinct value of the given attribute (e.g. deduplicate by product_id).
     ///
-    /// The attribute must be in [filterableAttributes](https://www.meilisearch.com/docs/reference/api/settings/update-all-settings#body-filterable-attributes-one-of-0).
+    /// The attribute must be in [filterableAttributes](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-filterable-attributes-one-of-0).
     ///
-    /// This overrides the index [distinctAttribute](https://www.meilisearch.com/docs/reference/api/settings/update-all-settings#body-distinct-attribute-one-of-0) setting for this request.
+    /// This overrides the index [distinctAttribute](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-distinct-attribute-one-of-0) setting for this request.
     ///
-    /// See [distinct attribute](https://www.meilisearch.com/docs/learn/relevancy/distinct_attribute).
+    /// See [distinct attribute](https://docs.hanzo.ai/index/learn/relevancy/distinct_attribute).
     #[param(required = false)]
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchDistinct>)]
     distinct: Option<String>,
@@ -220,11 +220,11 @@ pub struct SearchQueryGet {
     ///
     /// The response includes `facetDistribution` and, for numeric facets, `facetStats` (min/max).
     ///
-    /// Use `["*"]` to request counts for all [filterableAttributes](https://www.meilisearch.com/docs/reference/api/settings/update-all-settings#body-filterable-attributes-one-of-0).
+    /// Use `["*"]` to request counts for all [filterableAttributes](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-filterable-attributes-one-of-0).
     ///
-    /// The number of values returned per facet is limited by the index [maxValuesPerFacet](https://www.meilisearch.com/docs/reference/api/settings/update-faceting#body-max-values-per-facet-one-of-0) setting; attributes not in filterableAttributes are ignored.
+    /// The number of values returned per facet is limited by the index [maxValuesPerFacet](https://docs.hanzo.ai/index/reference/api/settings/update-faceting#body-max-values-per-facet-one-of-0) setting; attributes not in filterableAttributes are ignored.
     ///
-    /// More info: [faceting](https://www.meilisearch.com/docs/learn/filtering_and_sorting/search_with_facet_filters).
+    /// More info: [faceting](https://docs.hanzo.ai/index/learn/filtering_and_sorting/search_with_facet_filters).
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchFacets>)]
     #[param(required = false, value_type = Vec<String>, explode = false)]
     facets: Option<CS<String>>,
@@ -242,13 +242,13 @@ pub struct SearchQueryGet {
     matching_strategy: MatchingStrategy,
     /// Restrict the search to the listed attributes only.
     ///
-    /// Each attribute must be in the index [searchable attributes](https://www.meilisearch.com/docs/learn/relevancy/displayed_searchable_attributes) list.
+    /// Each attribute must be in the index [searchable attributes](https://docs.hanzo.ai/index/learn/relevancy/displayed_searchable_attributes) list.
     ///
     /// The order of attributes in this parameter does not affect relevancy.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchAttributesToSearchOn>)]
     #[param(required = false, value_type = Vec<String>, explode = false)]
     pub attributes_to_search_on: Option<CS<String>>,
-    /// Exclude from the results any document whose [ranking score](https://www.meilisearch.com/docs/learn/relevancy/ranking_score) is below this value (between 0.0 and 1.0).
+    /// Exclude from the results any document whose [ranking score](https://docs.hanzo.ai/index/learn/relevancy/ranking_score) is below this value (between 0.0 and 1.0).
     ///
     /// Excluded hits do not count toward `estimatedTotalHits`, `totalHits`, or facet distribution.
     ///
@@ -258,15 +258,15 @@ pub struct SearchQueryGet {
     pub ranking_score_threshold: Option<RankingScoreThresholdGet>,
     /// Explicitly specify the language(s) of the query.
     ///
-    /// Pass an array of [supported ISO-639 locales](https://www.meilisearch.com/docs/reference/api/settings/update-all-settings#body-localized-attributes-one-of-0).
+    /// Pass an array of [supported ISO-639 locales](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-localized-attributes-one-of-0).
     ///
     /// This overrides auto-detection; use it when auto-detection is wrong for the query or the documents.
     ///
-    /// See also the [localizedAttributes](https://www.meilisearch.com/docs/reference/api/settings/list-all-settings#response-localized-attributes-one-of-0) settings and [Language](https://www.meilisearch.com/docs/learn/resources/language).
+    /// See also the [localizedAttributes](https://docs.hanzo.ai/index/reference/api/settings/list-all-settings#response-localized-attributes-one-of-0) settings and [Language](https://docs.hanzo.ai/index/learn/resources/language).
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchLocales>)]
     #[param(required = false, value_type = Vec<Locale>, explode = false)]
     pub locales: Option<CS<Locale>>,
-    /// Name of the embedder for [hybrid search](https://www.meilisearch.com/docs/learn/ai_powered_search/getting_started_with_ai_search), which combines keyword and semantic search.
+    /// Name of the embedder for [hybrid search](https://docs.hanzo.ai/index/learn/ai_powered_search/getting_started_with_ai_search), which combines keyword and semantic search.
     ///
     /// Must match an embedder configured in the index settings.
     ///
@@ -282,11 +282,11 @@ pub struct SearchQueryGet {
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchSemanticRatio>)]
     #[param(required = false, value_type = f32)]
     pub hybrid_semantic_ratio: Option<SemanticRatioGet>,
-    /// Custom query vector for [vector or hybrid search](https://www.meilisearch.com/docs/learn/ai_powered_search/getting_started_with_ai_search).
+    /// Custom query vector for [vector or hybrid search](https://docs.hanzo.ai/index/learn/ai_powered_search/getting_started_with_ai_search).
     ///
     /// The array length must match the dimensions of the embedder configured in the index.
     ///
-    /// This parameter is mandatory when using a [user-provided embedder](https://www.meilisearch.com/docs/learn/ai_powered_search/search_with_user_provided_embeddings).
+    /// This parameter is mandatory when using a [user-provided embedder](https://docs.hanzo.ai/index/learn/ai_powered_search/search_with_user_provided_embeddings).
     ///
     /// When used with `hybrid`, documents are ranked by vector similarity.
     ///
@@ -296,15 +296,15 @@ pub struct SearchQueryGet {
     vector: Option<CS<f32>>,
     /// When true, the response includes document and query embeddings in each hit's `_vectors` field.
     ///
-    /// The `_vectors` field must be listed in [displayedAttributes](https://www.meilisearch.com/docs/reference/api/settings/update-all-settings#body-displayed-attributes-one-of-0) for it to appear.
+    /// The `_vectors` field must be listed in [displayedAttributes](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-displayed-attributes-one-of-0) for it to appear.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchRetrieveVectors>)]
     #[param(required = false, value_type = bool, default)]
     retrieve_vectors: Param<bool>,
-    /// For [personalized search](https://www.meilisearch.com/docs/learn/personalization/making_personalized_search_queries): a string describing the user (e.g. preferences or behavior).
+    /// For [personalized search](https://docs.hanzo.ai/index/learn/personalization/making_personalized_search_queries): a string describing the user (e.g. preferences or behavior).
     ///
     /// Results are then tailored to that profile.
     ///
-    /// Personalization must be [enabled](https://www.meilisearch.com/docs/reference/api/experimental-features/configure-experimental-features) (e.g. Cohere key for self-hosted instances).
+    /// Personalization must be [enabled](https://docs.hanzo.ai/index/reference/api/experimental-features/configure-experimental-features) (e.g. Cohere key for self-hosted instances).
     #[param(required = false)]
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchPersonalizeUserContext>)]
     pub personalize_user_context: Option<String>,
@@ -326,13 +326,13 @@ pub struct SearchQueryGet {
     use_network: Option<Param<bool>>,
     /// When true, each document includes a `_rankingScore` between 0.0 and 1.0; a higher value means the document is more relevant.
     ///
-    /// See [ranking score](https://www.meilisearch.com/docs/learn/relevancy/ranking_score).
+    /// See [ranking score](https://docs.hanzo.ai/index/learn/relevancy/ranking_score).
     ///
     /// The `sort` ranking rule does not affect the value of `_rankingScore`.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchShowRankingScore>)]
     #[param(required = false, value_type = bool)]
     show_ranking_score: Param<bool>,
-    /// When true, each document includes `_rankingScoreDetails`, which breaks down the score contribution of each [ranking rule](https://www.meilisearch.com/docs/learn/relevancy/ranking_rules).
+    /// When true, each document includes `_rankingScoreDetails`, which breaks down the score contribution of each [ranking rule](https://docs.hanzo.ai/index/learn/relevancy/ranking_rules).
     ///
     /// Useful for debugging relevancy.
     #[deserr(default, error = DeserrQueryParamError<InvalidSearchShowRankingScoreDetails>)]

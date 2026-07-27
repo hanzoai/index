@@ -13,7 +13,7 @@ pub enum ProxyError {
     #[error("could not authenticate against the remote host\n  - hint: check that the remote instance was registered with a valid API key having the `documents.add` action")]
     AuthenticationError,
     #[error(
-            "could not parse response from the remote host as a document addition response{}\n  - hint: check that the remote instance is a Meilisearch instance running the same version",
+            "could not parse response from the remote host as a document addition response{}\n  - hint: check that the remote instance runs the same version",
             response_from_remote(response)
         )]
     CouldNotParseResponse { response: Result<String, ReqwestErrorWithoutUrl> },

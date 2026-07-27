@@ -35,7 +35,7 @@ use crate::{LogRouteHandle, LogStderrHandle};
     tags((
         name = "Logs",
         description = "Everything about retrieving or customizing logs.
-Currently [experimental](https://www.meilisearch.com/docs/learn/experimental/overview).",
+Currently [experimental](https://docs.hanzo.ai/index/learn/experimental/overview).",
     )),
 )]
 pub struct LogsApi;

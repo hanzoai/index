@@ -249,9 +249,9 @@ pub fn print_launch_resume(opt: &Opt, analytics: Analytics, config_read_from: Op
         if !opt.no_analytics {
             eprintln!(
                 "
-Thank you for using Meilisearch!
+Thank you for using Hanzo Index!
 
-\nWe collect anonymized analytics to improve our product and your experience. To learn more, including how to turn off analytics, visit our dedicated documentation page: https://www.meilisearch.com/docs/learn/what_is_meilisearch/telemetry
+\nWe collect anonymized analytics to improve our product and your experience. To learn more, including how to turn off analytics, visit https://docs.hanzo.ai/index/telemetry
 
 Anonymous telemetry:\t\"Enabled\""
             );
@@ -268,10 +268,10 @@ Anonymous telemetry:\t\"Enabled\""
 
     match (opt.env.as_ref(), &opt.master_key) {
         ("production", Some(_)) => {
-            eprintln!("A master key has been set. Requests to Meilisearch won't be authorized unless you provide an authentication key.");
+            eprintln!("A master key has been set. Requests won't be authorized unless you provide an authentication key.");
         }
         ("development", Some(master_key)) => {
-            eprintln!("A master key has been set. Requests to Meilisearch won't be authorized unless you provide an authentication key.");
+            eprintln!("A master key has been set. Requests won't be authorized unless you provide an authentication key.");
 
             if master_key.len() < MASTER_KEY_MIN_SIZE {
                 print_master_key_too_short_warning()
@@ -283,10 +283,8 @@ Anonymous telemetry:\t\"Enabled\""
     }
 
     eprintln!();
-    eprintln!("Check out Meilisearch Cloud!\thttps://www.meilisearch.com/cloud?utm_campaign=oss&utm_source=engine&utm_medium=cli");
-    eprintln!("Documentation:\t\t\thttps://www.meilisearch.com/docs");
-    eprintln!("Source code:\t\t\thttps://github.com/meilisearch/meilisearch");
-    eprintln!("Discord:\t\t\thttps://discord.meilisearch.com");
+    eprintln!("Documentation:\t\t\thttps://docs.hanzo.ai/index");
+    eprintln!("Source code:\t\t\thttps://github.com/hanzoai/index");
     eprintln!();
 }
 
@@ -314,7 +312,7 @@ fn print_master_key_too_short_warning() {
 
     eprintln!("\n{}", generated_master_key_message());
     eprintln!(
-        "\nRestart Meilisearch with the argument above to use this new and secure master key."
+        "\nRestart the server with the argument above to use this new and secure master key."
     )
 }
 
@@ -339,7 +337,7 @@ fn print_missing_master_key_warning() {
 
     eprintln!("\n{}", generated_master_key_message());
     eprintln!(
-        "\nRestart Meilisearch with the argument above to use this new and secure master key."
+        "\nRestart the server with the argument above to use this new and secure master key."
     )
 }
 

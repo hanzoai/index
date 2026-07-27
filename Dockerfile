@@ -25,7 +25,7 @@ RUN     set -eux; \
         # with no default, so an unpassed build-arg aborted the shell with
         #   /bin/sh: EXTRA_ARGS: parameter not set
         # before cargo ran at all.
-        cargo build --release -p meilisearch -p meilitool ${EXTRA_ARGS:-}
+        cargo build --release -p search -p searchtool ${EXTRA_ARGS:-}
 
 # Run
 FROM    ghcr.io/hanzoai/alpine:3.22
@@ -40,13 +40,11 @@ ENV     MEILI_SERVER_PROVIDER docker
 
 RUN     apk add -q --no-cache libgcc tini curl
 
-# add meilisearch and meilitool to the `/bin` so you can run it from anywhere
-# and it's easy to find.
-COPY    --from=compiler /target/release/meilisearch /bin/meilisearch
-COPY    --from=compiler /target/release/meilitool /bin/meilitool
-# To stay compatible with the older version of the container (pre v0.27.0) we're
-# going to symlink the meilisearch binary in the path to `/meilisearch`
-RUN     ln -s /bin/meilisearch /meilisearch
+# The crates are `search` and `searchtool` (crates/*/Cargo.toml, no [[bin]]
+# override), so cargo emits binaries by those names. The upstream symlink for
+# pre-v0.27.0 containers is dropped — we have no such containers.
+COPY    --from=compiler /target/release/search /bin/search
+COPY    --from=compiler /target/release/searchtool /bin/searchtool
 
 # This directory should hold all the data related to meilisearch so we're going
 # to move our PWD in there.
@@ -57,4 +55,4 @@ WORKDIR /meili_data
 EXPOSE  7700/tcp
 
 ENTRYPOINT ["tini", "--"]
-CMD     /bin/meilisearch
+CMD     /bin/search

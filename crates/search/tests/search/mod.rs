@@ -101,7 +101,7 @@ async fn simple_search() {
         .await;
 }
 
-/// See <https://github.com/hanzoai/index/issues/5547>
+/// See <https://github.com/meilisearch/meilisearch/issues/5547>
 #[actix_rt::test]
 async fn bug_5547() {
     let server = Server::new_shared();
@@ -123,7 +123,7 @@ async fn bug_5547() {
 
 #[actix_rt::test]
 async fn search_with_stop_word() {
-    // related to https://github.com/hanzoai/index/issues/4984
+    // related to https://github.com/meilisearch/meilisearch/issues/4984
     let server = Server::new_shared();
     let index = server.unique_index();
 
@@ -188,7 +188,7 @@ async fn search_with_stop_word() {
 
 #[actix_rt::test]
 async fn search_with_typo_settings() {
-    // related to https://github.com/hanzoai/index/issues/5240
+    // related to https://github.com/meilisearch/meilisearch/issues/5240
     let server = Server::new_shared();
     let index = server.unique_index();
 
@@ -222,7 +222,7 @@ async fn search_with_typo_settings() {
 
 #[actix_rt::test]
 async fn phrase_search_with_stop_word() {
-    // related to https://github.com/hanzoai/index/issues/3521
+    // related to https://github.com/meilisearch/meilisearch/issues/3521
     let server = Server::new_shared();
     let index = server.unique_index();
 
@@ -1204,7 +1204,7 @@ async fn camelcased_words() {
     let server = Server::new_shared();
     let index = server.unique_index();
 
-    // related to https://github.com/hanzoai/index/issues/3818
+    // related to https://github.com/meilisearch/meilisearch/issues/3818
     let documents = json!([
         { "id": 0, "title": "DeLonghi" },
         { "id": 1, "title": "delonghi" },

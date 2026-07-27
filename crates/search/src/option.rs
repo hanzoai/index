@@ -464,7 +464,7 @@ pub struct Opt {
     pub experimental_replication_parameters: bool,
 
     /// Experimental RAM reduction during indexing, do not use in production,
-    /// see: <https://github.com/index/product/discussions/652>
+    /// see: <https://github.com/meilisearch/product/discussions/652>
     #[clap(long, env = INDEX_EXPERIMENTAL_REDUCE_INDEXING_MEMORY_USAGE)]
     #[serde(default)]
     pub experimental_reduce_indexing_memory_usage: bool,

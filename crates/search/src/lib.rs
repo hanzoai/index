@@ -475,7 +475,7 @@ pub fn update_version_file_for_dumpless_upgrade(
     // In the case of v1.12, the index-scheduler didn't store its internal version at the time.
     // => We must write it immediately **in the index-scheduler** otherwise we'll update the version file
     //    there is a risk of DB corruption if a restart happens after writing the version file but before
-    //    writing the version in the index-scheduler. See <https://github.com/hanzoai/index/issues/5280>
+    //    writing the version in the index-scheduler. See <https://github.com/meilisearch/meilisearch/issues/5280>
     if from_major == 1 && from_minor == 12 {
         let env = unsafe {
             heed::EnvOpenOptions::new()

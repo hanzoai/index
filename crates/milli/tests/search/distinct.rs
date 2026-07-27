@@ -205,7 +205,7 @@ test_distinct!(
     7
 );
 test_distinct!(
-    // testing: https://github.com/hanzoai/index/issues/4078
+    // testing: https://github.com/meilisearch/meilisearch/issues/4078
     distinct_string_limit_and_offset,
     tag,
     false,
@@ -215,7 +215,7 @@ test_distinct!(
     3
 );
 test_distinct!(
-    // testing: https://github.com/hanzoai/index/issues/4078
+    // testing: https://github.com/meilisearch/meilisearch/issues/4078
     exhaustive_distinct_string_limit_and_offset,
     tag,
     true,
@@ -225,7 +225,7 @@ test_distinct!(
     3
 );
 test_distinct!(
-    // testing: https://github.com/hanzoai/index/issues/4078
+    // testing: https://github.com/meilisearch/meilisearch/issues/4078
     distinct_number_limit_and_offset,
     asc_desc_rank,
     false,
@@ -235,7 +235,7 @@ test_distinct!(
     7
 );
 test_distinct!(
-    // testing: https://github.com/hanzoai/index/issues/4078
+    // testing: https://github.com/meilisearch/meilisearch/issues/4078
     exhaustive_distinct_number_limit_and_offset,
     asc_desc_rank,
     true,

@@ -467,7 +467,7 @@ async fn import_dump_v1_rubygems_with_settings() {
     snapshot!(code, @"200 OK");
     assert_eq!(
         document,
-        json!({ "name": "search", "summary": "An easy-to-use ruby client for Hanzo Index API", "description": "An easy-to-use ruby client for Hanzo Index API. See https://github.com/index/HanzoIndex", "id": "188040", "version": "0.15.2", "total_downloads": "7465"})
+        json!({ "name": "search", "summary": "An easy-to-use ruby client for Hanzo Index API", "description": "An easy-to-use ruby client for Hanzo Index API. See https://github.com/meilisearch/HanzoIndex", "id": "188040", "version": "0.15.2", "total_downloads": "7465"})
     );
 
     let (document, code) = index.get_document(191940, None).await;
@@ -967,7 +967,7 @@ async fn import_dump_v2_rubygems_with_settings() {
     snapshot!(code, @"200 OK");
     assert_eq!(
         document,
-        json!({ "name": "search", "summary": "An easy-to-use ruby client for Hanzo Index API", "description": "An easy-to-use ruby client for Hanzo Index API. See https://github.com/index/HanzoIndex", "id": "188040", "version": "0.15.2", "total_downloads": "7465"})
+        json!({ "name": "search", "summary": "An easy-to-use ruby client for Hanzo Index API", "description": "An easy-to-use ruby client for Hanzo Index API. See https://github.com/meilisearch/HanzoIndex", "id": "188040", "version": "0.15.2", "total_downloads": "7465"})
     );
 
     let (document, code) = index.get_document(191940, None).await;
@@ -1467,7 +1467,7 @@ async fn import_dump_v3_rubygems_with_settings() {
     snapshot!(code, @"200 OK");
     assert_eq!(
         document,
-        json!({ "name": "search", "summary": "An easy-to-use ruby client for Hanzo Index API", "description": "An easy-to-use ruby client for Hanzo Index API. See https://github.com/index/HanzoIndex", "id": "188040", "version": "0.15.2", "total_downloads": "7465"})
+        json!({ "name": "search", "summary": "An easy-to-use ruby client for Hanzo Index API", "description": "An easy-to-use ruby client for Hanzo Index API. See https://github.com/meilisearch/HanzoIndex", "id": "188040", "version": "0.15.2", "total_downloads": "7465"})
     );
 
     let (document, code) = index.get_document(191940, None).await;
@@ -1967,7 +1967,7 @@ async fn import_dump_v4_rubygems_with_settings() {
     snapshot!(code, @"200 OK");
     assert_eq!(
         document,
-        json!({ "name": "search", "summary": "An easy-to-use ruby client for Hanzo Index API", "description": "An easy-to-use ruby client for Hanzo Index API. See https://github.com/index/HanzoIndex", "id": "188040", "version": "0.15.2", "total_downloads": "7465"})
+        json!({ "name": "search", "summary": "An easy-to-use ruby client for Hanzo Index API", "description": "An easy-to-use ruby client for Hanzo Index API. See https://github.com/meilisearch/HanzoIndex", "id": "188040", "version": "0.15.2", "total_downloads": "7465"})
     );
 
     let (document, code) = index.get_document(191940, None).await;

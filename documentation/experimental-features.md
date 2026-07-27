@@ -45,7 +45,7 @@ Example CLI flags: `--experimental-disable-soft-delete`, `--experimental-multi-i
 ## Communication with users
 
 For each new experimental feature, we must:
-- GitHub: open a dedicated GitHub discussion in the  [product repository](https://github.com/index/product/discussions). This discussion should never become stale and be updated regularly. Users need to understand they can interact with us and get quick answers. The discussion should inform users about:
+- GitHub: open a dedicated GitHub discussion in the  [product repository](https://github.com/meilisearch/product/discussions). This discussion should never become stale and be updated regularly. Users need to understand they can interact with us and get quick answers. The discussion should inform users about:
   - Our motivations: why this feature is unstable?
   - Usage: how to activate this feature? Do we need to do a migration with a dump?
   - Planning: what are the conditions to make this feature stable? When do we expect it become stable?

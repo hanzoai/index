@@ -4,9 +4,9 @@ First, thank you for contributing to Hanzo Search! The goal of this document is 
 
 Remember that there are many ways to contribute other than writing code: improving [the documentation](https://docs.hanzo.ai/search), submitting [bug reports](https://github.com/hanzoai/search/issues/new?assignees=&labels=&template=bug_report.md&title=) and [feature requests](https://github.com/hanzoai/search/discussions)...
 
-Hanzo Search can manage multiple indexes, handle the update store, and expose an HTTP API. Search and indexation are the domain of the core engine, [`milli`](https://github.com/hanzoai/search/tree/main/milli), while tokenization is handled by [the `charabia` library](https://github.com/index/charabia/).
+Hanzo Search can manage multiple indexes, handle the update store, and expose an HTTP API. Search and indexation are the domain of the core engine, [`milli`](https://github.com/hanzoai/search/tree/main/milli), while tokenization is handled by [the `charabia` library](https://github.com/meilisearch/charabia/).
 
-If Hanzo Search does not offer optimized support for your language, please consider contributing to `charabia` by following the [CONTRIBUTING.md file](https://github.com/index/charabia/blob/main/CONTRIBUTING.md) and integrating your intended normalizer/segmenter.
+If Hanzo Search does not offer optimized support for your language, please consider contributing to `charabia` by following the [CONTRIBUTING.md file](https://github.com/meilisearch/charabia/blob/main/CONTRIBUTING.md) and integrating your intended normalizer/segmenter.
 
 ## Table of Contents
 
@@ -136,7 +136,7 @@ cargo run --release -- --pretty
 
 ### Testing the documentation locally
 
-You can run the [documentation](https://github.com/index/documentation) site locally to preview how the API reference renders.
+You can run the [documentation](https://github.com/meilisearch/documentation) site locally to preview how the API reference renders.
 
 **Requirements**
 
@@ -152,7 +152,7 @@ This generates `index-openapi.json` in the current directory.
 
 **2. Run the documentation site with the generated file:**
 
-- Clone the [documentation repository](https://github.com/index/documentation)
+- Clone the [documentation repository](https://github.com/meilisearch/documentation)
 - Copy the generated OpenAPI file into the docs repo at `assets/openapi/index-openapi-mintlify.json`
 - From the documentation repository root, run:
 
@@ -196,9 +196,9 @@ cargo run --release -- --pretty
 
 ### Update the mini-dashboard (local interface)
 
-To update the [mini-dashboard](https://github.com/index/mini-dashboard) (the local web interface served by Hanzo Index):
+To update the [mini-dashboard](https://github.com/meilisearch/mini-dashboard) (the local web interface served by Hanzo Index):
 
-1. Download the `build.zip` of the mini-dashboard attached to the [release](https://github.com/index/mini-dashboard/releases) you want to use.
+1. Download the `build.zip` of the mini-dashboard attached to the [release](https://github.com/meilisearch/mini-dashboard/releases) you want to use.
 
 2. Compute the SHA-1 checksum of the downloaded file:
 ```bash
@@ -207,7 +207,7 @@ shasum -a 1 ~/Downloads/build.zip
 
 3. In `crates/index/Cargo.toml`, update the `[package.metadata.mini-dashboard]` section with the new `assets-url` (pointing to the mini-dashboard release URL) and the `sha1` checksum.
 
-See [this example PR](https://github.com/hanzoai/index/pull/6091/changes) for a concrete example of the changes to apply.
+See [this example PR](https://github.com/meilisearch/meilisearch/pull/6091/changes) for a concrete example of the changes to apply.
 
 ### Logging
 

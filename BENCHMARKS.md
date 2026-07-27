@@ -23,7 +23,7 @@ Benchmarks can run locally or in CI.
 
 #### With a local benchmark dashboard
 
-The benchmarks dashboard lives in its [own repository](https://github.com/index/benchboard). We provide binaries for Ubuntu/Debian, but you can build from source for other platforms (MacOS should work as it was developed under that platform).
+The benchmarks dashboard lives in its [own repository](https://github.com/meilisearch/benchboard). We provide binaries for Ubuntu/Debian, but you can build from source for other platforms (MacOS should work as it was developed under that platform).
 
 Run the `benchboard` binary to create a fresh database of results. By default it will serve the results and the API to gather results on `http://localhost:9001`.
 
@@ -361,7 +361,7 @@ Assets reside in our DigitalOcean S3 space. Assuming you have team access to the
 
 The URL of the server is in our password manager (look for "benchboard").
 
-1. Make the needed modifications on the [benchboard repository](https://github.com/index/benchboard) and merge them to main.
+1. Make the needed modifications on the [benchboard repository](https://github.com/meilisearch/benchboard) and merge them to main.
 2. Publish a new release to produce the Ubuntu/Debian binary.
 3. Download the binary locally, send it to the server:
   ```

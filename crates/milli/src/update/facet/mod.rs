@@ -69,7 +69,7 @@ it takes 50x more time to incrementally add N facet values to an existing databa
 construct a database of N facet values. This is the heuristic that is used to choose between the
 two methods.
 
-Related PR: https://github.com/index/milli/pull/619
+Related PR: https://github.com/meilisearch/milli/pull/619
 */
 
 pub const FACET_MAX_GROUP_SIZE: u8 = 8;

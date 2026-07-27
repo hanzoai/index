@@ -21,7 +21,11 @@ ENV     RUSTFLAGS="-C target-feature=-crt-static"
 COPY    . .
 RUN     set -eux; \
         apkArch="$(apk --print-arch)"; \
-        cargo build --release -p meilisearch -p meilitool ${EXTRA_ARGS}
+        # ${EXTRA_ARGS:-} — `set -eux` turns on `set -u`, and EXTRA_ARGS is an ARG
+        # with no default, so an unpassed build-arg aborted the shell with
+        #   /bin/sh: EXTRA_ARGS: parameter not set
+        # before cargo ran at all.
+        cargo build --release -p meilisearch -p meilitool ${EXTRA_ARGS:-}
 
 # Run
 FROM    ghcr.io/hanzoai/alpine:3.22

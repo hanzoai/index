@@ -45,7 +45,7 @@ mod mod_test;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-use crate::error::Hanzo IndexHttpError;
+use crate::error::HttpError;
 use crate::search::value_paths_visitor::ValuePathsVisitor;
 
 mod federated;
@@ -2098,24 +2098,24 @@ pub fn search_from_kind(
     index_uid: String,
     search_kind: SearchKind,
     search: milli::Search<'_>,
-) -> Result<(milli::SearchResult, Option<u32>), Hanzo IndexHttpError> {
+) -> Result<(milli::SearchResult, Option<u32>), HttpError> {
     let (milli_result, semantic_hit_count) = match &search_kind {
         SearchKind::KeywordOnly => {
             let results = search
                 .execute()
-                .map_err(|e| Hanzo IndexHttpError::from_milli(e, Some(index_uid.to_string())))?;
+                .map_err(|e| HttpError::from_milli(e, Some(index_uid.to_string())))?;
             (results, None)
         }
         SearchKind::SemanticOnly { .. } => {
             let results = search
                 .execute()
-                .map_err(|e| Hanzo IndexHttpError::from_milli(e, Some(index_uid.to_string())))?;
+                .map_err(|e| HttpError::from_milli(e, Some(index_uid.to_string())))?;
             let semantic_hit_count = results.document_scores.len() as u32;
             (results, Some(semantic_hit_count))
         }
         SearchKind::Hybrid { semantic_ratio, .. } => search
             .execute_hybrid(*semantic_ratio)
-            .map_err(|e| Hanzo IndexHttpError::from_milli(e, Some(index_uid)))?,
+            .map_err(|e| HttpError::from_milli(e, Some(index_uid)))?,
     };
     Ok((milli_result, semantic_hit_count))
 }
@@ -2589,7 +2589,7 @@ pub fn perform_similar(
     // preventing a use-after-move
     let Some(internal_id) = index.external_documents_ids().get(&rtxn, &id)? else {
         return Err(ResponseError::from_msg(
-            Hanzo IndexHttpError::DocumentNotFound(id.into_inner()).to_string(),
+            HttpError::DocumentNotFound(id.into_inner()).to_string(),
             Code::NotFoundSimilarId,
         ));
     };
@@ -2977,7 +2977,7 @@ pub(crate) fn parse_filter(
     let filter = match facets {
         Value::String(expr) => Filter::from_str(expr).map_err(|e| e.into()),
         Value::Array(arr) => parse_filter_array(arr).map_err(|e| e.into()),
-        v => Err(Hanzo IndexHttpError::InvalidExpression(&["String", "Array"], v.clone()).into()),
+        v => Err(HttpError::InvalidExpression(&["String", "Array"], v.clone()).into()),
     };
     let filter = filter.map_err(|err: ResponseError| {
         ResponseError::from_msg(err.to_string(), filter_parsing_error_code)
@@ -3036,7 +3036,7 @@ fn check_filter_experimental_features(
     Ok(filter)
 }
 
-fn parse_filter_array(arr: &'_ [Value]) -> Result<Option<Filter<'_>>, Hanzo IndexHttpError> {
+fn parse_filter_array(arr: &'_ [Value]) -> Result<Option<Filter<'_>>, HttpError> {
     let mut ands = Vec::new();
     for value in arr {
         match value {
@@ -3047,7 +3047,7 @@ fn parse_filter_array(arr: &'_ [Value]) -> Result<Option<Filter<'_>>, Hanzo Inde
                     match value {
                         Value::String(s) => ors.push(s.as_str()),
                         v => {
-                            return Err(Hanzo IndexHttpError::InvalidExpression(
+                            return Err(HttpError::InvalidExpression(
                                 &["String"],
                                 v.clone(),
                             ));
@@ -3057,7 +3057,7 @@ fn parse_filter_array(arr: &'_ [Value]) -> Result<Option<Filter<'_>>, Hanzo Inde
                 ands.push(Either::Left(ors));
             }
             v => {
-                return Err(Hanzo IndexHttpError::InvalidExpression(
+                return Err(HttpError::InvalidExpression(
                     &["String", "[String]"],
                     v.clone(),
                 ));
@@ -3065,5 +3065,5 @@ fn parse_filter_array(arr: &'_ [Value]) -> Result<Option<Filter<'_>>, Hanzo Inde
         }
     }
 
-    Filter::from_array(ands).map_err(|e| Hanzo IndexHttpError::from_milli(e, None))
+    Filter::from_array(ands).map_err(|e| HttpError::from_milli(e, None))
 }

@@ -17,7 +17,7 @@ use uuid::Uuid;
 
 #[derive(Debug, thiserror::Error)]
 #[allow(clippy::large_enum_variant)]
-pub enum Hanzo IndexHttpError {
+pub enum HttpError {
     #[error("A Content-Type header is missing. Accepted values for the Content-Type header are: {}",
             .0.iter().map(|s| format!("`{}`", s)).collect::<Vec<_>>().join(", "))]
     MissingContentType(Vec<String>),
@@ -159,90 +159,90 @@ if_remote=if let Some(remote) = remote {
     DistinctInFederatedQueryAndFederation(usize),
 }
 
-impl Hanzo IndexHttpError {
+impl HttpError {
     pub(crate) fn from_milli(error: milli::Error, index_name: Option<String>) -> Self {
         Self::Milli { error, index_name }
     }
 }
 
-impl ErrorCode for Hanzo IndexHttpError {
+impl ErrorCode for HttpError {
     fn error_code(&self) -> Code {
         match self {
-            Hanzo IndexHttpError::MissingContentType(_) => Code::MissingContentType,
-            Hanzo IndexHttpError::AlreadyUsedLogRoute => Code::BadRequest,
-            Hanzo IndexHttpError::CsvDelimiterWithWrongContentType(_) => Code::InvalidContentType,
-            Hanzo IndexHttpError::MissingPayload(_) => Code::MissingPayload,
-            Hanzo IndexHttpError::InvalidContentType(_, _) => Code::InvalidContentType,
-            Hanzo IndexHttpError::DocumentNotFound(_) => Code::DocumentNotFound,
-            Hanzo IndexHttpError::EmptyFilter => Code::InvalidDocumentFilter,
-            Hanzo IndexHttpError::InvalidExpression(_, _) => Code::InvalidSearchFilter,
-            Hanzo IndexHttpError::PayloadTooLarge(_) => Code::PayloadTooLarge,
-            Hanzo IndexHttpError::TooManySearchRequests(_) => Code::TooManySearchRequests,
-            Hanzo IndexHttpError::SearchLimiterIsDown => Code::Internal,
-            Hanzo IndexHttpError::SwapIndexPayloadWrongLength(_) => Code::InvalidSwapIndexes,
-            Hanzo IndexHttpError::IndexUid(e) => e.error_code(),
-            Hanzo IndexHttpError::SerdeJson(_) => Code::Internal,
-            Hanzo IndexHttpError::HeedError(_) => Code::Internal,
-            Hanzo IndexHttpError::IndexScheduler(e) => e.error_code(),
-            Hanzo IndexHttpError::RemoteIndexScheduler { error, .. } => error.error_code(),
-            Hanzo IndexHttpError::Milli { error, .. } => error.error_code(),
-            Hanzo IndexHttpError::Payload(e) => e.error_code(),
-            Hanzo IndexHttpError::FileStore(_) => Code::Internal,
-            Hanzo IndexHttpError::DocumentFormat(e) => e.error_code(),
-            Hanzo IndexHttpError::Join(_) => Code::Internal,
-            Hanzo IndexHttpError::MissingSearchHybrid => Code::MissingSearchHybrid,
-            Hanzo IndexHttpError::MediaAndVector => Code::InvalidSearchMediaAndVector,
-            Hanzo IndexHttpError::FederationOptionsInNonFederatedRequest(_)
-            | Hanzo IndexHttpError::RemoteAndUseNetwork(_) => {
+            HttpError::MissingContentType(_) => Code::MissingContentType,
+            HttpError::AlreadyUsedLogRoute => Code::BadRequest,
+            HttpError::CsvDelimiterWithWrongContentType(_) => Code::InvalidContentType,
+            HttpError::MissingPayload(_) => Code::MissingPayload,
+            HttpError::InvalidContentType(_, _) => Code::InvalidContentType,
+            HttpError::DocumentNotFound(_) => Code::DocumentNotFound,
+            HttpError::EmptyFilter => Code::InvalidDocumentFilter,
+            HttpError::InvalidExpression(_, _) => Code::InvalidSearchFilter,
+            HttpError::PayloadTooLarge(_) => Code::PayloadTooLarge,
+            HttpError::TooManySearchRequests(_) => Code::TooManySearchRequests,
+            HttpError::SearchLimiterIsDown => Code::Internal,
+            HttpError::SwapIndexPayloadWrongLength(_) => Code::InvalidSwapIndexes,
+            HttpError::IndexUid(e) => e.error_code(),
+            HttpError::SerdeJson(_) => Code::Internal,
+            HttpError::HeedError(_) => Code::Internal,
+            HttpError::IndexScheduler(e) => e.error_code(),
+            HttpError::RemoteIndexScheduler { error, .. } => error.error_code(),
+            HttpError::Milli { error, .. } => error.error_code(),
+            HttpError::Payload(e) => e.error_code(),
+            HttpError::FileStore(_) => Code::Internal,
+            HttpError::DocumentFormat(e) => e.error_code(),
+            HttpError::Join(_) => Code::Internal,
+            HttpError::MissingSearchHybrid => Code::MissingSearchHybrid,
+            HttpError::MediaAndVector => Code::InvalidSearchMediaAndVector,
+            HttpError::FederationOptionsInNonFederatedRequest(_)
+            | HttpError::RemoteAndUseNetwork(_) => {
                 Code::InvalidMultiSearchFederationOptions
             }
-            Hanzo IndexHttpError::PaginationInFederatedQuery(_, _) => {
+            HttpError::PaginationInFederatedQuery(_, _) => {
                 Code::InvalidMultiSearchQueryPagination
             }
-            Hanzo IndexHttpError::DistinctInFederatedQueryAndFederation(..) => {
+            HttpError::DistinctInFederatedQueryAndFederation(..) => {
                 Code::InvalidMultiSearchDistinct
             }
-            Hanzo IndexHttpError::FacetsInFederatedQuery(..) => Code::InvalidMultiSearchQueryFacets,
-            Hanzo IndexHttpError::InconsistentFacetOrder { .. } => {
+            HttpError::FacetsInFederatedQuery(..) => Code::InvalidMultiSearchQueryFacets,
+            HttpError::InconsistentFacetOrder { .. } => {
                 Code::InvalidMultiSearchFacetOrder
             }
-            Hanzo IndexHttpError::PersonalizationInFederatedQuery(_) => {
+            HttpError::PersonalizationInFederatedQuery(_) => {
                 Code::InvalidMultiSearchQueryPersonalization
             }
-            Hanzo IndexHttpError::ShowPerformanceDetailsInFederatedQuery(_) => {
+            HttpError::ShowPerformanceDetailsInFederatedQuery(_) => {
                 Code::InvalidMultiSearchQueryShowPerformanceDetails
             }
-            Hanzo IndexHttpError::InconsistentOriginHeaders { .. }
-            | Hanzo IndexHttpError::InconsistentImportHeaders { .. }
-            | Hanzo IndexHttpError::InconsistentImportMetadataHeaders { .. }
-            | Hanzo IndexHttpError::InconsistentTaskNetworkHeaders { .. } => {
+            HttpError::InconsistentOriginHeaders { .. }
+            | HttpError::InconsistentImportHeaders { .. }
+            | HttpError::InconsistentImportMetadataHeaders { .. }
+            | HttpError::InconsistentTaskNetworkHeaders { .. } => {
                 Code::InconsistentDocumentChangeHeaders
             }
-            Hanzo IndexHttpError::InvalidHeaderValue { .. } => Code::InvalidHeaderValue,
-            Hanzo IndexHttpError::NotLeader { .. } => Code::NotLeader,
-            Hanzo IndexHttpError::RenamedSelf { .. } => Code::InvalidNetworkSelf,
-            Hanzo IndexHttpError::UnexpectedNetworkPreviousRemotes => {
+            HttpError::InvalidHeaderValue { .. } => Code::InvalidHeaderValue,
+            HttpError::NotLeader { .. } => Code::NotLeader,
+            HttpError::RenamedSelf { .. } => Code::InvalidNetworkSelf,
+            HttpError::UnexpectedNetworkPreviousRemotes => {
                 Code::UnexpectedNetworkPreviousRemotes
             }
-            Hanzo IndexHttpError::NetworkVersionTooOld { .. } => Code::NetworkVersionTooOld,
-            Hanzo IndexHttpError::UnprocessedNetworkTask { .. } => Code::UnprocessedNetworkTask,
+            HttpError::NetworkVersionTooOld { .. } => Code::NetworkVersionTooOld,
+            HttpError::UnprocessedNetworkTask { .. } => Code::UnprocessedNetworkTask,
         }
     }
 }
 
-impl From<Hanzo IndexHttpError> for aweb::Error {
-    fn from(other: Hanzo IndexHttpError) -> Self {
+impl From<HttpError> for aweb::Error {
+    fn from(other: HttpError) -> Self {
         aweb::Error::from(ResponseError::from(other))
     }
 }
 
-impl From<aweb::error::PayloadError> for Hanzo IndexHttpError {
+impl From<aweb::error::PayloadError> for HttpError {
     fn from(error: aweb::error::PayloadError) -> Self {
         match error {
-            aweb::error::PayloadError::Incomplete(_) => Hanzo IndexHttpError::Payload(
+            aweb::error::PayloadError::Incomplete(_) => HttpError::Payload(
                 PayloadError::Payload(ActixPayloadError::IncompleteError),
             ),
-            _ => Hanzo IndexHttpError::Payload(PayloadError::Payload(
+            _ => HttpError::Payload(PayloadError::Payload(
                 ActixPayloadError::OtherError(error),
             )),
         }
@@ -250,7 +250,7 @@ impl From<aweb::error::PayloadError> for Hanzo IndexHttpError {
 }
 
 impl<T: search_types::tasks::network::headers::GetHeader>
-    From<search_types::tasks::network::headers::DecodeError<T>> for Hanzo IndexHttpError
+    From<search_types::tasks::network::headers::DecodeError<T>> for HttpError
 {
     fn from(value: search_types::tasks::network::headers::DecodeError<T>) -> Self {
         Self::InvalidHeaderValue { header_name: value.header(), msg: value.to_string() }

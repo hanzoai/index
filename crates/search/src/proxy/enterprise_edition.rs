@@ -22,7 +22,7 @@ use serde::de::DeserializeOwned;
 use serde_json::Value;
 use uuid::Uuid;
 
-use crate::error::Hanzo IndexHttpError;
+use crate::error::HttpError;
 use crate::proxy::{Body, Endpoint, ProxyError, ReqwestErrorWithoutUrl};
 use crate::routes::SummarizedTaskView;
 
@@ -112,7 +112,7 @@ where
 
 /// Parses the header to determine if this task is a duplicate and originates with a remote.
 ///
-/// If not, checks whether this remote is the leader and return `Hanzo IndexHttpError::NotLeader` if not.
+/// If not, checks whether this remote is the leader and return `HttpError::NotLeader` if not.
 ///
 /// If there is no leader, returns `Ok(None)`
 ///
@@ -122,12 +122,12 @@ where
 ///     1. The task originates with the current node
 ///     2. There's a declared `leader`
 ///     3. The declared leader is **not** the current node
-/// - `Hanzo IndexHttpError::InvalidHeaderValue`: if headers cannot be parsed as a task network.
-/// - `Hanzo IndexHttpError::InconsistentTaskNetwork`: if only some of the headers are present.
+/// - `HttpError::InvalidHeaderValue`: if headers cannot be parsed as a task network.
+/// - `HttpError::InconsistentTaskNetwork`: if only some of the headers are present.
 pub fn task_network_and_check_leader_and_version(
     req: &HttpRequest,
     network: &search_types::network::Network,
-) -> Result<Option<TaskNetwork>, Hanzo IndexHttpError> {
+) -> Result<Option<TaskNetwork>, HttpError> {
     let task_network =
         match (origin_from_req(req)?, import_data_from_req(req)?, import_metadata_from_req(req)?) {
             (Some(network_change), Some(import_from), Some(metadata)) => {
@@ -142,7 +142,7 @@ pub fn task_network_and_check_leader_and_version(
                     (Some(leader), Some(this)) if leader == this => (),
                     // 3. Any other change is disallowed
                     (Some(leader), _) => {
-                        return Err(Hanzo IndexHttpError::NotLeader { leader: leader.to_string() })
+                        return Err(HttpError::NotLeader { leader: leader.to_string() })
                     }
                 }
 
@@ -153,7 +153,7 @@ pub fn task_network_and_check_leader_and_version(
             }
             // all good cases were matched, so this is always an error
             (origin, import_from, metadata) => {
-                return Err(Hanzo IndexHttpError::InconsistentTaskNetworkHeaders {
+                return Err(HttpError::InconsistentTaskNetworkHeaders {
                     is_missing_origin: origin.is_none(),
                     is_missing_import: import_from.is_none(),
                     is_missing_import_metadata: metadata.is_none(),
@@ -162,7 +162,7 @@ pub fn task_network_and_check_leader_and_version(
         };
 
     if task_network.network_version() < network.version {
-        return Err(Hanzo IndexHttpError::NetworkVersionTooOld {
+        return Err(HttpError::NetworkVersionTooOld {
             received: task_network.network_version(),
             expected_at_least: network.version,
         });
@@ -193,7 +193,7 @@ pub async fn proxy<T, F, E: Endpoint>(
     network: search_types::network::Network,
     body: Body<T, F>,
     task: &Task,
-) -> Result<Task, Hanzo IndexHttpError>
+) -> Result<Task, HttpError>
 where
     T: serde::Serialize,
     F: FnMut(&str, &Remote, &mut T),
@@ -227,7 +227,7 @@ where
         for (body, (node_name, node)) in body
             .into_bytes_iter(network.remotes.into_iter().filter(|(name, _)| name.as_str() != this))
             .map_err(|err| {
-                Hanzo IndexHttpError::from_milli(err, index_uid.map(ToOwned::to_owned))
+                HttpError::from_milli(err, index_uid.map(ToOwned::to_owned))
             })?
         {
             tracing::trace!(node_name, "proxying task to remote");
@@ -547,7 +547,7 @@ impl<'a> search_types::tasks::network::headers::GetHeader for ResponseWrapper<'a
     }
 }
 
-pub fn origin_from_req(req: &HttpRequest) -> Result<Option<Origin>, Hanzo IndexHttpError> {
+pub fn origin_from_req(req: &HttpRequest) -> Result<Option<Origin>, HttpError> {
     let req = ResponseWrapper(req);
     let (remote_name, task_uid, network_version) = match (
         req.get_origin_remote()?,
@@ -556,10 +556,10 @@ pub fn origin_from_req(req: &HttpRequest) -> Result<Option<Origin>, Hanzo IndexH
     ) {
         (None, None, _) => return Ok(None),
         (None, Some(_), _) => {
-            return Err(Hanzo IndexHttpError::InconsistentOriginHeaders { is_remote_missing: true })
+            return Err(HttpError::InconsistentOriginHeaders { is_remote_missing: true })
         }
         (Some(_), None, _) => {
-            return Err(Hanzo IndexHttpError::InconsistentOriginHeaders {
+            return Err(HttpError::InconsistentOriginHeaders {
                 is_remote_missing: false,
             })
         }
@@ -573,7 +573,7 @@ pub fn origin_from_req(req: &HttpRequest) -> Result<Option<Origin>, Hanzo IndexH
     Ok(Some(Origin { remote_name: remote_name.into_owned(), task_uid, network_version }))
 }
 
-pub fn import_data_from_req(req: &HttpRequest) -> Result<Option<ImportData>, Hanzo IndexHttpError> {
+pub fn import_data_from_req(req: &HttpRequest) -> Result<Option<ImportData>, HttpError> {
     let req = ResponseWrapper(req);
     let (remote_name, index_name, document_count) =
         match (req.get_import_remote()?, req.get_import_index()?, req.get_import_docs()?) {
@@ -583,7 +583,7 @@ pub fn import_data_from_req(req: &HttpRequest) -> Result<Option<ImportData>, Han
             }
             // catch-all pattern that has to contain an inconsistency since we already matched (None, None, None) and (Some, Some, Some)
             (remote_name, index_name, documents) => {
-                return Err(Hanzo IndexHttpError::InconsistentImportHeaders {
+                return Err(HttpError::InconsistentImportHeaders {
                     is_remote_missing: remote_name.is_none(),
                     is_index_missing: index_name.is_none(),
                     is_docs_missing: documents.is_none(),
@@ -600,7 +600,7 @@ pub fn import_data_from_req(req: &HttpRequest) -> Result<Option<ImportData>, Han
 
 pub fn import_metadata_from_req(
     req: &HttpRequest,
-) -> Result<Option<ImportMetadata>, Hanzo IndexHttpError> {
+) -> Result<Option<ImportMetadata>, HttpError> {
     let req = ResponseWrapper(req);
     let (index_count, task_key, total_index_documents) = match (
         req.get_import_index_count()?,
@@ -613,7 +613,7 @@ pub fn import_metadata_from_req(
         }
         // catch-all pattern that has to contain an inconsistency since we already matched (None, None, None) and (Some, Some, Some)
         (index_count, task_key, total_index_documents) => {
-            return Err(Hanzo IndexHttpError::InconsistentImportMetadataHeaders {
+            return Err(HttpError::InconsistentImportMetadataHeaders {
                 is_index_count_missing: index_count.is_none(),
                 is_task_key_missing: task_key.is_none(),
                 is_total_index_documents_missing: total_index_documents.is_none(),

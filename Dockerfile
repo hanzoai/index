@@ -29,9 +29,9 @@ RUN     set -eux; \
 
 # Run
 FROM    ghcr.io/hanzoai/alpine:3.22
-LABEL   org.opencontainers.image.source="https://github.com/hanzoai/search"
-LABEL   org.opencontainers.image.title="Hanzo Search"
-LABEL   org.opencontainers.image.description="AI-powered search engine built on Hanzo Index"
+LABEL   org.opencontainers.image.source="https://github.com/hanzoai/index"
+LABEL   org.opencontainers.image.title="Hanzo Index"
+LABEL   org.opencontainers.image.description="Full-text and vector index: documents in, ranked results out"
 LABEL   org.opencontainers.image.vendor="Hanzo AI Inc."
 LABEL   org.opencontainers.image.url="https://hanzo.ai"
 
@@ -46,10 +46,10 @@ RUN     apk add -q --no-cache libgcc tini curl
 COPY    --from=compiler /target/release/search /bin/search
 COPY    --from=compiler /target/release/searchtool /bin/searchtool
 
-# This directory should hold all the data related to index so we're going
-# to move our PWD in there.
-# We don't want to put the index binary
-WORKDIR /index_data
+# The database lives here and nowhere else, so it is both the WORKDIR and the
+# mount point a deployment is expected to attach a volume to. Unset
+# INDEX_DB_PATH resolves relative to it.
+WORKDIR /data
 
 
 EXPOSE  7700/tcp

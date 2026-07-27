@@ -97,7 +97,7 @@ pub(crate) use async_openai_macros::byot;
 #[cfg(not(feature = "byot"))]
 pub(crate) use async_openai_macros::byot_passthrough as byot;
 
-// MEILI: remove unused modules
+// Unused modules are removed from this vendored copy.
 
 // mod assistants;
 // mod audio;

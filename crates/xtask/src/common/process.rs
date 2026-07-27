@@ -10,8 +10,8 @@ use crate::common::command::{health_command, run as run_command};
 use crate::common::instance::{Binary, BinarySource, Edition};
 
 #[tracing::instrument]
-pub async fn kill_meili(mut meilisearch: tokio::process::Child) {
-    let Some(id) = meilisearch.id() else { return };
+pub async fn kill_meili(mut search: tokio::process::Child) {
+    let Some(id) = search.id() else { return };
 
     match TokioCommand::new("kill").args(["--signal=TERM", &id.to_string()]).spawn() {
         Ok(mut cmd) => {
@@ -26,7 +26,7 @@ pub async fn kill_meili(mut meilisearch: tokio::process::Child) {
                 error = &error as &dyn std::error::Error,
                 "while terminating Meilisearch server with a kill -s TERM"
             );
-            if let Err(error) = meilisearch.kill().await {
+            if let Err(error) = search.kill().await {
                 tracing::warn!(
                     error = &error as &dyn std::error::Error,
                     "while terminating Meilisearch server"
@@ -36,10 +36,10 @@ pub async fn kill_meili(mut meilisearch: tokio::process::Child) {
         }
     };
 
-    match time::timeout(Duration::from_secs(5), meilisearch.wait()).await {
+    match time::timeout(Duration::from_secs(5), search.wait()).await {
         Ok(_) => (),
         Err(_) => {
-            if let Err(error) = meilisearch.kill().await {
+            if let Err(error) = search.kill().await {
                 tracing::warn!(
                     error = &error as &dyn std::error::Error,
                     "while terminating Meilisearch server"
@@ -52,7 +52,7 @@ pub async fn kill_meili(mut meilisearch: tokio::process::Child) {
 #[tracing::instrument]
 async fn build(edition: Edition) -> anyhow::Result<()> {
     let mut command = TokioCommand::new("cargo");
-    command.arg("build").arg("--release").arg("-p").arg("meilisearch");
+    command.arg("build").arg("--release").arg("-p").arg("search");
     if let Edition::Enterprise = edition {
         command.arg("--features=enterprise");
     }
@@ -84,9 +84,9 @@ pub async fn start_meili(
                 .arg("run")
                 .arg("--release")
                 .arg("-p")
-                .arg("meilisearch")
+                .arg("search")
                 .arg("--bin")
-                .arg("meilisearch");
+                .arg("search");
             if let Edition::Enterprise = *edition {
                 command.arg("--features=enterprise");
             }
@@ -127,16 +127,16 @@ pub async fn start_meili(
         }
     }
 
-    let mut meilisearch = command.spawn().context("Error starting Meilisearch")?;
+    let mut search = command.spawn().context("Error starting Meilisearch")?;
 
-    wait_for_health(client, &mut meilisearch).await?;
+    wait_for_health(client, &mut search).await?;
 
-    Ok(meilisearch)
+    Ok(search)
 }
 
 async fn wait_for_health(
     client: &Client,
-    meilisearch: &mut tokio::process::Child,
+    search: &mut tokio::process::Child,
 ) -> anyhow::Result<()> {
     for i in 0..100 {
         let res =
@@ -145,7 +145,7 @@ async fn wait_for_health(
         if res.is_ok() {
             // check that this is actually the current Meilisearch instance that answered us
             if let Some(exit_code) =
-                meilisearch.try_wait().context("cannot check Meilisearch server process status")?
+                search.try_wait().context("cannot check Meilisearch server process status")?
             {
                 tracing::error!("Got an health response from a different process");
                 bail!("Meilisearch server exited early with code {exit_code}");
@@ -156,13 +156,13 @@ async fn wait_for_health(
         time::sleep(Duration::from_millis(500)).await;
         // check whether the Meilisearch instance exited early (cut the wait)
         if let Some(exit_code) =
-            meilisearch.try_wait().context("cannot check Meilisearch server process status")?
+            search.try_wait().context("cannot check Meilisearch server process status")?
         {
             bail!("Meilisearch server exited early with code {exit_code}");
         }
         tracing::debug!(attempt = i, "Waiting for Meilisearch to go up");
     }
-    bail!("meilisearch is not responding")
+    bail!("search is not responding")
 }
 
 pub async fn delete_db() {

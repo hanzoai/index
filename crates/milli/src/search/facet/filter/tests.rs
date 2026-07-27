@@ -4,7 +4,7 @@ use std::iter::FromIterator;
 use big_s::S;
 use either::Either;
 use filter_parser::{FilterCondition, IndexFilterCondition};
-use meili_snap::snapshot;
+use search_snap::snapshot;
 use roaring::RoaringBitmap;
 
 use super::index_filter::IndexFilter;

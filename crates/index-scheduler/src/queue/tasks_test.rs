@@ -1,7 +1,7 @@
-use meili_snap::snapshot;
-use meilisearch_auth::AuthFilter;
-use meilisearch_types::index_uid_pattern::IndexUidPattern;
-use meilisearch_types::tasks::{IndexSwap, KindWithContent, Status};
+use search_snap::snapshot;
+use search_auth::AuthFilter;
+use search_types::index_uid_pattern::IndexUidPattern;
+use search_types::tasks::{IndexSwap, KindWithContent, Status};
 use time::{Duration, OffsetDateTime};
 
 use crate::insta_snapshot::{snapshot_bitmap, snapshot_index_scheduler};

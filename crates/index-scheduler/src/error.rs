@@ -1,13 +1,13 @@
 use std::fmt::Display;
 
 use http_client::reqwest::StatusCode;
-use meilisearch_types::batches::BatchId;
-use meilisearch_types::error::{Code, ErrorCode};
-use meilisearch_types::milli::index::RollbackOutcome;
-use meilisearch_types::milli::DocumentId;
-use meilisearch_types::tasks::network::{ReceiveImportFinishedError, ReceiveTaskError};
-use meilisearch_types::tasks::{Kind, Status};
-use meilisearch_types::{heed, milli};
+use search_types::batches::BatchId;
+use search_types::error::{Code, ErrorCode};
+use search_types::milli::index::RollbackOutcome;
+use search_types::milli::DocumentId;
+use search_types::tasks::network::{ReceiveImportFinishedError, ReceiveTaskError};
+use search_types::tasks::{Kind, Status};
+use search_types::{heed, milli};
 use thiserror::Error;
 use uuid::Uuid;
 

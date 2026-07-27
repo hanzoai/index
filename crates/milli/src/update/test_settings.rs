@@ -1,7 +1,7 @@
 use big_s::S;
 use heed::types::Bytes;
 use maplit::{btreemap, btreeset};
-use meili_snap::snapshot;
+use search_snap::snapshot;
 
 use super::*;
 use crate::error::Error;

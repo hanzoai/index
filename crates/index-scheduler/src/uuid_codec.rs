@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 
-use meilisearch_types::heed::{BoxedError, BytesDecode, BytesEncode};
+use search_types::heed::{BoxedError, BytesDecode, BytesEncode};
 use uuid::Uuid;
 
 /// A heed codec for value of struct Uuid.

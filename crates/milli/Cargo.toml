@@ -130,7 +130,7 @@ mimalloc = { workspace = true }
 insta = "=1.39.0"
 maplit = "1.0.2"
 md5 = "0.8.0"
-meili-snap = { path = "../meili-snap" }
+search-snap = { path = "../search-snap" }
 rand = { version = "0.8.5", features = ["small_rng"] }
 
 [features]

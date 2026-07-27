@@ -2125,8 +2125,8 @@ pub struct PrefixSettings {
     pub compute_prefixes: PrefixSearch,
 }
 
-/// This is unfortunately a duplication of the struct in <meilisearch/src/search/mod.rs>.
-/// The reason why it is duplicated is because milli cannot depend on meilisearch. It would be cyclic imports.
+/// This is unfortunately a duplication of the struct in <search/src/search/mod.rs>.
+/// The reason why it is duplicated is because milli cannot depend on search. It would be cyclic imports.
 #[derive(Default, Debug, Copy, Clone, PartialEq, Eq, Deserr, ToSchema, Serialize, Deserialize)]
 #[deserr(rename_all = camelCase)]
 #[serde(rename_all = "camelCase")]

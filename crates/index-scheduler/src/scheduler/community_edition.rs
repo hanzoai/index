@@ -1,7 +1,7 @@
-use meilisearch_types::milli::progress::Progress;
-use meilisearch_types::network::Remote;
-use meilisearch_types::tasks::network::Origin;
-use meilisearch_types::tasks::Task;
+use search_types::milli::progress::Progress;
+use search_types::network::Remote;
+use search_types::tasks::network::Origin;
+use search_types::tasks::Task;
 
 use super::create_batch::Batch;
 use crate::scheduler::process_batch::ProcessBatchInfo;
@@ -61,7 +61,7 @@ impl IndexScheduler {
     pub(super) async fn process_snapshot_to_s3(
         &self,
         _progress: Progress,
-        _opts: meilisearch_types::milli::update::S3SnapshotOptions,
+        _opts: search_types::milli::update::S3SnapshotOptions,
         _tasks: Vec<Task>,
     ) -> Result<Vec<Task>> {
         Err(Error::RequiresEnterpriseEdition { action: "processing an S3-streaming snapshot task" })

@@ -12,11 +12,11 @@ use std::fs::File as StdFile;
 use std::time::Duration;
 
 use file_store::FileStore;
-use meilisearch_types::batches::BatchId;
-use meilisearch_types::heed::{Database, Env, RoTxn, RwTxn, WithoutTls};
-use meilisearch_types::milli::{CboRoaringBitmapCodec, BEU32};
-use meilisearch_types::tasks::network::DbTaskNetwork;
-use meilisearch_types::tasks::{Kind, KindWithContent, Status, Task};
+use search_types::batches::BatchId;
+use search_types::heed::{Database, Env, RoTxn, RwTxn, WithoutTls};
+use search_types::milli::{CboRoaringBitmapCodec, BEU32};
+use search_types::tasks::network::DbTaskNetwork;
+use search_types::tasks::{Kind, KindWithContent, Status, Task};
 use roaring::RoaringBitmap;
 use time::format_description::well_known::Rfc3339;
 use time::OffsetDateTime;
@@ -45,42 +45,42 @@ pub(crate) mod db_name {
 pub struct Query {
     /// The maximum number of tasks to be matched
     pub limit: Option<u32>,
-    /// The minimum [task id](`meilisearch_types::tasks::Task::uid`) to be matched
+    /// The minimum [task id](`search_types::tasks::Task::uid`) to be matched
     pub from: Option<u32>,
     /// The order used to return the tasks. By default the newest tasks are returned first and the boolean is `false`.
     pub reverse: Option<bool>,
-    /// The [task ids](`meilisearch_types::tasks::Task::uid`) to be matched
+    /// The [task ids](`search_types::tasks::Task::uid`) to be matched
     pub uids: Option<Vec<TaskId>>,
-    /// The [batch ids](`meilisearch_types::batches::Batch::uid`) to be matched
+    /// The [batch ids](`search_types::batches::Batch::uid`) to be matched
     pub batch_uids: Option<Vec<BatchId>>,
-    /// The allowed [statuses](`meilisearch_types::tasks::Task::status`) of the matched tasls
+    /// The allowed [statuses](`search_types::tasks::Task::status`) of the matched tasls
     pub statuses: Option<Vec<Status>>,
-    /// The allowed [kinds](meilisearch_types::tasks::Kind) of the matched tasks.
+    /// The allowed [kinds](search_types::tasks::Kind) of the matched tasks.
     ///
     /// The kind of a task is given by:
     /// ```
-    /// # use meilisearch_types::tasks::{Task, Kind};
+    /// # use search_types::tasks::{Task, Kind};
     /// # fn doc_func(task: Task) -> Kind {
     /// task.kind.as_kind()
     /// # }
     /// ```
     pub types: Option<Vec<Kind>>,
-    /// The allowed [index ids](meilisearch_types::tasks::Task::index_uid) of the matched tasks
+    /// The allowed [index ids](search_types::tasks::Task::index_uid) of the matched tasks
     pub index_uids: Option<Vec<String>>,
-    /// The [task ids](`meilisearch_types::tasks::Task::uid`) of the [`TaskCancelation`](meilisearch_types::tasks::Task::Kind::TaskCancelation) tasks
+    /// The [task ids](`search_types::tasks::Task::uid`) of the [`TaskCancelation`](search_types::tasks::Task::Kind::TaskCancelation) tasks
     /// that canceled the matched tasks.
     pub canceled_by: Option<Vec<TaskId>>,
-    /// Exclusive upper bound of the matched tasks' [`enqueued_at`](meilisearch_types::tasks::Task::enqueued_at) field.
+    /// Exclusive upper bound of the matched tasks' [`enqueued_at`](search_types::tasks::Task::enqueued_at) field.
     pub before_enqueued_at: Option<OffsetDateTime>,
-    /// Exclusive lower bound of the matched tasks' [`enqueued_at`](meilisearch_types::tasks::Task::enqueued_at) field.
+    /// Exclusive lower bound of the matched tasks' [`enqueued_at`](search_types::tasks::Task::enqueued_at) field.
     pub after_enqueued_at: Option<OffsetDateTime>,
-    /// Exclusive upper bound of the matched tasks' [`started_at`](meilisearch_types::tasks::Task::started_at) field.
+    /// Exclusive upper bound of the matched tasks' [`started_at`](search_types::tasks::Task::started_at) field.
     pub before_started_at: Option<OffsetDateTime>,
-    /// Exclusive lower bound of the matched tasks' [`started_at`](meilisearch_types::tasks::Task::started_at) field.
+    /// Exclusive lower bound of the matched tasks' [`started_at`](search_types::tasks::Task::started_at) field.
     pub after_started_at: Option<OffsetDateTime>,
-    /// Exclusive upper bound of the matched tasks' [`finished_at`](meilisearch_types::tasks::Task::finished_at) field.
+    /// Exclusive upper bound of the matched tasks' [`finished_at`](search_types::tasks::Task::finished_at) field.
     pub before_finished_at: Option<OffsetDateTime>,
-    /// Exclusive lower bound of the matched tasks' [`finished_at`](meilisearch_types::tasks::Task::finished_at) field.
+    /// Exclusive lower bound of the matched tasks' [`finished_at`](search_types::tasks::Task::finished_at) field.
     pub after_finished_at: Option<OffsetDateTime>,
 }
 
@@ -110,7 +110,7 @@ impl Query {
         )
     }
 
-    /// Add an [index id](meilisearch_types::tasks::Task::index_uid) to the list of permitted indexes.
+    /// Add an [index id](search_types::tasks::Task::index_uid) to the list of permitted indexes.
     pub fn with_index(self, index_uid: String) -> Self {
         let mut index_vec = self.index_uids.unwrap_or_default();
         index_vec.push(index_uid);
@@ -124,7 +124,7 @@ impl Query {
     }
 }
 
-/// Structure which holds meilisearch's indexes and schedules the tasks
+/// Structure which holds search's indexes and schedules the tasks
 /// to be performed on them.
 pub struct Queue {
     pub(crate) tasks: tasks::TaskQueue,

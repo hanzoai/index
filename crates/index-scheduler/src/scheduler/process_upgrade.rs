@@ -1,5 +1,5 @@
-use meilisearch_types::milli;
-use meilisearch_types::milli::progress::{Progress, VariableNameStep};
+use search_types::milli;
+use search_types::milli::progress::{Progress, VariableNameStep};
 
 use crate::{Error, IndexScheduler, Result};
 
@@ -83,7 +83,7 @@ impl IndexScheduler {
         }
 
         tracing::info!(?db_path, ?db_version, "roll back version file");
-        meilisearch_types::versioning::create_version_file(
+        search_types::versioning::create_version_file(
             db_path,
             db_version.0,
             db_version.1,

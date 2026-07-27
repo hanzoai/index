@@ -1,7 +1,7 @@
 use anyhow::bail;
-use meilisearch_types::heed::{Env, RwTxn, WithoutTls};
-use meilisearch_types::tasks::{Details, KindWithContent, Status, Task};
-use meilisearch_types::versioning;
+use search_types::heed::{Env, RwTxn, WithoutTls};
+use search_types::tasks::{Details, KindWithContent, Status, Task};
+use search_types::versioning;
 use time::OffsetDateTime;
 use tracing::info;
 

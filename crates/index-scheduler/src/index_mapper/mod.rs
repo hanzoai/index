@@ -3,13 +3,13 @@ use std::sync::{Arc, RwLock};
 use std::time::Duration;
 use std::{fs, thread};
 
-use meilisearch_types::heed::types::{SerdeJson, Str};
-use meilisearch_types::heed::{Database, Env, RoTxn, RwTxn, WithoutTls};
-use meilisearch_types::milli::database_stats::DatabaseStats;
-use meilisearch_types::milli::index::RollbackOutcome;
-use meilisearch_types::milli::sharding::Shards;
-use meilisearch_types::milli::update::IndexerConfig;
-use meilisearch_types::milli::{self, CreateOrOpen, FieldDistribution, Index};
+use search_types::heed::types::{SerdeJson, Str};
+use search_types::heed::{Database, Env, RoTxn, RwTxn, WithoutTls};
+use search_types::milli::database_stats::DatabaseStats;
+use search_types::milli::index::RollbackOutcome;
+use search_types::milli::sharding::Shards;
+use search_types::milli::update::IndexerConfig;
+use search_types::milli::{self, CreateOrOpen, FieldDistribution, Index};
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 use tracing::error;
@@ -30,7 +30,7 @@ mod db_name {
     pub const INDEX_STATS: &str = "index-stats";
 }
 
-/// Structure managing meilisearch's indexes.
+/// Structure managing search's indexes.
 ///
 /// It is responsible for:
 /// 1. Creating new indexes
@@ -74,7 +74,7 @@ pub struct IndexMapper {
     pub(crate) index_base_map_size: usize,
     /// The quantity by which the map size of an index is incremented upon reopening, in bytes.
     index_growth_amount: usize,
-    /// Whether we open a meilisearch index with the MDB_WRITEMAP option or not.
+    /// Whether we open a search index with the MDB_WRITEMAP option or not.
     enable_mdb_writemap: bool,
     pub indexer_config: Arc<IndexerConfig>,
 
@@ -121,10 +121,10 @@ pub struct IndexStats {
     pub internal_database_sizes: Vec<(String, u64)>,
 
     /// Number of embeddings in the index.
-    /// Option: retrocompatible with the stats of the pre-v1.13.0 versions of meilisearch
+    /// Option: retrocompatible with the stats of the pre-v1.13.0 versions of search
     pub number_of_embeddings: Option<u64>,
     /// Number of embedded documents in the index.
-    /// Option: retrocompatible with the stats of the pre-v1.13.0 versions of meilisearch
+    /// Option: retrocompatible with the stats of the pre-v1.13.0 versions of search
     pub number_of_embedded_documents: Option<u64>,
     /// Size taken by the used pages of the index' DB, in bytes.
     ///

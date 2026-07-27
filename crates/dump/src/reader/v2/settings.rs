@@ -222,9 +222,9 @@ impl FromStr for AscDesc {
 
     // since we don't know if this comes from the old or new syntax we need to check
     // for both syntax.
-    // WARN: this code doesn't come from the original meilisearch v0.22.0 but was
-    // written specifically to be able to import the dump of meilisearch v0.21.0 AND
-    // meilisearch v0.22.0.
+    // WARN: this code doesn't come from the original search v0.22.0 but was
+    // written specifically to be able to import the dump of search v0.21.0 AND
+    // search v0.22.0.
     fn from_str(text: &str) -> Result<AscDesc, Self::Err> {
         if let Some((field_name, asc_desc)) = text.rsplit_once(':') {
             match asc_desc {

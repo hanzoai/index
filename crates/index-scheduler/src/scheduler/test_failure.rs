@@ -1,11 +1,11 @@
 use std::time::Instant;
 
 use big_s::S;
-use meili_snap::snapshot;
-use meilisearch_types::milli::update::IndexDocumentsMethod::*;
-use meilisearch_types::milli::update::{MissingDocumentPolicy, Setting};
-use meilisearch_types::milli::{obkv_to_json, FilterableAttributesRule};
-use meilisearch_types::tasks::{Kind, KindWithContent};
+use search_snap::snapshot;
+use search_types::milli::update::IndexDocumentsMethod::*;
+use search_types::milli::update::{MissingDocumentPolicy, Setting};
+use search_types::milli::{obkv_to_json, FilterableAttributesRule};
+use search_types::tasks::{Kind, KindWithContent};
 
 use crate::insta_snapshot::snapshot_index_scheduler;
 use crate::test_utils::Breakpoint::*;
@@ -126,7 +126,7 @@ fn fail_in_update_task_after_process_batch_success_for_document_addition() {
 fn fail_in_process_batch_for_document_deletion() {
     let (index_scheduler, mut handle) = IndexScheduler::test(true, vec![]);
 
-    use meilisearch_types::settings::{Settings, Unchecked};
+    use search_types::settings::{Settings, Unchecked};
     let mut new_settings: Box<Settings<Unchecked>> = Box::default();
     new_settings.filterable_attributes =
         Setting::Set(vec![FilterableAttributesRule::Field(S("catto"))]);

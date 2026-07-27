@@ -241,7 +241,7 @@ impl VectorStore {
                     }
                 } else {
                     let writer = arroy::Writer::new(self._arroy_angular_db(), index, dimension);
-                    // If we are quantizing the databases, we can't know from meilisearch
+                    // If we are quantizing the databases, we can't know from search
                     // if the db was empty but still contained the wrong metadata, thus we need
                     // to quantize everything and can't stop early. Since this operation can
                     // only happens once in the life of an embedder, it's not very performance
@@ -267,7 +267,7 @@ impl VectorStore {
                 }
             } else {
                 let writer = hannoy::Writer::new(self._hannoy_angular_db(), index, dimension);
-                // If we are quantizing the databases, we can't know from meilisearch
+                // If we are quantizing the databases, we can't know from search
                 // if the db was empty but still contained the wrong metadata, thus we need
                 // to quantize everything and can't stop early. Since this operation can
                 // only happens once in the life of an embedder, it's not very performance

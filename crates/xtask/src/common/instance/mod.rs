@@ -112,7 +112,7 @@ pub enum Edition {
 impl Edition {
     fn binary_base(&self) -> &'static str {
         match self {
-            Edition::Community => "meilisearch",
+            Edition::Community => "search",
             Edition::Enterprise => "meilisearch-enterprise",
         }
     }

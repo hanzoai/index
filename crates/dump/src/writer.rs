@@ -4,13 +4,13 @@ use std::path::PathBuf;
 
 use flate2::write::GzEncoder;
 use flate2::Compression;
-use meilisearch_types::batches::Batch;
-use meilisearch_types::dynamic_search_rules::DynamicSearchRule;
-use meilisearch_types::features::{ChatCompletionSettings, RuntimeTogglableFeatures};
-use meilisearch_types::keys::Key;
-use meilisearch_types::network::Network;
-use meilisearch_types::settings::{Checked, Settings};
-use meilisearch_types::webhooks::WebhooksDumpView;
+use search_types::batches::Batch;
+use search_types::dynamic_search_rules::DynamicSearchRule;
+use search_types::features::{ChatCompletionSettings, RuntimeTogglableFeatures};
+use search_types::keys::Key;
+use search_types::network::Network;
+use search_types::settings::{Checked, Settings};
+use search_types::webhooks::WebhooksDumpView;
 use serde_json::{Map, Value};
 use tempfile::TempDir;
 use time::OffsetDateTime;
@@ -290,8 +290,8 @@ pub(crate) mod test {
     use std::str::FromStr;
 
     use flate2::bufread::GzDecoder;
-    use meili_snap::insta;
-    use meilisearch_types::settings::Unchecked;
+    use search_snap::insta;
+    use search_types::settings::Unchecked;
 
     use super::*;
     use crate::reader::Document;

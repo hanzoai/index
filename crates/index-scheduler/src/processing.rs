@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use meilisearch_types::milli::progress::{AtomicSubStep, NamedStep, Progress, ProgressView};
-use meilisearch_types::milli::{make_atomic_progress, make_enum_progress};
+use search_types::milli::progress::{AtomicSubStep, NamedStep, Progress, ProgressView};
+use search_types::milli::{make_atomic_progress, make_enum_progress};
 use roaring::RoaringBitmap;
 
 use crate::utils::ProcessingBatch;
@@ -202,8 +202,8 @@ make_enum_progress! {
 }
 
 pub mod network {
-    use meilisearch_types::milli::make_enum_progress;
-    use meilisearch_types::tasks::network::NetworkTopologyState as DbNetworkTopologyState;
+    use search_types::milli::make_enum_progress;
+    use search_types::tasks::network::NetworkTopologyState as DbNetworkTopologyState;
 
     make_enum_progress! {
             pub enum NetworkTopologyState {
@@ -252,7 +252,7 @@ make_atomic_progress!(UpdateFile alias AtomicUpdateFileStep => "update file" );
 mod test {
     use std::sync::atomic::Ordering;
 
-    use meili_snap::{json_string, snapshot};
+    use search_snap::{json_string, snapshot};
 
     use super::*;
 

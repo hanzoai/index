@@ -5,9 +5,9 @@ use std::path::Path;
 
 use super::Document;
 use crate::{Error, IndexMetadata, Result, Version};
-use meilisearch_types::dynamic_search_rules::RuleUid;
-pub use meilisearch_types::milli;
-use meilisearch_types::milli::vector::embedder::hf::OverridePooling;
+use search_types::dynamic_search_rules::RuleUid;
+pub use search_types::milli;
+use search_types::milli::vector::embedder::hf::OverridePooling;
 use roaring::RoaringBitmap;
 use tempfile::TempDir;
 use time::OffsetDateTime;
@@ -16,42 +16,42 @@ use uuid::Uuid;
 
 pub type Metadata = crate::Metadata;
 
-pub type Settings<T> = meilisearch_types::settings::Settings<T>;
-pub type Checked = meilisearch_types::settings::Checked;
-pub type Unchecked = meilisearch_types::settings::Unchecked;
+pub type Settings<T> = search_types::settings::Settings<T>;
+pub type Checked = search_types::settings::Checked;
+pub type Unchecked = search_types::settings::Unchecked;
 
 pub type Task = crate::TaskDump;
-pub type Batch = meilisearch_types::batches::Batch;
-pub type Key = meilisearch_types::keys::Key;
-pub type ChatCompletionSettings = meilisearch_types::features::ChatCompletionSettings;
-pub type RuntimeTogglableFeatures = meilisearch_types::features::RuntimeTogglableFeatures;
-pub type Network = meilisearch_types::network::Network;
-pub type Webhooks = meilisearch_types::webhooks::WebhooksDumpView;
-pub type DynamicSearchRule = meilisearch_types::dynamic_search_rules::DynamicSearchRule;
+pub type Batch = search_types::batches::Batch;
+pub type Key = search_types::keys::Key;
+pub type ChatCompletionSettings = search_types::features::ChatCompletionSettings;
+pub type RuntimeTogglableFeatures = search_types::features::RuntimeTogglableFeatures;
+pub type Network = search_types::network::Network;
+pub type Webhooks = search_types::webhooks::WebhooksDumpView;
+pub type DynamicSearchRule = search_types::dynamic_search_rules::DynamicSearchRule;
 
 // ===== Other types to clarify the code of the compat module
 // everything related to the tasks
-pub type Status = meilisearch_types::tasks::Status;
+pub type Status = search_types::tasks::Status;
 pub type Kind = crate::KindDump;
-pub type Details = meilisearch_types::tasks::Details;
+pub type Details = search_types::tasks::Details;
 
 // everything related to the settings
-pub type Setting<T> = meilisearch_types::milli::update::Setting<T>;
-pub type TypoTolerance = meilisearch_types::settings::TypoSettings;
-pub type MinWordSizeForTypos = meilisearch_types::settings::MinWordSizeTyposSetting;
-pub type FacetingSettings = meilisearch_types::settings::FacetingSettings;
-pub type PaginationSettings = meilisearch_types::settings::PaginationSettings;
+pub type Setting<T> = search_types::milli::update::Setting<T>;
+pub type TypoTolerance = search_types::settings::TypoSettings;
+pub type MinWordSizeForTypos = search_types::settings::MinWordSizeTyposSetting;
+pub type FacetingSettings = search_types::settings::FacetingSettings;
+pub type PaginationSettings = search_types::settings::PaginationSettings;
 
 // everything related to the api keys
-pub type Action = meilisearch_types::keys::Action;
-pub type IndexUidPattern = meilisearch_types::index_uid_pattern::IndexUidPattern;
+pub type Action = search_types::keys::Action;
+pub type IndexUidPattern = search_types::index_uid_pattern::IndexUidPattern;
 
 // everything related to the errors
-pub type ResponseError = meilisearch_types::error::ResponseError;
-pub type Code = meilisearch_types::error::Code;
-pub type RankingRuleView = meilisearch_types::settings::RankingRuleView;
+pub type ResponseError = search_types::error::ResponseError;
+pub type Code = search_types::error::Code;
+pub type RankingRuleView = search_types::settings::RankingRuleView;
 
-pub type FilterableAttributesRule = meilisearch_types::milli::FilterableAttributesRule;
+pub type FilterableAttributesRule = search_types::milli::FilterableAttributesRule;
 
 pub struct V6Reader {
     dump: TempDir,
@@ -100,7 +100,7 @@ impl V6Reader {
             Err(e) => return Err(e.into()),
         };
 
-        let mut network: Option<meilisearch_types::network::Network> =
+        let mut network: Option<search_types::network::Network> =
             match fs::read(dump.path().join("network.json")) {
                 Ok(network_file) => Some(serde_json::from_reader(&*network_file)?),
                 Err(error) => match error.kind() {

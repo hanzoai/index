@@ -1,10 +1,10 @@
 use std::sync::{Arc, RwLock};
 
-use meilisearch_types::features::{InstanceTogglableFeatures, RuntimeTogglableFeatures};
-use meilisearch_types::heed::types::{SerdeJson, Str};
-use meilisearch_types::heed::{Database, Env, RwTxn, WithoutTls};
-use meilisearch_types::network::route::Status;
-use meilisearch_types::network::{Network, RemoteAvailability};
+use search_types::features::{InstanceTogglableFeatures, RuntimeTogglableFeatures};
+use search_types::heed::types::{SerdeJson, Str};
+use search_types::heed::{Database, Env, RwTxn, WithoutTls};
+use search_types::network::route::Status;
+use search_types::network::{Network, RemoteAvailability};
 
 use crate::error::FeatureNotEnabledError;
 use crate::Result;

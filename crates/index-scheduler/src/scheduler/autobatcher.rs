@@ -7,11 +7,11 @@ The main function of the autobatcher is [`next_autobatch`].
 
 use std::ops::ControlFlow::{self, Break, Continue};
 
-use meilisearch_types::tasks::{BatchStopReason, PrimaryKeyMismatchReason, TaskId};
+use search_types::tasks::{BatchStopReason, PrimaryKeyMismatchReason, TaskId};
 
 use crate::KindWithContent;
 
-/// Succinctly describes a task's [`Kind`](meilisearch_types::tasks::Kind)
+/// Succinctly describes a task's [`Kind`](search_types::tasks::Kind)
 /// for the purpose of simplifying the implementation of the autobatcher.
 ///
 /// Only the non-prioritised tasks that can be grouped in a batch have a corresponding [`AutobatchKind`]

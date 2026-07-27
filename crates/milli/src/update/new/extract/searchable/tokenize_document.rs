@@ -180,7 +180,7 @@ mod test {
     use bumpalo::Bump;
     use bumparaw_collections::RawMap;
     use charabia::TokenizerBuilder;
-    use meili_snap::snapshot;
+    use search_snap::snapshot;
     use rustc_hash::FxBuildHasher;
     use serde_json::json;
     use serde_json::value::RawValue;

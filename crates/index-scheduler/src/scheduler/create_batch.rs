@@ -1,11 +1,11 @@
 use std::fmt;
 use std::io::ErrorKind;
 
-use meilisearch_types::heed::RoTxn;
-use meilisearch_types::milli::update::{IndexDocumentsMethod, MissingDocumentPolicy};
-use meilisearch_types::settings::{Settings, Unchecked};
-use meilisearch_types::tasks::network::{DbTaskNetwork, NetworkTopologyState, Origin};
-use meilisearch_types::tasks::{BatchStopReason, Kind, KindWithContent, Status, Task};
+use search_types::heed::RoTxn;
+use search_types::milli::update::{IndexDocumentsMethod, MissingDocumentPolicy};
+use search_types::settings::{Settings, Unchecked};
+use search_types::tasks::network::{DbTaskNetwork, NetworkTopologyState, Origin};
+use search_types::tasks::{BatchStopReason, Kind, KindWithContent, Status, Task};
 use roaring::RoaringBitmap;
 use serde_json::Value;
 use uuid::Uuid;
@@ -531,9 +531,9 @@ impl IndexScheduler {
         // if the version is not the current, refuse to batch any additional task.
         let version = self.version.get_version(rtxn)?;
         let package_version = (
-            meilisearch_types::versioning::VERSION_MAJOR,
-            meilisearch_types::versioning::VERSION_MINOR,
-            meilisearch_types::versioning::VERSION_PATCH,
+            search_types::versioning::VERSION_MAJOR,
+            search_types::versioning::VERSION_MINOR,
+            search_types::versioning::VERSION_PATCH,
         );
         if version != Some(package_version) {
             return Err(Error::UnrecoverableError(Box::new(

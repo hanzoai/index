@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
-use meilisearch_types::heed::types::{SerdeJson, Str};
-use meilisearch_types::heed::{Env, RoTxn, WithoutTls};
+use search_types::heed::types::{SerdeJson, Str};
+use search_types::heed::{Env, RoTxn, WithoutTls};
 use serde::{Deserialize, Serialize};
 
 use crate::Result;

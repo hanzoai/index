@@ -1,8 +1,8 @@
-use meilisearch_types::milli::update::IndexDocumentsMethod::{
+use search_types::milli::update::IndexDocumentsMethod::{
     self, ReplaceDocuments, UpdateDocuments,
 };
-use meilisearch_types::milli::update::MissingDocumentPolicy;
-use meilisearch_types::tasks::{BatchStopReason, IndexSwap, KindWithContent};
+use search_types::milli::update::MissingDocumentPolicy;
+use search_types::tasks::{BatchStopReason, IndexSwap, KindWithContent};
 use uuid::Uuid;
 
 use self::autobatcher::{autobatch, BatchKind};
@@ -13,7 +13,7 @@ use crate::TaskId;
 macro_rules! debug_snapshot {
         ($value:expr, @$snapshot:literal) => {{
             let value = format!("{:?}", $value);
-            meili_snap::snapshot!(value, @$snapshot);
+            search_snap::snapshot!(value, @$snapshot);
         }};
     }
 

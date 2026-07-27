@@ -2,14 +2,14 @@ use std::collections::BTreeMap;
 
 use big_s::S;
 use insta::assert_json_snapshot;
-use meili_snap::{json_string, snapshot};
-use meilisearch_types::milli::index::EmbeddingsWithMetadata;
-use meilisearch_types::milli::update::{MissingDocumentPolicy, Setting};
-use meilisearch_types::milli::vector::settings::EmbeddingSettings;
-use meilisearch_types::milli::vector::SearchQuery;
-use meilisearch_types::milli::{self, obkv_to_json};
-use meilisearch_types::settings::{SettingEmbeddingSettings, Settings, Unchecked};
-use meilisearch_types::tasks::KindWithContent;
+use search_snap::{json_string, snapshot};
+use search_types::milli::index::EmbeddingsWithMetadata;
+use search_types::milli::update::{MissingDocumentPolicy, Setting};
+use search_types::milli::vector::settings::EmbeddingSettings;
+use search_types::milli::vector::SearchQuery;
+use search_types::milli::{self, obkv_to_json};
+use search_types::settings::{SettingEmbeddingSettings, Settings, Unchecked};
+use search_types::tasks::KindWithContent;
 use milli::update::IndexDocumentsMethod::*;
 use milli::vector::db::IndexEmbeddingConfig;
 
@@ -69,7 +69,7 @@ fn import_vectors() {
     {
         let rtxn = index_scheduler.read_txn().unwrap();
         let task = index_scheduler.queue.tasks.get_task(&rtxn, 0).unwrap().unwrap();
-        let task = meilisearch_types::task_view::TaskView::from_task(&task);
+        let task = search_types::task_view::TaskView::from_task(&task);
         insta::assert_json_snapshot!(task.details);
     }
 
@@ -79,7 +79,7 @@ fn import_vectors() {
     {
         let rtxn = index_scheduler.read_txn().unwrap();
         let task = index_scheduler.queue.tasks.get_task(&rtxn, 0).unwrap().unwrap();
-        let task = meilisearch_types::task_view::TaskView::from_task(&task);
+        let task = search_types::task_view::TaskView::from_task(&task);
         insta::assert_json_snapshot!(task.details);
     }
 
@@ -420,7 +420,7 @@ fn import_vectors_first_and_embedder_later() {
         .collect::<Vec<_>>();
     snapshot!(serde_json::to_string(&documents).unwrap(), name: "documents after initial push");
 
-    let setting = meilisearch_types::settings::Settings::<Unchecked> {
+    let setting = search_types::settings::Settings::<Unchecked> {
         embedders: Setting::Set(maplit::btreemap! {
             S("my_doggo_embedder") => SettingEmbeddingSettings { inner: Setting::Set(EmbeddingSettings {
                 source: Setting::Set(milli::vector::settings::EmbedderSource::HuggingFace),
@@ -586,7 +586,7 @@ fn delete_document_containing_vector() {
     // 6. The user defined roaring bitmap shouldn't contains the id of the second document
     let (index_scheduler, mut handle) = IndexScheduler::test(true, vec![]);
 
-    let setting = meilisearch_types::settings::Settings::<Unchecked> {
+    let setting = search_types::settings::Settings::<Unchecked> {
         embedders: Setting::Set(maplit::btreemap! {
             S("manual") => SettingEmbeddingSettings { inner: Setting::Set(EmbeddingSettings {
                 source: Setting::Set(milli::vector::settings::EmbedderSource::UserProvided),
@@ -757,7 +757,7 @@ fn delete_embedder_with_user_provided_vectors() {
     // 4. The documents contain the vectors again
     let (index_scheduler, mut handle) = IndexScheduler::test(true, vec![]);
 
-    let setting = meilisearch_types::settings::Settings::<Unchecked> {
+    let setting = search_types::settings::Settings::<Unchecked> {
         embedders: Setting::Set(maplit::btreemap! {
             S("manual") => SettingEmbeddingSettings { inner: Setting::Set(EmbeddingSettings {
                 source: Setting::Set(milli::vector::settings::EmbedderSource::UserProvided),
@@ -845,7 +845,7 @@ fn delete_embedder_with_user_provided_vectors() {
     }
 
     {
-        let setting = meilisearch_types::settings::Settings::<Unchecked> {
+        let setting = search_types::settings::Settings::<Unchecked> {
             embedders: Setting::Set(maplit::btreemap! {
                 S("manual") => SettingEmbeddingSettings { inner: Setting::Reset },
             }),
@@ -880,7 +880,7 @@ fn delete_embedder_with_user_provided_vectors() {
     }
 
     {
-        let setting = meilisearch_types::settings::Settings::<Unchecked> {
+        let setting = search_types::settings::Settings::<Unchecked> {
             embedders: Setting::Reset,
             ..Default::default()
         };

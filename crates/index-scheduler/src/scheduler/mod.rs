@@ -26,11 +26,11 @@ use std::path::PathBuf;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::Arc;
 
-use meilisearch_types::error::ResponseError;
-use meilisearch_types::heed::{Env, WithoutTls};
-use meilisearch_types::milli::update::S3SnapshotOptions;
-use meilisearch_types::milli::{self, MustStopProcessing};
-use meilisearch_types::tasks::Status;
+use search_types::error::ResponseError;
+use search_types::heed::{Env, WithoutTls};
+use search_types::milli::update::S3SnapshotOptions;
+use search_types::milli::{self, MustStopProcessing};
+use search_types::tasks::Status;
 use process_batch::ProcessBatchInfo;
 use rayon::current_num_threads;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
@@ -134,7 +134,7 @@ impl Scheduler {
 
         Scheduler {
             must_stop_processing: MustStopProcessing::default(),
-            // we want to start the loop right away in case meilisearch was ctrl+Ced while processing things
+            // we want to start the loop right away in case search was ctrl+Ced while processing things
             wake_up: Arc::new(SignalEvent::auto(true)),
             autobatching_enabled: *autobatching_enabled,
             max_number_of_batched_tasks: *max_number_of_batched_tasks,

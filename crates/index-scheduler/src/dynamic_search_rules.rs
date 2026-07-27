@@ -1,10 +1,10 @@
 use std::sync::{Arc, RwLock};
 
-use meilisearch_types::dynamic_search_rules::{DynamicSearchRule, DynamicSearchRules, RuleUid};
-use meilisearch_types::heed;
-use meilisearch_types::heed::types::{SerdeJson, Str};
-use meilisearch_types::heed::{Database, Env, RwTxn, WithoutTls};
-use meilisearch_types::index_uid::IndexUid;
+use search_types::dynamic_search_rules::{DynamicSearchRule, DynamicSearchRules, RuleUid};
+use search_types::heed;
+use search_types::heed::types::{SerdeJson, Str};
+use search_types::heed::{Database, Env, RwTxn, WithoutTls};
+use search_types::index_uid::IndexUid;
 
 use crate::Result;
 

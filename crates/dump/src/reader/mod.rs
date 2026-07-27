@@ -7,7 +7,7 @@ use self::v5::V5Reader;
 use self::v6::{V6IndexReader, V6Reader};
 use crate::{ArchiveExt, Result, Version};
 use flate2::bufread::GzDecoder;
-use meilisearch_types::index_uid::IndexUid;
+use search_types::index_uid::IndexUid;
 use serde::Deserialize;
 use tempfile::TempDir;
 
@@ -240,8 +240,8 @@ impl From<CompatIndexV5ToV6> for DumpIndexReader {
 pub(crate) mod test {
     use std::{fs::File, io::Seek};
 
-    use meili_snap::insta;
-    use meilisearch_types::{
+    use search_snap::insta;
+    use search_types::{
         batches::{Batch, BatchEnqueuedAt, BatchStats},
         task_view::DetailsView,
         tasks::{BatchStopReason, Kind, Status},
@@ -313,12 +313,12 @@ pub(crate) mod test {
 
         // batches didn't exists at the time
         let batches = dump.batches().unwrap().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot!(meili_snap::json_string!(batches), @"[]");
+        search_snap::snapshot!(search_snap::json_string!(batches), @"[]");
 
         // tasks
         let tasks = dump.tasks().unwrap().collect::<Result<Vec<_>>>().unwrap();
         let (tasks, update_files): (Vec<_>, Vec<_>) = tasks.into_iter().unzip();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(tasks), @"2b8a72d6bc6ba79980491966437daaf9");
+        search_snap::snapshot_hash!(search_snap::json_string!(tasks), @"2b8a72d6bc6ba79980491966437daaf9");
         assert_eq!(update_files.len(), 10);
         assert!(update_files[0].is_none()); // the dump creation
         assert!(update_files[1].is_none());
@@ -439,19 +439,19 @@ pub(crate) mod test {
 
         // batches didn't exists at the time
         let batches = dump.batches().unwrap().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot!(meili_snap::json_string!(batches), @"[]");
+        search_snap::snapshot!(search_snap::json_string!(batches), @"[]");
 
         // tasks
         let tasks = dump.tasks().unwrap().collect::<Result<Vec<_>>>().unwrap();
         let (tasks, update_files): (Vec<_>, Vec<_>) = tasks.into_iter().unzip();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(tasks), @"3ddf6169b0a3703c5d770971f036fc5d");
+        search_snap::snapshot_hash!(search_snap::json_string!(tasks), @"3ddf6169b0a3703c5d770971f036fc5d");
         assert_eq!(update_files.len(), 2);
         assert!(update_files[0].is_none()); // the dump creation
         assert!(update_files[1].is_none()); // the processed document addition
 
         // keys
         let keys = dump.keys().unwrap().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(keys), @"13c2da155e9729c2344688cab29af71d");
+        search_snap::snapshot_hash!(search_snap::json_string!(keys), @"13c2da155e9729c2344688cab29af71d");
 
         // indexes
         let mut indexes = dump.indexes().unwrap().collect::<Result<Vec<_>>>().unwrap();
@@ -548,12 +548,12 @@ pub(crate) mod test {
 
         // batches didn't exists at the time
         let batches = dump.batches().unwrap().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot!(meili_snap::json_string!(batches), @"[]");
+        search_snap::snapshot!(search_snap::json_string!(batches), @"[]");
 
         // tasks
         let tasks = dump.tasks().unwrap().collect::<Result<Vec<_>>>().unwrap();
         let (tasks, update_files): (Vec<_>, Vec<_>) = tasks.into_iter().unzip();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(tasks), @"4b03e23e740b27bfb9d2a1faffe512e2");
+        search_snap::snapshot_hash!(search_snap::json_string!(tasks), @"4b03e23e740b27bfb9d2a1faffe512e2");
         assert_eq!(update_files.len(), 22);
         assert!(update_files[0].is_none()); // the dump creation
         assert!(update_files[1].is_some()); // the enqueued document addition
@@ -561,7 +561,7 @@ pub(crate) mod test {
 
         // keys
         let keys = dump.keys().unwrap().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(keys), @"c9d2b467fe2fca0b35580d8a999808fb");
+        search_snap::snapshot_hash!(search_snap::json_string!(keys), @"c9d2b467fe2fca0b35580d8a999808fb");
 
         // indexes
         let mut indexes = dump.indexes().unwrap().collect::<Result<Vec<_>>>().unwrap();
@@ -586,7 +586,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(products.settings().unwrap());
         let documents = products.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"b01c8371aea4c7171af0d4d846a2bdca");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"b01c8371aea4c7171af0d4d846a2bdca");
 
         // movies
         insta::assert_json_snapshot!(movies.metadata(), @r###"
@@ -601,7 +601,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(movies.settings().unwrap());
         let documents = movies.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 200);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"e962baafd2fbae4cdd14e876053b0c5a");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"e962baafd2fbae4cdd14e876053b0c5a");
 
         // spells
         insta::assert_json_snapshot!(spells.metadata(), @r###"
@@ -616,7 +616,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(spells.settings().unwrap());
         let documents = spells.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"235016433dd04262c7f2da01d1e808ce");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"235016433dd04262c7f2da01d1e808ce");
 
         assert_eq!(dump.features().unwrap(), None);
     }
@@ -632,19 +632,19 @@ pub(crate) mod test {
 
         // batches didn't exists at the time
         let batches = dump.batches().unwrap().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot!(meili_snap::json_string!(batches), @"[]");
+        search_snap::snapshot!(search_snap::json_string!(batches), @"[]");
 
         // tasks
         let tasks = dump.tasks().unwrap().collect::<Result<Vec<_>>>().unwrap();
         let (tasks, update_files): (Vec<_>, Vec<_>) = tasks.into_iter().unzip();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(tasks), @"c1b06a5ca60d5805483c16c5b3ff61ef");
+        search_snap::snapshot_hash!(search_snap::json_string!(tasks), @"c1b06a5ca60d5805483c16c5b3ff61ef");
         assert_eq!(update_files.len(), 10);
         assert!(update_files[0].is_some()); // the enqueued document addition
         assert!(update_files[1..].iter().all(|u| u.is_none())); // everything already processed
 
         // keys
         let keys = dump.keys().unwrap().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(keys, { "[].uid" => "[uuid]" }), @"d751713988987e9331980363e24189ce");
+        search_snap::snapshot_hash!(search_snap::json_string!(keys, { "[].uid" => "[uuid]" }), @"d751713988987e9331980363e24189ce");
 
         // indexes
         let mut indexes = dump.indexes().unwrap().collect::<Result<Vec<_>>>().unwrap();
@@ -669,7 +669,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(products.settings().unwrap());
         let documents = products.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"b01c8371aea4c7171af0d4d846a2bdca");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"b01c8371aea4c7171af0d4d846a2bdca");
 
         // movies
         insta::assert_json_snapshot!(movies.metadata(), @r###"
@@ -684,7 +684,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(movies.settings().unwrap());
         let documents = movies.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 110);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"786022a66ecb992c8a2a60fee070a5ab");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"786022a66ecb992c8a2a60fee070a5ab");
 
         // spells
         insta::assert_json_snapshot!(spells.metadata(), @r###"
@@ -699,7 +699,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(spells.settings().unwrap());
         let documents = spells.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"235016433dd04262c7f2da01d1e808ce");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"235016433dd04262c7f2da01d1e808ce");
     }
 
     #[test]
@@ -713,19 +713,19 @@ pub(crate) mod test {
 
         // batches didn't exists at the time
         let batches = dump.batches().unwrap().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot!(meili_snap::json_string!(batches), @"[]");
+        search_snap::snapshot!(search_snap::json_string!(batches), @"[]");
 
         // tasks
         let tasks = dump.tasks().unwrap().collect::<Result<Vec<_>>>().unwrap();
         let (tasks, update_files): (Vec<_>, Vec<_>) = tasks.into_iter().unzip();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(tasks), @"0e203b6095f7c68dbdf788321dcc8215");
+        search_snap::snapshot_hash!(search_snap::json_string!(tasks), @"0e203b6095f7c68dbdf788321dcc8215");
         assert_eq!(update_files.len(), 10);
         assert!(update_files[0].is_some()); // the enqueued document addition
         assert!(update_files[1..].iter().all(|u| u.is_none())); // everything already processed
 
         // keys
         let keys = dump.keys().unwrap().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(keys), @"d751713988987e9331980363e24189ce");
+        search_snap::snapshot_hash!(search_snap::json_string!(keys), @"d751713988987e9331980363e24189ce");
 
         // indexes
         let mut indexes = dump.indexes().unwrap().collect::<Result<Vec<_>>>().unwrap();
@@ -751,7 +751,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(products.settings().unwrap());
         let documents = products.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"548284a84de510f71e88e6cdea495cf5");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"548284a84de510f71e88e6cdea495cf5");
 
         // movies
         insta::assert_json_snapshot!(movies.metadata(), { ".createdAt" => "[now]", ".updatedAt" => "[now]" }, @r###"
@@ -766,7 +766,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(movies.settings().unwrap());
         let documents = movies.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 110);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"d153b5a81d8b3cdcbe1dec270b574022");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"d153b5a81d8b3cdcbe1dec270b574022");
 
         // movies2
         insta::assert_json_snapshot!(movies2.metadata(), { ".createdAt" => "[now]", ".updatedAt" => "[now]" }, @r###"
@@ -781,7 +781,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(movies2.settings().unwrap());
         let documents = movies2.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 0);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"d751713988987e9331980363e24189ce");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"d751713988987e9331980363e24189ce");
 
         // spells
         insta::assert_json_snapshot!(spells.metadata(), { ".createdAt" => "[now]", ".updatedAt" => "[now]" }, @r###"
@@ -796,7 +796,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(spells.settings().unwrap());
         let documents = spells.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"235016433dd04262c7f2da01d1e808ce");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"235016433dd04262c7f2da01d1e808ce");
     }
 
     #[test]
@@ -810,19 +810,19 @@ pub(crate) mod test {
 
         // batches didn't exists at the time
         let batches = dump.batches().unwrap().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot!(meili_snap::json_string!(batches), @"[]");
+        search_snap::snapshot!(search_snap::json_string!(batches), @"[]");
 
         // tasks
         let tasks = dump.tasks().unwrap().collect::<Result<Vec<_>>>().unwrap();
         let (tasks, update_files): (Vec<_>, Vec<_>) = tasks.into_iter().unzip();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(tasks), @"d216c7f90f538ffbb2a059531d7ac89a");
+        search_snap::snapshot_hash!(search_snap::json_string!(tasks), @"d216c7f90f538ffbb2a059531d7ac89a");
         assert_eq!(update_files.len(), 9);
         assert!(update_files[0].is_some()); // the enqueued document addition
         assert!(update_files[1..].iter().all(|u| u.is_none())); // everything already processed
 
         // keys
         let keys = dump.keys().unwrap().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(keys), @"d751713988987e9331980363e24189ce");
+        search_snap::snapshot_hash!(search_snap::json_string!(keys), @"d751713988987e9331980363e24189ce");
 
         // indexes
         let mut indexes = dump.indexes().unwrap().collect::<Result<Vec<_>>>().unwrap();
@@ -848,7 +848,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(products.settings().unwrap());
         let documents = products.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"548284a84de510f71e88e6cdea495cf5");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"548284a84de510f71e88e6cdea495cf5");
 
         // movies
         insta::assert_json_snapshot!(movies.metadata(), @r###"
@@ -863,7 +863,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(movies.settings().unwrap());
         let documents = movies.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 110);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"d153b5a81d8b3cdcbe1dec270b574022");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"d153b5a81d8b3cdcbe1dec270b574022");
 
         // movies2
         insta::assert_json_snapshot!(movies2.metadata(), { ".createdAt" => "[now]", ".updatedAt" => "[now]" }, @r###"
@@ -878,7 +878,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(movies2.settings().unwrap());
         let documents = movies2.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 0);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"d751713988987e9331980363e24189ce");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"d751713988987e9331980363e24189ce");
 
         // spells
         insta::assert_json_snapshot!(spells.metadata(), @r###"
@@ -893,7 +893,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(spells.settings().unwrap());
         let documents = spells.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"235016433dd04262c7f2da01d1e808ce");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"235016433dd04262c7f2da01d1e808ce");
     }
 
     #[test]
@@ -907,18 +907,18 @@ pub(crate) mod test {
 
         // batches didn't exists at the time
         let batches = dump.batches().unwrap().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot!(meili_snap::json_string!(batches), @"[]");
+        search_snap::snapshot!(search_snap::json_string!(batches), @"[]");
 
         // tasks
         let tasks = dump.tasks().unwrap().collect::<Result<Vec<_>>>().unwrap();
         let (tasks, update_files): (Vec<_>, Vec<_>) = tasks.into_iter().unzip();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(tasks), @"e27999f1112632222cb84f6cffff7c5f");
+        search_snap::snapshot_hash!(search_snap::json_string!(tasks), @"e27999f1112632222cb84f6cffff7c5f");
         assert_eq!(update_files.len(), 8);
         assert!(update_files[0..].iter().all(|u| u.is_none())); // everything already processed
 
         // keys
         let keys = dump.keys().unwrap().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(keys), @"d751713988987e9331980363e24189ce");
+        search_snap::snapshot_hash!(search_snap::json_string!(keys), @"d751713988987e9331980363e24189ce");
 
         // indexes
         let mut indexes = dump.indexes().unwrap().collect::<Result<Vec<_>>>().unwrap();
@@ -943,7 +943,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(products.settings().unwrap());
         let documents = products.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"548284a84de510f71e88e6cdea495cf5");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"548284a84de510f71e88e6cdea495cf5");
 
         // movies
         insta::assert_json_snapshot!(movies.metadata(), @r###"
@@ -958,7 +958,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(movies.settings().unwrap());
         let documents = movies.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"0227598af846e574139ee0b80e03a720");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"0227598af846e574139ee0b80e03a720");
 
         // spells
         insta::assert_json_snapshot!(spells.metadata(), @r###"
@@ -973,7 +973,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(spells.settings().unwrap());
         let documents = spells.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"235016433dd04262c7f2da01d1e808ce");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"235016433dd04262c7f2da01d1e808ce");
     }
 
     #[test]
@@ -987,19 +987,19 @@ pub(crate) mod test {
 
         // batches didn't exists at the time
         let batches = dump.batches().unwrap().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot!(meili_snap::json_string!(batches), @"[]");
+        search_snap::snapshot!(search_snap::json_string!(batches), @"[]");
 
         // tasks
         let tasks = dump.tasks().unwrap().collect::<Result<Vec<_>>>().unwrap();
         let (tasks, update_files): (Vec<_>, Vec<_>) = tasks.into_iter().unzip();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(tasks), @"0155a664b0cf62aae23db5138b6b03d7");
+        search_snap::snapshot_hash!(search_snap::json_string!(tasks), @"0155a664b0cf62aae23db5138b6b03d7");
         assert_eq!(update_files.len(), 9);
         assert!(update_files[..].iter().all(|u| u.is_none())); // no update file in dump v1
 
         // keys
         let keys = dump.keys().unwrap().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot!(meili_snap::json_string!(keys), @"[]");
-        meili_snap::snapshot_hash!(meili_snap::json_string!(keys), @"d751713988987e9331980363e24189ce");
+        search_snap::snapshot!(search_snap::json_string!(keys), @"[]");
+        search_snap::snapshot_hash!(search_snap::json_string!(keys), @"d751713988987e9331980363e24189ce");
 
         // indexes
         let mut indexes = dump.indexes().unwrap().collect::<Result<Vec<_>>>().unwrap();
@@ -1024,7 +1024,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(products.settings().unwrap());
         let documents = products.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"b01c8371aea4c7171af0d4d846a2bdca");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"b01c8371aea4c7171af0d4d846a2bdca");
 
         // movies
         insta::assert_json_snapshot!(movies.metadata(), @r###"
@@ -1039,7 +1039,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(movies.settings().unwrap());
         let documents = movies.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"b63dbed5bbc059f3e32bc471ae699bf5");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"b63dbed5bbc059f3e32bc471ae699bf5");
 
         // spells
         insta::assert_json_snapshot!(spells.metadata(), @r###"
@@ -1054,6 +1054,6 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(spells.settings().unwrap());
         let documents = spells.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"aa24c0cfc733d66c396237ad44263bed");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"aa24c0cfc733d66c396237ad44263bed");
     }
 }

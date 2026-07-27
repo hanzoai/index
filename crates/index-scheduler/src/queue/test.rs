@@ -1,7 +1,7 @@
 use big_s::S;
-use meili_snap::{json_string, snapshot};
-use meilisearch_types::error::ErrorCode;
-use meilisearch_types::tasks::{KindWithContent, Status};
+use search_snap::{json_string, snapshot};
+use search_types::error::ErrorCode;
+use search_types::tasks::{KindWithContent, Status};
 use roaring::RoaringBitmap;
 
 use crate::insta_snapshot::snapshot_index_scheduler;

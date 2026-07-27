@@ -29,7 +29,7 @@ use crate::routes::Pagination;
     tag = "Keys",
     tags((
         name = "Keys",
-        description = "Manage API `keys` for a Meilisearch instance. Each key has a given set of permissions.
+        description = "Manage API `keys` for an index instance. Each key has a given set of permissions.
 You must have the master key or the default admin key to access the keys route. More information about the keys and their rights.
 Accessing any route under `/keys` without having set a master key will result in an error.",
     )),
@@ -62,7 +62,7 @@ pub struct ApiKeyApi;
         )),
         (status = 401, description = "The route has been hit on an unprotected instance.", body = ResponseError, content_type = "application/json", example = json!(
             {
-                "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
+                "message": "This instance is running without a master key. To access this API endpoint, you must have set a master key at launch.",
                 "code": "missing_master_key",
                 "type": "auth",
                 "link": "https://docs.hanzo.ai/errors#missing_master_key"
@@ -147,7 +147,7 @@ impl ListApiKeys {
         )),
         (status = 401, description = "The route has been hit on an unprotected instance.", body = ResponseError, content_type = "application/json", example = json!(
             {
-                "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
+                "message": "This instance is running without a master key. To access this API endpoint, you must have set a master key at launch.",
                 "code": "missing_master_key",
                 "type": "auth",
                 "link": "https://docs.hanzo.ai/errors#missing_master_key"
@@ -207,7 +207,7 @@ pub async fn list_api_keys(
         )),
         (status = 401, description = "The route has been hit on an unprotected instance.", body = ResponseError, content_type = "application/json", example = json!(
             {
-                "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
+                "message": "This instance is running without a master key. To access this API endpoint, you must have set a master key at launch.",
                 "code": "missing_master_key",
                 "type": "auth",
                 "link": "https://docs.hanzo.ai/errors#missing_master_key"
@@ -279,7 +279,7 @@ pub async fn get_api_key(
         )),
         (status = 401, description = "The route has been hit on an unprotected instance.", body = ResponseError, content_type = "application/json", example = json!(
             {
-                "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
+                "message": "This instance is running without a master key. To access this API endpoint, you must have set a master key at launch.",
                 "code": "missing_master_key",
                 "type": "auth",
                 "link": "https://docs.hanzo.ai/errors#missing_master_key"
@@ -341,7 +341,7 @@ pub async fn patch_api_key(
         )),
         (status = 401, description = "The route has been hit on an unprotected instance.", body = ResponseError, content_type = "application/json", example = json!(
             {
-                "message": "Meilisearch is running without a master key. To access this API endpoint, you must have set a master key at launch.",
+                "message": "This instance is running without a master key. To access this API endpoint, you must have set a master key at launch.",
                 "code": "missing_master_key",
                 "type": "auth",
                 "link": "https://docs.hanzo.ai/errors#missing_master_key"

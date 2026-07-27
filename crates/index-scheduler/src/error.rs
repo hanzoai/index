@@ -177,7 +177,7 @@ pub enum Error {
     RollbackFailed { index: String, rollback_outcome: RollbackOutcome },
     #[error(transparent)]
     UnrecoverableError(Box<Self>),
-    #[error("The index scheduler is in version v{}.{}.{}, but Meilisearch is in version v{}.{}.{}.\n  - hint: start the correct version of Meilisearch, or consider updating your database. See also <https://www.meilisearch.com/docs/learn/update_and_migration/updating>",
+    #[error("The index scheduler is in version v{}.{}.{}, but Meilisearch is in version v{}.{}.{}.\n  - hint: start the correct version of Meilisearch, or consider updating your database. See also <https://docs.hanzo.ai/index/learn/update_and_migration/updating>",
     index_scheduler_version.0, index_scheduler_version.1, index_scheduler_version.2,
     package_version.0, package_version.1, package_version.2)]
     IndexSchedulerVersionMismatch {

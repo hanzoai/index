@@ -31,7 +31,7 @@ mod error {
         #[error("could not authenticate against the remote host\n  - hint: check that the remote instance was registered with a valid API key having the `search` action")]
         AuthenticationError,
         #[error(
-            "could not parse response from the remote host as a federated search response{}\n  - hint: check that the remote instance is a Meilisearch instance running the same version",
+            "could not parse response from the remote host as a federated search response{}\n  - hint: check that the remote instance runs the same version",
             response_from_remote(response)
         )]
         CouldNotParseResponse { response: Result<String, ReqwestErrorWithoutUrl> },
@@ -39,11 +39,11 @@ mod error {
         BadRequest { status_code: StatusCode, response: Result<String, ReqwestErrorWithoutUrl> },
         #[error("remote host did not answer before the deadline")]
         Timeout,
-        #[error("remote hit does not contain `{0}`\n  - hint: check that the remote instance is a Meilisearch instance running the same version")]
+        #[error("remote hit does not contain `{0}`\n  - hint: check that the remote instance runs the same version")]
         MissingPathInResponse(&'static str),
         #[error("remote host responded with code {}{}", status_code.as_u16(), response_from_remote(response))]
         RemoteError { status_code: StatusCode, response: Result<String, ReqwestErrorWithoutUrl> },
-        #[error("remote hit contains an unexpected value at path `{path}`: expected {expected_type}, received `{received_value}`\n  - hint: check that the remote instance is a Meilisearch instance running the same version")]
+        #[error("remote hit contains an unexpected value at path `{path}`: expected {expected_type}, received `{received_value}`\n  - hint: check that the remote instance runs the same version")]
         UnexpectedValueInPath {
             path: &'static str,
             expected_type: &'static str,

@@ -41,7 +41,7 @@ use crate::{aggregate_methods, Opt};
     tag = "Async task management",
     tags((
         name = "Tasks",
-        description = "The tasks route gives information about the progress of the [asynchronous operations](https://docs.meilisearch.com/learn/advanced/asynchronous_operations.html).",
+        description = "The tasks route gives information about the progress of the [asynchronous operations](https://docs.hanzo.ai/index/learn/advanced/asynchronous_operations.html).",
     )),
 )]
 pub struct TaskApi;
@@ -334,7 +334,7 @@ impl<Method: AggregateMethod + 'static> Aggregate for TaskFilterAnalytics<Method
 
 /// Cancel tasks
 ///
-/// Cancel enqueued and/or processing [tasks](https://www.meilisearch.com/docs/learn/async/asynchronous_operations). You must provide at least one filter (e.g. `uids`, `indexUids`, `statuses`) to specify which tasks to cancel.
+/// Cancel enqueued and/or processing [tasks](https://docs.hanzo.ai/index/learn/async/asynchronous_operations). You must provide at least one filter (e.g. `uids`, `indexUids`, `statuses`) to specify which tasks to cancel.
 #[routes::path(
     security(("Bearer" = ["tasks.cancel", "tasks.*", "*"])),
     params(TaskDeletionOrCancelationQuery),
@@ -418,7 +418,7 @@ async fn cancel_tasks(
 
 /// Delete tasks
 ///
-/// Permanently delete [tasks](https://docs.meilisearch.com/learn/advanced/asynchronous_operations.html) matching the given filters. You must provide at least one filter (e.g. `uids`, `indexUids`, `statuses`) to specify which tasks to delete.
+/// Permanently delete [tasks](https://docs.hanzo.ai/index/learn/advanced/asynchronous_operations.html) matching the given filters. You must provide at least one filter (e.g. `uids`, `indexUids`, `statuses`) to specify which tasks to delete.
 #[routes::path(
     security(("Bearer" = ["tasks.delete", "tasks.*", "*"])),
     params(TaskDeletionOrCancelationQuery),
@@ -524,7 +524,7 @@ pub struct AllTasks {
 
 /// List tasks
 ///
-/// The `/tasks` route returns information about [asynchronous operations](https://docs.meilisearch.com/learn/advanced/asynchronous_operations.html) (indexing, document updates, settings changes, and so on).
+/// The `/tasks` route returns information about [asynchronous operations](https://docs.hanzo.ai/index/learn/advanced/asynchronous_operations.html) (indexing, document updates, settings changes, and so on).
 ///
 /// Tasks are returned in descending order of uid by default, so the most recently created or updated tasks appear first. Results are paginated and can be filtered using query parameters such as `indexUids`, `statuses`, `types`, and date ranges.
 #[routes::path(
@@ -590,7 +590,7 @@ async fn get_tasks(
 
 /// Get task
 ///
-/// Retrieve a single [task](https://www.meilisearch.com/docs/learn/async/asynchronous_operations) by its uid.
+/// Retrieve a single [task](https://docs.hanzo.ai/index/learn/async/asynchronous_operations) by its uid.
 #[routes::path(
     security(("Bearer" = ["tasks.get", "tasks.*", "*"])),
     params(("task_id" = u32, format = UInt32, example = 0, description = "The task identifier.", nullable = false)),
@@ -655,7 +655,7 @@ async fn get_task(
 
 /// Get task's document payload
 ///
-/// Retrieve the document payload that was sent with this [task](https://www.meilisearch.com/docs/learn/async/asynchronous_operations).
+/// Retrieve the document payload that was sent with this [task](https://docs.hanzo.ai/index/learn/async/asynchronous_operations).
 /// Only available for document-related tasks that are enqueued or processing.
 #[routes::path(
     security(("Bearer" = ["tasks.get", "tasks.*", "*"])),

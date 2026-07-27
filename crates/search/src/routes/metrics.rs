@@ -26,13 +26,13 @@ pub struct MetricApi;
 
 /// Get Prometheus metrics
 ///
-/// Return metrics for the engine in Prometheus format. This is an [experimental feature](https://www.meilisearch.com/docs/learn/experimental/overview) and must be enabled before use.
+/// Return metrics for the engine in Prometheus format. This is an [experimental feature](https://docs.hanzo.ai/index/learn/experimental/overview) and must be enabled before use.
 #[routes::path(
     security(("Bearer" = ["metrics.get", "metrics.*", "*"])),
     responses(
         (status = 200, description = "The metrics of the instance.", body = String, content_type = "text/plain", example = json!(
             r#"
-# HELP meilisearch_db_size_bytes Meilisearch DB Size In Bytes
+# HELP meilisearch_db_size_bytes DB Size In Bytes
 # TYPE meilisearch_db_size_bytes gauge
 meilisearch_db_size_bytes 1130496
 # HELP meilisearch_batch_running_progress_trace The currently running progress trace
@@ -41,7 +41,7 @@ meilisearch_batch_running_progress_trace{batch_uid="0",step_name="document"} 0.7
 meilisearch_batch_running_progress_trace{batch_uid="0",step_name="extracting word proximity"} 0.2222222222222222
 meilisearch_batch_running_progress_trace{batch_uid="0",step_name="indexing"} 0.6666666666666666
 meilisearch_batch_running_progress_trace{batch_uid="0",step_name="processing tasks"} 0
-# HELP meilisearch_http_requests_total Meilisearch HTTP requests total
+# HELP meilisearch_http_requests_total Index HTTP requests total
 # TYPE meilisearch_http_requests_total counter
 meilisearch_http_requests_total{method="GET",path="/metrics",status="400"} 1
 meilisearch_http_requests_total{method="PATCH",path="/experimental-features",status="200"} 1
@@ -71,7 +71,7 @@ meilisearch_last_finished_batches_progress_trace_ms{batch_uid="0",step_name="pro
 meilisearch_last_finished_batches_progress_trace_ms{batch_uid="0",step_name="processing tasks > computing document changes > preparing payloads"} 367
 meilisearch_last_finished_batches_progress_trace_ms{batch_uid="0",step_name="processing tasks > computing document changes > preparing payloads > payload"} 367
 meilisearch_last_finished_batches_progress_trace_ms{batch_uid="0",step_name="processing tasks > indexing"} 18970
-# HELP meilisearch_index_count Meilisearch Index Count
+# HELP meilisearch_index_count Index Count
 # TYPE meilisearch_index_count gauge
 meilisearch_index_count 1
 # HELP meilisearch_index_docs_count Meilisearch Index Docs Count
@@ -103,7 +103,7 @@ meilisearch_nb_tasks{kind="types",value="settingsUpdate"} 22
 meilisearch_nb_tasks{kind="types",value="snapshotCreation"} 0
 meilisearch_nb_tasks{kind="types",value="taskCancelation"} 0
 meilisearch_nb_tasks{kind="types",value="taskDeletion"} 0
-# HELP meilisearch_used_db_size_bytes Meilisearch Used DB Size In Bytes
+# HELP meilisearch_used_db_size_bytes Used DB Size In Bytes
 # TYPE meilisearch_used_db_size_bytes gauge
 meilisearch_used_db_size_bytes 409600
 "#

@@ -108,8 +108,8 @@ mod webhooks;
     ),
     tag = "Root",
     tags(
-        (name = "Stats", description = "Stats gives extended information and metrics about indexes and the Meilisearch database."),
-        (name = "Health", description = "The health check endpoint enables you to periodically test the health of your Meilisearch instance."),
+        (name = "Stats", description = "Stats gives extended information and metrics about indexes and the database."),
+        (name = "Health", description = "The health check endpoint enables you to periodically test the health of your index instance."),
         (name = "Version", description = "Returns the version of the running Meilisearch instance."),
         (name = "Backups", description = "Meilisearch offers two types of backups: snapshots and dumps. Snapshots are mainly intended as a safeguard, while dumps are useful when migrating Meilisearch."),
         (name = "Export", description = "Export documents and settings from this instance to a remote Meilisearch server."),
@@ -603,7 +603,7 @@ enum HealthStatus {
 
 /// Get health
 ///
-/// The health check endpoint enables you to periodically test the health of your Meilisearch instance. Returns a simple status indicating that the server is available.
+/// The health check endpoint enables you to periodically test the health of your index instance. Returns a simple status indicating that the server is available.
 ///
 /// The engine will return `available` status with a `200` status code when the instance is healthy.
 /// It will return `mustRestart` status with a `500` status code if the instance requires a restart.

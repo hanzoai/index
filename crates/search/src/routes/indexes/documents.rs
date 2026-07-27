@@ -93,7 +93,7 @@ pub struct DocumentParam {
     tags(
         (
             name = "Documents",
-            description = "Documents are objects composed of fields that can store any type of data. Each field contains an attribute and its associated value. Documents are stored inside [indexes](https://www.meilisearch.com/docs/learn/getting_started/indexes).",
+            description = "Documents are objects composed of fields that can store any type of data. Each field contains an attribute and its associated value. Documents are stored inside [indexes](https://docs.hanzo.ai/index/learn/getting_started/indexes).",
         ),
     ),
 )]
@@ -179,7 +179,7 @@ impl<Method: AggregateMethod> Aggregate for DocumentsFetchAggregator<Method> {
 
 /// Get document
 ///
-/// Retrieve a single document by its [primary key](https://www.meilisearch.com/docs/learn/getting_started/primary_key) value.
+/// Retrieve a single document by its [primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key) value.
 #[routes::path(
     security(("Bearer" = ["documents.get", "documents.*", "*"])),
     params(
@@ -290,7 +290,7 @@ impl Aggregate for DocumentsDeletionAggregator {
 
 /// Delete document
 ///
-/// Delete a single document by its [primary key](https://www.meilisearch.com/docs/learn/getting_started/primary_key).
+/// Delete a single document by its [primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key).
 #[routes::path(
     security(("Bearer" = ["documents.delete", "documents.*", "*"])),
     params(
@@ -463,7 +463,7 @@ pub struct BrowseQuery {
     #[deserr(default, error = DeserrJsonError<InvalidDocumentRetrieveVectors>)]
     retrieve_vectors: bool,
     /// Array of specific document IDs to retrieve. Only documents with
-    /// matching [primary key](https://www.meilisearch.com/docs/learn/getting_started/primary_key) values will be returned. If not specified, all
+    /// matching [primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key) values will be returned. If not specified, all
     /// documents matching other criteria are returned. This is useful for
     /// fetching specific known documents.
     #[schema(required = false, value_type = Option<Vec<String>>, example = json!(["cody", "finn", "brandy", "gambit"]))]
@@ -756,7 +756,7 @@ async fn documents_by_query(
 #[deserr(error = DeserrQueryParamError, rename_all = camelCase, deny_unknown_fields)]
 #[into_params(parameter_in = Query, rename_all = "camelCase")]
 pub struct UpdateDocumentsQuery {
-    /// The [primary key](https://www.meilisearch.com/docs/learn/getting_started/primary_key) field for uniquely identifying each document.
+    /// The [primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key) field for uniquely identifying each document.
     /// This parameter is optional and can only be set the first time documents are added to an index.
     /// Subsequent attempts to specify it will be ignored if the primary key has already been set.
     #[param(required = false, example = "id")]
@@ -1296,7 +1296,7 @@ async fn copy_body_to_file(
 
 /// Delete documents by batch
 ///
-/// Delete multiple documents in one request by providing an array of [primary key](https://www.meilisearch.com/docs/learn/getting_started/primary_key) values.
+/// Delete multiple documents in one request by providing an array of [primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key) values.
 #[routes::path(
     security(("Bearer" = ["documents.delete", "documents.*", "*"])),
     params(

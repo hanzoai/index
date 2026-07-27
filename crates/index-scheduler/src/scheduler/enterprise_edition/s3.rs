@@ -3,10 +3,10 @@
 // Use of this source code is governed by the Business Source License 1.1,
 // as found in the LICENSE-EE file or at <https://mariadb.com/bsl11>
 
-use meilisearch_types::heed::Env;
-use meilisearch_types::milli;
-use meilisearch_types::milli::progress::Progress;
-use meilisearch_types::tasks::{Status, Task};
+use search_types::heed::Env;
+use search_types::milli;
+use search_types::milli::progress::Progress;
+use search_types::tasks::{Status, Task};
 
 use crate::{Error, IndexScheduler, Result};
 
@@ -97,12 +97,12 @@ impl IndexScheduler {
     pub(in crate::scheduler) async fn process_snapshot_to_s3(
         &self,
         progress: Progress,
-        opts: meilisearch_types::milli::update::S3SnapshotOptions,
+        opts: search_types::milli::update::S3SnapshotOptions,
         mut tasks: Vec<Task>,
     ) -> Result<Vec<Task>> {
         use std::ffi::OsStr;
 
-        use meilisearch_types::milli::update::S3SnapshotOptions;
+        use search_types::milli::update::S3SnapshotOptions;
 
         let S3SnapshotOptions {
             s3_bucket_url,
@@ -219,8 +219,8 @@ fn stream_tarball_into_pipe(
     use std::path::Path;
     use std::sync::atomic::Ordering;
 
-    use meilisearch_types::milli::progress::VariableNameStep;
-    use meilisearch_types::VERSION_FILE_NAME;
+    use search_types::milli::progress::VariableNameStep;
+    use search_types::VERSION_FILE_NAME;
 
     use crate::processing::{AtomicUpdateFileStep, SnapshotCreationProgress};
     use crate::scheduler::process_snapshot_creation::UPDATE_FILES_DIR_NAME;
@@ -317,7 +317,7 @@ fn stream_tarball_into_pipe(
 fn append_index_to_tarball<W, P>(
     tarball: &mut tar::Builder<W>,
     path: P,
-    index: &meilisearch_types::milli::Index,
+    index: &search_types::milli::Index,
 ) -> Result<(), Error>
 where
     W: std::io::Write,
@@ -361,7 +361,7 @@ where
 
     let mut temp_file = tempfile::tempfile()?;
 
-    env.copy_to_file(&mut temp_file, meilisearch_types::heed::CompactionOption::Disabled)?;
+    env.copy_to_file(&mut temp_file, search_types::heed::CompactionOption::Disabled)?;
 
     temp_file.flush()?;
     temp_file.seek(std::io::SeekFrom::Start(0))?;

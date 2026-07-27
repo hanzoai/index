@@ -3,7 +3,7 @@
 
 /*!
 This crate defines the index scheduler, which is responsible for:
-1. Keeping references to meilisearch's indexes and mapping them to their
+1. Keeping references to search's indexes and mapping them to their
    user-defined names.
 2. Scheduling tasks given by the user and executing them, in batch if possible.
 
@@ -56,29 +56,29 @@ pub use error::Error;
 pub use features::RoFeatures;
 use flate2::bufread::GzEncoder;
 use flate2::Compression;
-use meilisearch_types::batches::Batch;
-use meilisearch_types::dynamic_search_rules::{DynamicSearchRule, DynamicSearchRules, RuleUid};
-use meilisearch_types::features::{
+use search_types::batches::Batch;
+use search_types::dynamic_search_rules::{DynamicSearchRule, DynamicSearchRules, RuleUid};
+use search_types::features::{
     ChatCompletionSettings, InstanceTogglableFeatures, RuntimeTogglableFeatures,
 };
-use meilisearch_types::heed::byteorder::BE;
-use meilisearch_types::heed::types::{DecodeIgnore, SerdeJson, Str, I128};
-use meilisearch_types::heed::{self, Database, Env, RoTxn, RwTxn, WithoutTls};
-use meilisearch_types::milli::sharding::Shards;
-use meilisearch_types::milli::update::IndexerConfig;
-use meilisearch_types::milli::vector::json_template::JsonTemplate;
-use meilisearch_types::milli::vector::{
+use search_types::heed::byteorder::BE;
+use search_types::heed::types::{DecodeIgnore, SerdeJson, Str, I128};
+use search_types::heed::{self, Database, Env, RoTxn, RwTxn, WithoutTls};
+use search_types::milli::sharding::Shards;
+use search_types::milli::update::IndexerConfig;
+use search_types::milli::vector::json_template::JsonTemplate;
+use search_types::milli::vector::{
     Embedder, EmbedderOptions, RuntimeEmbedder, RuntimeEmbedders, RuntimeFragment,
 };
-use meilisearch_types::milli::{self, Index};
-use meilisearch_types::network::route::Status;
-use meilisearch_types::network::{Network, RemoteAvailability};
-use meilisearch_types::task_view::TaskView;
-use meilisearch_types::tasks::network::{
+use search_types::milli::{self, Index};
+use search_types::network::route::Status;
+use search_types::network::{Network, RemoteAvailability};
+use search_types::task_view::TaskView;
+use search_types::tasks::network::{
     DbTaskNetwork, NetworkTopologyChange, Origin, TaskNetwork,
 };
-use meilisearch_types::tasks::{KindWithContent, Task};
-use meilisearch_types::webhooks::{Webhook, WebhooksDumpView, WebhooksView};
+use search_types::tasks::{KindWithContent, Task};
+use search_types::webhooks::{Webhook, WebhooksDumpView, WebhooksView};
 use milli::vector::db::IndexEmbeddingConfig;
 pub use queue::Query;
 use queue::Queue;
@@ -117,7 +117,7 @@ pub struct IndexSchedulerOptions {
     pub tasks_path: PathBuf,
     /// The path to the file store containing the files associated to the tasks.
     pub update_file_path: PathBuf,
-    /// The path to the folder containing meilisearch's indexes.
+    /// The path to the folder containing search's indexes.
     pub indexes_path: PathBuf,
     /// The path to the folder containing the snapshots.
     pub snapshots_path: PathBuf,
@@ -129,15 +129,15 @@ pub struct IndexSchedulerOptions {
     pub cli_webhook_authorization: Option<String>,
     /// The maximum size, in bytes, of the task index.
     pub task_db_size: usize,
-    /// The size, in bytes, with which a meilisearch index is opened the first time of each meilisearch index.
+    /// The size, in bytes, with which a search index is opened the first time of each search index.
     pub index_base_map_size: usize,
-    /// Whether we open a meilisearch index with the MDB_WRITEMAP option or not.
+    /// Whether we open a search index with the MDB_WRITEMAP option or not.
     pub enable_mdb_writemap: bool,
     /// The size, in bytes, by which the map size of an index is increased when it resized due to being full.
     pub index_growth_amount: usize,
     /// The number of indexes that can be concurrently opened in memory.
     pub index_count: usize,
-    /// Configuration used during indexing for each meilisearch index.
+    /// Configuration used during indexing for each search index.
     pub indexer_config: Arc<IndexerConfig>,
     /// Set to `true` iff the index scheduler is allowed to automatically
     /// batch tasks together, to process multiple tasks at once.
@@ -170,7 +170,7 @@ pub struct IndexSchedulerOptions {
     pub experimental_no_snapshot_compaction: bool,
 }
 
-/// Structure which holds meilisearch's indexes and schedules the tasks
+/// Structure which holds search's indexes and schedules the tasks
 /// to be performed on them.
 pub struct IndexScheduler {
     /// The LMDB environment which the DBs are associated with.
@@ -611,7 +611,7 @@ impl IndexScheduler {
     /// And a `Vec` of the index_uid + its stats
     pub fn paginated_indexes_stats(
         &self,
-        filters: &meilisearch_auth::AuthFilter,
+        filters: &search_auth::AuthFilter,
         from: usize,
         limit: usize,
     ) -> Result<(usize, Vec<(String, index_mapper::IndexStats)>)> {
@@ -709,7 +709,7 @@ impl IndexScheduler {
     pub fn get_tasks_from_authorized_indexes(
         &self,
         query: &Query,
-        filters: &meilisearch_auth::AuthFilter,
+        filters: &search_auth::AuthFilter,
     ) -> Result<(Vec<Task>, u64)> {
         let rtxn = self.read_txn()?;
         let processing = self.processing_tasks.read().unwrap();
@@ -728,7 +728,7 @@ impl IndexScheduler {
     pub fn get_task_ids_from_authorized_indexes(
         &self,
         query: &Query,
-        filters: &meilisearch_auth::AuthFilter,
+        filters: &search_auth::AuthFilter,
     ) -> Result<(RoaringBitmap, u64)> {
         let rtxn = self.read_txn()?;
         let processing = self.processing_tasks.read().unwrap();
@@ -757,7 +757,7 @@ impl IndexScheduler {
     pub fn get_batches_from_authorized_indexes(
         &self,
         query: &Query,
-        filters: &meilisearch_auth::AuthFilter,
+        filters: &search_auth::AuthFilter,
     ) -> Result<(Vec<Batch>, u64)> {
         let rtxn = self.read_txn()?;
         let processing = self.processing_tasks.read().unwrap();
@@ -776,7 +776,7 @@ impl IndexScheduler {
     pub fn get_batch_ids_from_authorized_indexes(
         &self,
         query: &Query,
-        filters: &meilisearch_auth::AuthFilter,
+        filters: &search_auth::AuthFilter,
     ) -> Result<(RoaringBitmap, u64)> {
         let rtxn = self.read_txn()?;
         let processing = self.processing_tasks.read().unwrap();
@@ -953,7 +953,7 @@ impl IndexScheduler {
         let mut network_tasks = self
             .queue
             .tasks
-            .get_kind(&*wtxn, meilisearch_types::tasks::Kind::NetworkTopologyChange)?;
+            .get_kind(&*wtxn, search_types::tasks::Kind::NetworkTopologyChange)?;
         if network_tasks.is_empty() {
             return Err(Error::ImportTaskWithoutNetworkTask);
         }
@@ -963,7 +963,7 @@ impl IndexScheduler {
                 let enqueued = self
                     .queue
                     .tasks
-                    .get_status(&*wtxn, meilisearch_types::tasks::Status::Enqueued)?;
+                    .get_status(&*wtxn, search_types::tasks::Status::Enqueued)?;
 
                 network_tasks &= enqueued;
                 if let Some(network_task) = network_tasks.into_iter().next() {
@@ -1225,7 +1225,7 @@ impl IndexScheduler {
                  -> Result<(String, Arc<RuntimeEmbedder>)> {
                     let document_template = prompt
                         .try_into()
-                        .map_err(meilisearch_types::milli::Error::from)
+                        .map_err(search_types::milli::Error::from)
                         .map_err(|err| Error::from_milli(err, Some(index_uid.clone())))?;
 
                     let fragments = fragments
@@ -1259,7 +1259,7 @@ impl IndexScheduler {
                             self.scheduler.embedding_cache_cap,
                             self.ip_policy().clone(),
                         )
-                        .map_err(meilisearch_types::milli::vector::Error::from)
+                        .map_err(search_types::milli::vector::Error::from)
                         .map_err(|err| Error::from_milli(err.into(), Some(index_uid.clone())))?,
                     );
                     {
@@ -1348,7 +1348,7 @@ pub use index_mapper::IndexStats as InnerIndexStats;
 #[serde(rename_all = "camelCase")]
 struct Webhooks {
     // The cli webhook should *never* be stored in a database.
-    // It represent a state that only exists for this execution of meilisearch
+    // It represent a state that only exists for this execution of search
     #[serde(skip)]
     pub cli: Option<CliWebhook>,
 

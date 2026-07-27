@@ -178,7 +178,7 @@ pub(crate) mod test {
     use std::io::BufReader;
 
     use flate2::bufread::GzDecoder;
-    use meili_snap::insta;
+    use search_snap::insta;
     use tempfile::TempDir;
 
     use super::*;
@@ -220,11 +220,11 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(products.settings().unwrap());
         let documents = products.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"b01c8371aea4c7171af0d4d846a2bdca");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"b01c8371aea4c7171af0d4d846a2bdca");
 
         // products tasks
         let tasks = products.tasks().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(tasks), @"91de507f206ad21964584021932ba7a7");
+        search_snap::snapshot_hash!(search_snap::json_string!(tasks), @"91de507f206ad21964584021932ba7a7");
 
         // movies
         insta::assert_json_snapshot!(movies.metadata(), @r###"
@@ -239,11 +239,11 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(movies.settings().unwrap());
         let documents = movies.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"b63dbed5bbc059f3e32bc471ae699bf5");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"b63dbed5bbc059f3e32bc471ae699bf5");
 
         // movies tasks
         let tasks = movies.tasks().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(tasks), @"55eef4de2bef7e84c5ce0bee47488f56");
+        search_snap::snapshot_hash!(search_snap::json_string!(tasks), @"55eef4de2bef7e84c5ce0bee47488f56");
 
         // spells
         insta::assert_json_snapshot!(dnd_spells.metadata(), @r###"
@@ -258,10 +258,10 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(dnd_spells.settings().unwrap());
         let documents = dnd_spells.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"aa24c0cfc733d66c396237ad44263bed");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"aa24c0cfc733d66c396237ad44263bed");
 
         // spells tasks
         let tasks = dnd_spells.tasks().collect::<Result<Vec<_>>>().unwrap();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(tasks), @"836dd7d64d5ad20ad901c44b1b161a4c");
+        search_snap::snapshot_hash!(search_snap::json_string!(tasks), @"836dd7d64d5ad20ad901c44b1b161a4c");
     }
 }

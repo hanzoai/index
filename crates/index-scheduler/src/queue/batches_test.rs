@@ -1,9 +1,9 @@
-use meili_snap::snapshot;
-use meilisearch_auth::AuthFilter;
-use meilisearch_types::index_uid_pattern::IndexUidPattern;
-use meilisearch_types::milli::update::MissingDocumentPolicy;
-use meilisearch_types::milli::FilterableAttributesRule;
-use meilisearch_types::tasks::{IndexSwap, KindWithContent, Status};
+use search_snap::snapshot;
+use search_auth::AuthFilter;
+use search_types::index_uid_pattern::IndexUidPattern;
+use search_types::milli::update::MissingDocumentPolicy;
+use search_types::milli::FilterableAttributesRule;
+use search_types::tasks::{IndexSwap, KindWithContent, Status};
 use time::{Duration, OffsetDateTime};
 
 use crate::insta_snapshot::{snapshot_bitmap, snapshot_index_scheduler};
@@ -644,8 +644,8 @@ fn batch_deletion_by_filter_and_addition() {
         .register(
             KindWithContent::SettingsUpdate {
                 index_uid: "docs".to_string(),
-                new_settings: Box::new(meilisearch_types::settings::Settings {
-                    filterable_attributes: meilisearch_types::milli::update::Setting::Set(vec![
+                new_settings: Box::new(search_types::settings::Settings {
+                    filterable_attributes: search_types::milli::update::Setting::Set(vec![
                         FilterableAttributesRule::Field("id".to_string()),
                     ]),
                     _kind: std::marker::PhantomData,

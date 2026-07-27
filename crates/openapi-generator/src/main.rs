@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
 use clap::Parser;
-use meilisearch::routes::MeilisearchApi;
+use search::routes::MeilisearchApi;
 use serde_json::{Map, Value};
 use utoipa::OpenApi;
 
@@ -549,7 +549,7 @@ fn check_params() -> Result<()> {
     let meilisearch_src = Path::new(&manifest_dir)
         .join("../meilisearch/src")
         .canonicalize()
-        .context("resolve meilisearch/src path (run from workspace root)")?;
+        .context("resolve search/src path (run from workspace root)")?;
 
     let mut errors: Vec<String> = Vec::new();
     let mut request_body_types: HashSet<String> = HashSet::new();

@@ -331,7 +331,7 @@ pub(crate) mod test {
     use std::io::BufReader;
 
     use flate2::bufread::GzDecoder;
-    use meili_snap::insta;
+    use search_snap::insta;
     use tempfile::TempDir;
 
     use super::*;
@@ -354,7 +354,7 @@ pub(crate) mod test {
         // tasks
         let tasks = dump.tasks().collect::<Result<Vec<_>>>().unwrap();
         let (tasks, update_files): (Vec<_>, Vec<_>) = tasks.into_iter().unzip();
-        meili_snap::snapshot_hash!(meili_snap::json_string!(tasks), @"2298010973ee98cf4670787314176a3a");
+        search_snap::snapshot_hash!(search_snap::json_string!(tasks), @"2298010973ee98cf4670787314176a3a");
         assert_eq!(update_files.len(), 9);
         assert!(update_files[..].iter().all(|u| u.is_none())); // no update file in dumps v1
 
@@ -381,7 +381,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(products.settings().unwrap());
         let documents = products.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"b01c8371aea4c7171af0d4d846a2bdca");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"b01c8371aea4c7171af0d4d846a2bdca");
 
         // movies
         insta::assert_json_snapshot!(movies.metadata(), @r###"
@@ -396,7 +396,7 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(movies.settings().unwrap());
         let documents = movies.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"b63dbed5bbc059f3e32bc471ae699bf5");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"b63dbed5bbc059f3e32bc471ae699bf5");
 
         // spells
         insta::assert_json_snapshot!(spells.metadata(), @r###"
@@ -411,6 +411,6 @@ pub(crate) mod test {
         insta::assert_json_snapshot!(spells.settings().unwrap());
         let documents = spells.documents().unwrap().collect::<Result<Vec<_>>>().unwrap();
         assert_eq!(documents.len(), 10);
-        meili_snap::snapshot_hash!(format!("{:#?}", documents), @"aa24c0cfc733d66c396237ad44263bed");
+        search_snap::snapshot_hash!(format!("{:#?}", documents), @"aa24c0cfc733d66c396237ad44263bed");
     }
 }

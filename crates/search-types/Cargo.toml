@@ -1,0 +1,92 @@
+[package]
+name = "search-types"
+publish = false
+
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+homepage.workspace = true
+readme.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+actix-web = { version = "4.12.0", default-features = false }
+anyhow = "1.0.100"
+base64 = "0.22.1"
+bumpalo = "3.19.0"
+bumparaw-collections = "0.1.4"
+byte-unit = { version = "5.1.6", features = ["serde"] }
+convert_case = "0.9.0"
+csv = "1.4.0"
+deserr = { version = "0.6.4", features = ["actix-web"] }
+either = { version = "1.15.0", features = ["serde"] }
+enum-iterator = "2.3.0"
+file-store = { path = "../file-store" }
+flate2 = "1.1.5"
+fst = "0.4.7"
+itertools = "0.14.0"
+memmap2 = "0.9.9"
+milli = { path = "../milli" }
+papaya = "0.2.4"
+roaring = { version = "0.10.12", features = ["serde"] }
+rustc-hash = "2.1.1"
+serde = { version = "1.0.228", features = ["derive"] }
+serde-cs = "0.2.4"
+serde_json = { version = "1.0.145", features = ["preserve_order"] }
+tar = "0.4.46"
+tempfile = "3.23.0"
+thiserror = "2.0.17"
+time = { version = "0.3.47", features = [
+    "serde-well-known",
+    "formatting",
+    "parsing",
+    "macros",
+] }
+tokio = "1.48"
+urlencoding = "2.1.3"
+utoipa = { version = "5.4.0", features = [
+    "macros",
+    "non_strict_integers",
+    "preserve_order",
+    "uuid",
+    "time",
+    "openapi_extensions",
+] }
+uuid = { version = "1.18.1", features = ["serde", "v4"] }
+
+[dev-dependencies]
+# fixed version due to format breakages in v1.40
+insta = "=1.39.0"
+search-snap = { path = "../search-snap" }
+
+[features]
+# all specialized tokenizations
+all-tokenizations = ["milli/all-tokenizations"]
+
+# chinese specialized tokenization
+chinese = ["milli/chinese"]
+chinese-pinyin = ["milli/chinese-pinyin"]
+
+enterprise = ["milli/enterprise"]
+
+# hebrew specialized tokenization
+hebrew = ["milli/hebrew"]
+# japanese specialized tokenization
+japanese = ["milli/japanese"]
+# korean specialized tokenization
+korean = ["milli/korean"]
+# thai specialized tokenization
+thai = ["milli/thai"]
+# allow greek specialized tokenization
+greek = ["milli/greek"]
+# allow khmer specialized tokenization
+khmer = ["milli/khmer"]
+# allow vietnamese specialized tokenization
+vietnamese = ["milli/vietnamese"]
+# force swedish character recomposition
+swedish-recomposition = ["milli/swedish-recomposition"]
+# allow german tokenization
+german = ["milli/german"]
+# allow turkish normalization
+turkish = ["milli/turkish"]

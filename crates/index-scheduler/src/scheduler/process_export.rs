@@ -9,19 +9,19 @@ use byte_unit::Byte;
 use flate2::write::GzEncoder;
 use flate2::Compression;
 use http_client::ureq::http::header::AUTHORIZATION;
-use meilisearch_types::error::Code;
-use meilisearch_types::index_uid_pattern::IndexUidPattern;
-use meilisearch_types::milli::constants::RESERVED_VECTORS_FIELD_NAME;
-use meilisearch_types::milli::index::EmbeddingsWithMetadata;
-use meilisearch_types::milli::progress::{Progress, VariableNameStep};
-use meilisearch_types::milli::update::{request_threads, Setting};
-use meilisearch_types::milli::vector::parsed_vectors::{ExplicitVectors, VectorOrArrayOfVectors};
-use meilisearch_types::milli::{self, obkv_to_json, Filter, InternalError};
-use meilisearch_types::network::route;
-use meilisearch_types::settings::{self, SecretPolicy};
-use meilisearch_types::tasks::network::headers::SetHeader as _;
-use meilisearch_types::tasks::network::{ImportData, ImportMetadata, Origin};
-use meilisearch_types::tasks::{DetailsExportIndexSettings, ExportIndexSettings};
+use search_types::error::Code;
+use search_types::index_uid_pattern::IndexUidPattern;
+use search_types::milli::constants::RESERVED_VECTORS_FIELD_NAME;
+use search_types::milli::index::EmbeddingsWithMetadata;
+use search_types::milli::progress::{Progress, VariableNameStep};
+use search_types::milli::update::{request_threads, Setting};
+use search_types::milli::vector::parsed_vectors::{ExplicitVectors, VectorOrArrayOfVectors};
+use search_types::milli::{self, obkv_to_json, Filter, InternalError};
+use search_types::network::route;
+use search_types::settings::{self, SecretPolicy};
+use search_types::tasks::network::headers::SetHeader as _;
+use search_types::tasks::network::{ImportData, ImportMetadata, Origin};
+use search_types::tasks::{DetailsExportIndexSettings, ExportIndexSettings};
 use roaring::RoaringBitmap;
 use serde::Deserialize;
 use serde_json::json;
@@ -672,7 +672,7 @@ impl ExportOptions<'_> {
 }
 
 pub(super) struct ExportContext<'a> {
-    pub(super) index: &'a meilisearch_types::milli::Index,
+    pub(super) index: &'a search_types::milli::Index,
     pub(super) index_rtxn: &'a milli::heed::RoTxn<'a>,
     pub(super) universe: &'a RoaringBitmap,
     pub(super) progress: &'a Progress,

@@ -1,11 +1,11 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/meilisearch",
-    "crates/meilitool",
-    "crates/meilisearch-types",
-    "crates/meilisearch-auth",
-    "crates/meili-snap",
+    "crates/search",
+    "crates/searchtool",
+    "crates/search-types",
+    "crates/search-auth",
+    "crates/search-snap",
     "crates/index-scheduler",
     "crates/dump",
     "crates/file-store",

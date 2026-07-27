@@ -1,13 +1,13 @@
 use std::collections::BTreeMap;
 
 use big_s::S;
-use meili_snap::{json_string, snapshot};
-use meilisearch_auth::AuthFilter;
-use meilisearch_types::milli::update::IndexDocumentsMethod::*;
-use meilisearch_types::milli::update::MissingDocumentPolicy;
-use meilisearch_types::milli::{self};
-use meilisearch_types::settings::SettingEmbeddingSettings;
-use meilisearch_types::tasks::{IndexSwap, KindWithContent};
+use search_snap::{json_string, snapshot};
+use search_auth::AuthFilter;
+use search_types::milli::update::IndexDocumentsMethod::*;
+use search_types::milli::update::MissingDocumentPolicy;
+use search_types::milli::{self};
+use search_types::settings::SettingEmbeddingSettings;
+use search_types::tasks::{IndexSwap, KindWithContent};
 use milli::vector::db::IndexEmbeddingConfig;
 use roaring::RoaringBitmap;
 
@@ -733,7 +733,7 @@ fn cancel_mix_of_tasks() {
 
 #[test]
 fn test_settings_update() {
-    use meilisearch_types::settings::{Settings, Unchecked};
+    use search_types::settings::{Settings, Unchecked};
     use milli::update::Setting;
 
     let (index_scheduler, mut handle) = IndexScheduler::test(true, vec![]);
@@ -772,7 +772,7 @@ fn test_settings_update() {
     {
         let rtxn = index_scheduler.read_txn().unwrap();
         let task = index_scheduler.queue.tasks.get_task(&rtxn, 0).unwrap().unwrap();
-        let task = meilisearch_types::task_view::TaskView::from_task(&task);
+        let task = search_types::task_view::TaskView::from_task(&task);
         insta::assert_json_snapshot!(task.details);
     }
 
@@ -782,7 +782,7 @@ fn test_settings_update() {
     {
         let rtxn = index_scheduler.read_txn().unwrap();
         let task = index_scheduler.queue.tasks.get_task(&rtxn, 0).unwrap().unwrap();
-        let task = meilisearch_types::task_view::TaskView::from_task(&task);
+        let task = search_types::task_view::TaskView::from_task(&task);
         insta::assert_json_snapshot!(task.details);
     }
 

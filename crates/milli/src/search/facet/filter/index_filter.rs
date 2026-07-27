@@ -262,7 +262,7 @@ impl<'a> IndexFilter<'a> {
                 };
 
                 if *last == u8::MAX {
-                    // u8::MAX is a forbidden UTF-8 byte, we're guaranteed it cannot be sent through a filter to meilisearch, but just in case, we're going to return something
+                    // u8::MAX is a forbidden UTF-8 byte, we're guaranteed it cannot be sent through a filter to search, but just in case, we're going to return something
                     tracing::warn!(
                         "Found non utf-8 character in filter. That shouldn't be possible"
                     );
@@ -583,7 +583,7 @@ impl<'a> IndexFilter<'a> {
 
                     let result = index.cellulite.in_circle(rtxn, point, radius, resolution)?;
 
-                    r2 = Some(RoaringBitmap::from_iter(result)); // TODO: Remove once we update roaring in meilisearch
+                    r2 = Some(RoaringBitmap::from_iter(result)); // TODO: Remove once we update roaring in search
                 }
 
                 match (r1, r2) {
@@ -749,7 +749,7 @@ impl<'a> IndexFilter<'a> {
 
                     let result = index.cellulite.in_shape(rtxn, &polygon)?;
 
-                    r2 = Some(RoaringBitmap::from_iter(result)); // TODO: Remove once we update roaring in meilisearch
+                    r2 = Some(RoaringBitmap::from_iter(result)); // TODO: Remove once we update roaring in search
                 }
 
                 match (r1, r2) {
@@ -798,7 +798,7 @@ impl<'a> IndexFilter<'a> {
                 let polygon = geo_types::Polygon::new(geo_types::LineString(coords), Vec::new());
                 let result = index.cellulite.in_shape(rtxn, &polygon)?;
 
-                let result = roaring::RoaringBitmap::from_iter(result); // TODO: Remove once we update roaring in meilisearch
+                let result = roaring::RoaringBitmap::from_iter(result); // TODO: Remove once we update roaring in search
 
                 Ok(result)
             }

@@ -2,10 +2,10 @@ use std::ffi::OsStr;
 use std::fs;
 use std::sync::atomic::Ordering;
 
-use meilisearch_types::heed::CompactionOption;
-use meilisearch_types::milli::progress::{Progress, VariableNameStep};
-use meilisearch_types::tasks::{Status, Task};
-use meilisearch_types::{compression, VERSION_FILE_NAME};
+use search_types::heed::CompactionOption;
+use search_types::milli::progress::{Progress, VariableNameStep};
+use search_types::tasks::{Status, Task};
+use search_types::{compression, VERSION_FILE_NAME};
 
 use crate::heed::EnvOpenOptions;
 use crate::processing::{AtomicUpdateFileStep, SnapshotCreationProgress};

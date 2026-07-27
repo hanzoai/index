@@ -1,12 +1,12 @@
 use std::collections::BTreeSet;
 use std::fmt::Write;
 
-use meilisearch_types::batches::{Batch, BatchEnqueuedAt, BatchStats};
-use meilisearch_types::heed::types::{SerdeBincode, SerdeJson, Str};
-use meilisearch_types::heed::{Database, RoTxn};
-use meilisearch_types::milli::{CboRoaringBitmapCodec, RoaringBitmapCodec, BEU32};
-use meilisearch_types::tasks::{Details, Kind, Status, Task};
-use meilisearch_types::versioning::{self, VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH};
+use search_types::batches::{Batch, BatchEnqueuedAt, BatchStats};
+use search_types::heed::types::{SerdeBincode, SerdeJson, Str};
+use search_types::heed::{Database, RoTxn};
+use search_types::milli::{CboRoaringBitmapCodec, RoaringBitmapCodec, BEU32};
+use search_types::tasks::{Details, Kind, Status, Task};
+use search_types::versioning::{self, VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH};
 use roaring::RoaringBitmap;
 
 use crate::index_mapper::IndexMapper;

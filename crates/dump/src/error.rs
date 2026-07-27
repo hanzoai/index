@@ -1,4 +1,4 @@
-use meilisearch_types::error::{Code, ErrorCode};
+use search_types::error::{Code, ErrorCode};
 use thiserror::Error;
 
 #[derive(Debug, Error)]

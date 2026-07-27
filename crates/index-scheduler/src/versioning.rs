@@ -1,7 +1,7 @@
-use meilisearch_types::heed::types::Str;
-use meilisearch_types::heed::{self, Database, Env, RoTxn, RwTxn, WithoutTls};
-use meilisearch_types::milli::heed_codec::version::VersionCodec;
-use meilisearch_types::versioning;
+use search_types::heed::types::Str;
+use search_types::heed::{self, Database, Env, RoTxn, RwTxn, WithoutTls};
+use search_types::milli::heed_codec::version::VersionCodec;
+use search_types::versioning;
 
 use crate::upgrade::upgrade_index_scheduler;
 use crate::Result;

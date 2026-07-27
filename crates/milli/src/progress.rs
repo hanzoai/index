@@ -123,7 +123,7 @@ impl Progress {
         }
     }
 
-    // TODO: This code should be in meilisearch_types but cannot because milli can't depend on meilisearch_types
+    // TODO: This code should be in search_types but cannot because milli can't depend on search_types
     pub fn as_progress_view(&self) -> Option<ProgressView> {
         let inner = match self.steps.read() {
             Ok(inner) => inner,

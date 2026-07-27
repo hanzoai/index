@@ -6,14 +6,14 @@ use std::rc::Rc;
 use std::sync::atomic::Ordering;
 
 use byte_unit::Byte;
-use meilisearch_types::batches::BatchId;
-use meilisearch_types::heed::{Database, RoTxn, RwTxn};
-use meilisearch_types::milli::heed::CompactionOption;
-use meilisearch_types::milli::progress::{Progress, VariableNameStep};
-use meilisearch_types::milli::{self, CboRoaringBitmapCodec, ChannelCongestion};
-use meilisearch_types::network::Network;
-use meilisearch_types::tasks::{Details, IndexSwap, Kind, KindWithContent, Status, Task};
-use meilisearch_types::versioning::{VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH};
+use search_types::batches::BatchId;
+use search_types::heed::{Database, RoTxn, RwTxn};
+use search_types::milli::heed::CompactionOption;
+use search_types::milli::progress::{Progress, VariableNameStep};
+use search_types::milli::{self, CboRoaringBitmapCodec, ChannelCongestion};
+use search_types::network::Network;
+use search_types::tasks::{Details, IndexSwap, Kind, KindWithContent, Status, Task};
+use search_types::versioning::{VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH};
 use milli::update::Settings as MilliSettings;
 use roaring::{MultiOps, RoaringBitmap};
 use tempfile::{PersistError, TempPath};
@@ -47,7 +47,7 @@ impl IndexScheduler {
     /// ## Return
     /// The list of tasks that were processed. The metadata of each task in the returned
     /// list is updated accordingly, with the exception of the its date fields
-    /// [`finished_at`](meilisearch_types::tasks::Task::finished_at) and [`started_at`](meilisearch_types::tasks::Task::started_at).
+    /// [`finished_at`](search_types::tasks::Task::finished_at) and [`started_at`](search_types::tasks::Task::started_at).
     #[tracing::instrument(level = "trace", skip(self, batch, progress), target = "indexing::scheduler", fields(batch=batch.to_string()))]
     pub(crate) fn process_batch(
         &self,
@@ -1091,9 +1091,9 @@ impl IndexScheduler {
             };
 
             // check that we are rollbacking an upgrade to the current Meilisearch
-            let bin_major: u32 = meilisearch_types::versioning::VERSION_MAJOR;
-            let bin_minor: u32 = meilisearch_types::versioning::VERSION_MINOR;
-            let bin_patch: u32 = meilisearch_types::versioning::VERSION_PATCH;
+            let bin_major: u32 = search_types::versioning::VERSION_MAJOR;
+            let bin_minor: u32 = search_types::versioning::VERSION_MINOR;
+            let bin_patch: u32 = search_types::versioning::VERSION_PATCH;
 
             if to == (bin_major, bin_minor, bin_patch) {
                 tracing::warn!(

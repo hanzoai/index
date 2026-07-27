@@ -6,12 +6,12 @@ use big_s::S;
 use crossbeam_channel::RecvTimeoutError;
 use file_store::File;
 use http_client::policy::IpPolicy;
-use meilisearch_auth::open_auth_store_env;
-use meilisearch_types::document_formats::DocumentFormatError;
-use meilisearch_types::milli::update::IndexDocumentsMethod::ReplaceDocuments;
-use meilisearch_types::milli::update::{IndexerConfig, MissingDocumentPolicy};
-use meilisearch_types::tasks::KindWithContent;
-use meilisearch_types::{versioning, VERSION_FILE_NAME};
+use search_auth::open_auth_store_env;
+use search_types::document_formats::DocumentFormatError;
+use search_types::milli::update::IndexDocumentsMethod::ReplaceDocuments;
+use search_types::milli::update::{IndexerConfig, MissingDocumentPolicy};
+use search_types::tasks::KindWithContent;
+use search_types::{versioning, VERSION_FILE_NAME};
 use tempfile::{NamedTempFile, TempDir};
 use uuid::Uuid;
 use Breakpoint::*;
@@ -230,7 +230,7 @@ pub(crate) fn read_json(
     let mut buffer = BufWriter::new(temp_file.reopen().unwrap());
     buffer.write_all(bytes).unwrap();
     buffer.flush().unwrap();
-    meilisearch_types::document_formats::read_json(temp_file.as_file(), write)
+    search_types::document_formats::read_json(temp_file.as_file(), write)
 }
 
 /// Create an update file with the given file uuid.

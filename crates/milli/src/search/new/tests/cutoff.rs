@@ -8,7 +8,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use http_client::policy::IpPolicy;
-use meili_snap::snapshot;
+use search_snap::snapshot;
 
 use crate::index::tests::TempIndex;
 use crate::score_details::{ScoreDetails, ScoringStrategy};

@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use meilisearch_types::{
+use search_types::{
     error::ResponseError,
     heed::RoTxn,
     milli::{

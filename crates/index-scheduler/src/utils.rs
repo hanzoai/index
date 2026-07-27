@@ -5,12 +5,12 @@ use std::ops::{Bound, RangeInclusive};
 use std::sync::Arc;
 
 use convert_case::{Case, Casing as _};
-use meilisearch_types::batches::{Batch, BatchEnqueuedAt, BatchId, BatchStats};
-use meilisearch_types::heed::{Database, RoTxn, RwTxn};
-use meilisearch_types::milli::progress::Progress;
-use meilisearch_types::milli::{CboRoaringBitmapCodec, ChannelCongestion};
-use meilisearch_types::task_view::DetailsView;
-use meilisearch_types::tasks::{
+use search_types::batches::{Batch, BatchEnqueuedAt, BatchId, BatchStats};
+use search_types::heed::{Database, RoTxn, RwTxn};
+use search_types::milli::progress::Progress;
+use search_types::milli::{CboRoaringBitmapCodec, ChannelCongestion};
+use search_types::task_view::DetailsView;
+use search_types::tasks::{
     BatchStopReason, Details, IndexSwap, Kind, KindWithContent, Status,
 };
 use roaring::RoaringBitmap;
@@ -772,14 +772,14 @@ pub fn dichotomic_search(start_point: usize, mut is_good: impl FnMut(usize) -> b
 }
 
 pub struct ReqwestRequestWrapper(pub http_client::reqwest::RequestBuilder);
-impl meilisearch_types::tasks::network::headers::SetHeader for ReqwestRequestWrapper {
+impl search_types::tasks::network::headers::SetHeader for ReqwestRequestWrapper {
     fn set_header(self, name: &str, value: &str) -> Self {
         Self(self.0.prepare(|request| request.header(name, value)))
     }
 }
 
 pub struct UreqRequestWrapper<P>(pub http_client::ureq::RequestBuilder<P>);
-impl<P> meilisearch_types::tasks::network::headers::SetHeader for UreqRequestWrapper<P> {
+impl<P> search_types::tasks::network::headers::SetHeader for UreqRequestWrapper<P> {
     fn set_header(self, name: &str, value: &str) -> Self {
         Self(self.0.header(name, value))
     }

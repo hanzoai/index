@@ -4,12 +4,12 @@ use std::collections::HashMap;
 use std::io;
 
 use dump::{KindDump, TaskDump, UpdateFile};
-use meilisearch_types::batches::{Batch, BatchId};
-use meilisearch_types::heed::RwTxn;
-use meilisearch_types::index_uid_pattern::IndexUidPattern;
-use meilisearch_types::milli;
-use meilisearch_types::milli::update::MissingDocumentPolicy;
-use meilisearch_types::tasks::{Kind, KindWithContent, Status, Task};
+use search_types::batches::{Batch, BatchId};
+use search_types::heed::RwTxn;
+use search_types::index_uid_pattern::IndexUidPattern;
+use search_types::milli;
+use search_types::milli::update::MissingDocumentPolicy;
+use search_types::tasks::{Kind, KindWithContent, Status, Task};
 use roaring::RoaringBitmap;
 use uuid::Uuid;
 

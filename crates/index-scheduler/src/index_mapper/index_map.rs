@@ -4,8 +4,8 @@ use std::path::Path;
 use std::str::FromStr;
 use std::time::Duration;
 
-use meilisearch_types::heed::{EnvClosingEvent, EnvFlags, EnvOpenOptions};
-use meilisearch_types::milli::{CreateOrOpen, Index, Result};
+use search_types::heed::{EnvClosingEvent, EnvFlags, EnvOpenOptions};
+use search_types::milli::{CreateOrOpen, Index, Result};
 use time::OffsetDateTime;
 use uuid::Uuid;
 
@@ -342,8 +342,8 @@ fn create_or_open_index(
 #[cfg(test)]
 mod tests {
 
-    use meilisearch_types::heed::{Env, WithoutTls};
-    use meilisearch_types::Index;
+    use search_types::heed::{Env, WithoutTls};
+    use search_types::Index;
     use uuid::Uuid;
 
     use super::super::IndexMapper;

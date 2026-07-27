@@ -164,7 +164,7 @@ async fn execute_run(
         },
     };
 
-    let meilisearch =
+    let search =
         start_meili(meili_client, master_key, &binary, &args.common.asset_folder).await?;
 
     let processor = run_workload_commands(
@@ -178,7 +178,7 @@ async fn execute_run(
     )
     .await?;
 
-    process::kill_meili(meilisearch).await;
+    process::kill_meili(search).await;
 
     tracing::info!(run_number, "Successful run");
 

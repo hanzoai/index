@@ -1,8 +1,8 @@
 use std::collections::BTreeMap;
 
-use meilisearch_types::heed::{Database, Env, RwTxn, WithoutTls};
-use meilisearch_types::milli::{CboRoaringBitmapCodec, BEU32};
-use meilisearch_types::tasks::{Kind, Status};
+use search_types::heed::{Database, Env, RwTxn, WithoutTls};
+use search_types::milli::{CboRoaringBitmapCodec, BEU32};
+use search_types::tasks::{Kind, Status};
 use roaring::RoaringBitmap;
 use tracing::info;
 

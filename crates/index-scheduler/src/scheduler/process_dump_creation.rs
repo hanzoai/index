@@ -4,12 +4,12 @@ use std::io::BufWriter;
 use std::sync::atomic::Ordering;
 
 use dump::IndexMetadata;
-use meilisearch_types::milli::constants::RESERVED_VECTORS_FIELD_NAME;
-use meilisearch_types::milli::index::EmbeddingsWithMetadata;
-use meilisearch_types::milli::progress::{Progress, VariableNameStep};
-use meilisearch_types::milli::vector::parsed_vectors::{ExplicitVectors, VectorOrArrayOfVectors};
-use meilisearch_types::milli::{self};
-use meilisearch_types::tasks::{Details, KindWithContent, Status, Task};
+use search_types::milli::constants::RESERVED_VECTORS_FIELD_NAME;
+use search_types::milli::index::EmbeddingsWithMetadata;
+use search_types::milli::progress::{Progress, VariableNameStep};
+use search_types::milli::vector::parsed_vectors::{ExplicitVectors, VectorOrArrayOfVectors};
+use search_types::milli::{self};
+use search_types::tasks::{Details, KindWithContent, Status, Task};
 use time::macros::format_description;
 use time::OffsetDateTime;
 
@@ -247,10 +247,10 @@ impl IndexScheduler {
             }
 
             // 5.2. Dump the settings
-            let settings = meilisearch_types::settings::settings(
+            let settings = search_types::settings::settings(
                 index,
                 &rtxn,
-                meilisearch_types::settings::SecretPolicy::RevealSecrets,
+                search_types::settings::SecretPolicy::RevealSecrets,
             )
             .map_err(|e| Error::from_milli(e, Some(uid.to_string())))?;
             index_dumper.settings(&settings)?;

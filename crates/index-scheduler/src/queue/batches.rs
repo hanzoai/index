@@ -1,11 +1,11 @@
 use std::collections::HashSet;
 use std::ops::{Bound, RangeBounds};
 
-use meilisearch_types::batches::{Batch, BatchId};
-use meilisearch_types::heed::types::{DecodeIgnore, SerdeBincode, SerdeJson, Str};
-use meilisearch_types::heed::{Database, Env, RoTxn, RwTxn, WithoutTls};
-use meilisearch_types::milli::{CboRoaringBitmapCodec, RoaringBitmapCodec, BEU32};
-use meilisearch_types::tasks::{Kind, Status};
+use search_types::batches::{Batch, BatchId};
+use search_types::heed::types::{DecodeIgnore, SerdeBincode, SerdeJson, Str};
+use search_types::heed::{Database, Env, RoTxn, RwTxn, WithoutTls};
+use search_types::milli::{CboRoaringBitmapCodec, RoaringBitmapCodec, BEU32};
+use search_types::tasks::{Kind, Status};
 use roaring::{MultiOps, RoaringBitmap};
 use time::OffsetDateTime;
 
@@ -531,7 +531,7 @@ impl Queue {
         &self,
         rtxn: &RoTxn,
         query: &Query,
-        filters: &meilisearch_auth::AuthFilter,
+        filters: &search_auth::AuthFilter,
         processing: &ProcessingTasks,
     ) -> Result<(RoaringBitmap, u64)> {
         // compute all batches matching the filter by ignoring the limits, to find the number of batches matching
@@ -596,7 +596,7 @@ impl Queue {
         &self,
         rtxn: &RoTxn,
         query: &Query,
-        filters: &meilisearch_auth::AuthFilter,
+        filters: &search_auth::AuthFilter,
         processing: &ProcessingTasks,
     ) -> Result<(Vec<Batch>, u64)> {
         let (batches, total) =

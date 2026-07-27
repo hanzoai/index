@@ -1,10 +1,10 @@
 use std::ops::{Bound, RangeBounds};
 
-use meilisearch_types::heed::types::{DecodeIgnore, SerdeBincode, SerdeJson, Str};
-use meilisearch_types::heed::{Database, Env, RoTxn, RwTxn, WithoutTls};
-use meilisearch_types::milli::{CboRoaringBitmapCodec, RoaringBitmapCodec, BEU32};
-use meilisearch_types::tasks::network::DbTaskNetwork;
-use meilisearch_types::tasks::{Kind, KindWithContent, Status, Task};
+use search_types::heed::types::{DecodeIgnore, SerdeBincode, SerdeJson, Str};
+use search_types::heed::{Database, Env, RoTxn, RwTxn, WithoutTls};
+use search_types::milli::{CboRoaringBitmapCodec, RoaringBitmapCodec, BEU32};
+use search_types::tasks::network::DbTaskNetwork;
+use search_types::tasks::{Kind, KindWithContent, Status, Task};
 use roaring::{MultiOps, RoaringBitmap};
 use time::OffsetDateTime;
 
@@ -509,7 +509,7 @@ impl Queue {
         &self,
         rtxn: &RoTxn,
         query: &Query,
-        filters: &meilisearch_auth::AuthFilter,
+        filters: &search_auth::AuthFilter,
         processing_tasks: &ProcessingTasks,
     ) -> Result<(RoaringBitmap, u64)> {
         // compute all tasks matching the filter by ignoring the limits, to find the number of tasks matching
@@ -548,7 +548,7 @@ impl Queue {
         &self,
         rtxn: &RoTxn,
         query: &Query,
-        filters: &meilisearch_auth::AuthFilter,
+        filters: &search_auth::AuthFilter,
         processing_tasks: &ProcessingTasks,
     ) -> Result<(Vec<Task>, u64)> {
         let (tasks, total) =

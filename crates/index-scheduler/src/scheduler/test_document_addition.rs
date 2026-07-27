@@ -1,9 +1,9 @@
 use big_s::S;
-use meili_snap::snapshot;
-use meilisearch_types::milli::obkv_to_json;
-use meilisearch_types::milli::update::IndexDocumentsMethod::*;
-use meilisearch_types::milli::update::MissingDocumentPolicy;
-use meilisearch_types::tasks::KindWithContent;
+use search_snap::snapshot;
+use search_types::milli::obkv_to_json;
+use search_types::milli::update::IndexDocumentsMethod::*;
+use search_types::milli::update::MissingDocumentPolicy;
+use search_types::tasks::KindWithContent;
 use roaring::RoaringBitmap;
 
 use crate::insta_snapshot::snapshot_index_scheduler;

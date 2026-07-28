@@ -175,7 +175,7 @@ macro_rules! make_error_codes {
 
             /// return the doc url associated with the error
             fn url(&self) -> String {
-                format!("https://docs.hanzo.ai/errors#{}", self.name())
+                format!("https://docs.hanzo.ai/docs/errors#{}", self.name())
             }
         }
         pub mod deserr_codes {

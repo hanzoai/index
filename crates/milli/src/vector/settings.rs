@@ -16,7 +16,7 @@ use crate::vector::embedder::{manual, ollama, openai, rest, EmbedderOptions};
 use crate::vector::{DistributionShift, EmbeddingConfig};
 use crate::UserError;
 
-/// Embedder configuration for [AI-powered / hybrid search](https://docs.hanzo.ai/index/learn/ai_powered_search/getting_started_with_ai_search).
+/// Embedder configuration for [AI-powered / hybrid search](https://docs.hanzo.ai/docs/search).
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq, Deserr, ToSchema)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 #[deserr(rename_all = camelCase, deny_unknown_fields)]
@@ -132,7 +132,7 @@ pub struct EmbeddingSettings {
     /// - 🏗️ When modified for `ollama` and `rest`, embeddings are always regenerated
     /// - If targetting URL resolving to a non-global IP (such as `localhost`), make sure that
     ///   `--experimental-allowed-ip-networks` allows it. For details on how use this parameter,
-    ///   refer to [this documentation](https://docs.hanzo.ai/index/learn/self_hosted/configure_index_at_launch#allow-requests-to-private-networks).
+    ///   refer to [this documentation](https://docs.hanzo.ai/docs/search).
     #[serde(default, skip_serializing_if = "Setting::is_not_set")]
     #[deserr(default)]
     #[schema(value_type = Option<String>, example = json!("http://localhost:11434/api/embeddings"))]
@@ -142,7 +142,7 @@ pub struct EmbeddingSettings {
     ///
     /// For `rest` with multimodal; key is fragment name, value the payload.
     ///
-    /// See also [Image search with multimodal embeddings](https://docs.hanzo.ai/index/learn/ai_powered_search/image_search_with_multimodal_embeddings)
+    /// See also [Image search with multimodal embeddings](https://docs.hanzo.ai/docs/search)
     ///
     /// - 🏗️ When a fragment is deleted by passing `null` to its name, the corresponding embeddings are removed from documents.
     /// - 🏗️ When a fragment is modified, the corresponding embeddings are regenerated if their rendered version changes.
@@ -155,7 +155,7 @@ pub struct EmbeddingSettings {
     ///
     /// For `rest` with multimodal.
     ///
-    /// See also [Image search with multimodal embeddings](https://docs.hanzo.ai/index/learn/ai_powered_search/image_search_with_multimodal_embeddings)
+    /// See also [Image search with multimodal embeddings](https://docs.hanzo.ai/docs/search)
     ///
     /// - 🌱 Changing the value of this parameter never regenerates embeddings
     #[serde(default, skip_serializing_if = "Setting::is_not_set")]
@@ -165,7 +165,7 @@ pub struct EmbeddingSettings {
 
     /// Request body template for `rest` embedder.
     ///
-    /// See also [Configure a REST embedder](https://docs.hanzo.ai/index/learn/ai_powered_search/configure_rest_embedder)
+    /// See also [Configure a REST embedder](https://docs.hanzo.ai/docs/search)
     ///
     /// - Use `"{{text}}"` for the input.
     /// - Mandatory for `rest`.
@@ -177,7 +177,7 @@ pub struct EmbeddingSettings {
 
     /// Response template for `rest` embedder.
     ///
-    /// See also [Configure a REST embedder](https://docs.hanzo.ai/index/learn/ai_powered_search/configure_rest_embedder)
+    /// See also [Configure a REST embedder](https://docs.hanzo.ai/docs/search)
     ///
     /// - Use `"{{embedding}}"` where the embedding array is.
     /// - Mandatory for `rest`.
@@ -329,7 +329,7 @@ pub struct SubEmbeddingSettings {
     /// - 🏗️ When modified for `ollama` and `rest`, embeddings are always regenerated
     /// - If targetting URL resolving to a non-global IP (such as `localhost`), make sure that
     ///   `--experimental-allowed-ip-networks` allows it. For details on how use this parameter,
-    ///   refer to [this documentation](https://docs.hanzo.ai/index/learn/self_hosted/configure_index_at_launch#allow-requests-to-private-networks).
+    ///   refer to [this documentation](https://docs.hanzo.ai/docs/search).
     #[serde(default, skip_serializing_if = "Setting::is_not_set")]
     #[deserr(default)]
     #[schema(value_type = Option<String>, example = json!("http://localhost:11434/api/embeddings"))]
@@ -339,7 +339,7 @@ pub struct SubEmbeddingSettings {
     ///
     /// For `rest` with multimodal; key is fragment name, value the payload.
     ///
-    /// See also [Image search with multimodal embeddings](https://docs.hanzo.ai/index/learn/ai_powered_search/image_search_with_multimodal_embeddings)
+    /// See also [Image search with multimodal embeddings](https://docs.hanzo.ai/docs/search)
     ///
     /// - Only available for `indexingEmbedder`, not `searchEmbedder`.
     /// - 🏗️ When a fragment is deleted by passing `null` to its name, the corresponding embeddings are removed from documents.
@@ -353,7 +353,7 @@ pub struct SubEmbeddingSettings {
     ///
     /// For `rest` with multimodal.
     ///
-    /// See also [Image search with multimodal embeddings](https://docs.hanzo.ai/index/learn/ai_powered_search/image_search_with_multimodal_embeddings)
+    /// See also [Image search with multimodal embeddings](https://docs.hanzo.ai/docs/search)
     ///
     /// - 🌱 Changing the value of this parameter never regenerates embeddings
     #[serde(default, skip_serializing_if = "Setting::is_not_set")]
@@ -363,7 +363,7 @@ pub struct SubEmbeddingSettings {
 
     /// Request body template for `rest` embedder.
     ///
-    /// See also [Configure a REST embedder](https://docs.hanzo.ai/index/learn/ai_powered_search/configure_rest_embedder)
+    /// See also [Configure a REST embedder](https://docs.hanzo.ai/docs/search)
     ///
     /// - Use `"{{text}}"` for the input.
     /// - Mandatory for `rest`.
@@ -375,7 +375,7 @@ pub struct SubEmbeddingSettings {
 
     /// Response template for `rest` embedder.
     ///
-    /// See also [Configure a REST embedder](https://docs.hanzo.ai/index/learn/ai_powered_search/configure_rest_embedder)
+    /// See also [Configure a REST embedder](https://docs.hanzo.ai/docs/search)
     ///
     /// - Use `"{{embedding}}"` where the embedding array is.
     /// - Mandatory for `rest`.

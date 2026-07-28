@@ -576,7 +576,7 @@ async fn search_with_foreign_filter_on_author_profile() {
       "message": "using a foreign filter requires enabling the `foreign_keys` experimental feature. See https://github.com/orgs/meilisearch/discussions/873\n30:36 _foreign(author, birthday STARTS WITH \"1958-\" AND popularity >= 3.5)",
       "code": "feature_not_enabled",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
+      "link": "https://docs.hanzo.ai/docs/errors#feature_not_enabled"
     }
     "###);
 }
@@ -702,7 +702,7 @@ async fn federated_search_with_foreign_filter_on_author_profile() {
       "message": "using a foreign filter requires enabling the `foreign_keys` experimental feature. See https://github.com/orgs/meilisearch/discussions/873\n30:36 _foreign(author, birthday STARTS WITH \"1958-\" AND popularity >= 3.5)",
       "code": "feature_not_enabled",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
+      "link": "https://docs.hanzo.ai/docs/errors#feature_not_enabled"
     }
     "###);
 }
@@ -775,7 +775,7 @@ async fn multi_search_with_foreign_filter_on_author_profile() {
       "message": "Inside `.queries[0]`: using a foreign filter requires enabling the `foreign_keys` experimental feature. See https://github.com/orgs/meilisearch/discussions/873\n30:36 _foreign(author, birthday STARTS WITH \"1958-\" AND popularity >= 3.5)",
       "code": "feature_not_enabled",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
+      "link": "https://docs.hanzo.ai/docs/errors#feature_not_enabled"
     }
     "###);
 }
@@ -806,7 +806,7 @@ async fn foreign_filter_rejects_field_not_in_foreign_keys() {
       "message": "Index `[uuid]`: Field `title` is not a foreign key",
       "code": "invalid_search_filter",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
     }
     "###);
 
@@ -817,7 +817,7 @@ async fn foreign_filter_rejects_field_not_in_foreign_keys() {
       "message": "Index `[uuid]`: Field `title` is not a foreign key",
       "code": "invalid_search_filter",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
     }
     "###);
 }
@@ -848,7 +848,7 @@ async fn foreign_filter_rejects_when_index_has_no_foreign_keys_configured() {
       "message": "Index `[uuid]`: Field `author` is not a foreign key",
       "code": "invalid_search_filter",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
     }
     "###);
 
@@ -859,7 +859,7 @@ async fn foreign_filter_rejects_when_index_has_no_foreign_keys_configured() {
       "message": "Index `[uuid]`: Field `author` is not a foreign key",
       "code": "invalid_search_filter",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
     }
     "###);
 }
@@ -890,7 +890,7 @@ async fn foreign_filter_rejects_nested_foreign() {
       "message": "Index `[uuid]`: Nested foreign filters are not supported",
       "code": "invalid_search_filter",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
     }
     "###);
 
@@ -901,7 +901,7 @@ async fn foreign_filter_rejects_nested_foreign() {
       "message": "Index `[uuid]`: Nested foreign filters are not supported",
       "code": "invalid_search_filter",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
     }
     "###);
 }
@@ -933,7 +933,7 @@ async fn foreign_filter_propagates_inner_filter_error_on_foreign_index() {
       "message": "Index `[uuid]`: Attribute `birthday` is not filterable. Available filterable attribute patterns are: `id`.\n18:26 _foreign(author, birthday = \"1958-06-15\")",
       "code": "invalid_document_filter",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_document_filter"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_document_filter"
     }
     "###);
 
@@ -944,7 +944,7 @@ async fn foreign_filter_propagates_inner_filter_error_on_foreign_index() {
       "message": "Index `[uuid]`: Attribute `birthday` is not filterable. Available filterable attribute patterns are: `id`.\n18:26 _foreign(author, birthday = \"1958-06-15\")",
       "code": "invalid_document_filter",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_document_filter"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_document_filter"
     }
     "###);
 }
@@ -984,7 +984,7 @@ async fn foreign_filter_on_non_filterable_attribute() {
       "message": "Index `[uuid]`: Attribute `author` is not filterable. This index does not have configured filterable attributes.\n10:16 _foreign(author, id = a1)",
       "code": "invalid_search_filter",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
     }
     "###);
 
@@ -995,7 +995,7 @@ async fn foreign_filter_on_non_filterable_attribute() {
       "message": "Inside `.queries[0]`: Index `[uuid]`: Attribute `author` is not filterable. This index does not have configured filterable attributes.\n_foreign(author, id = a1)",
       "code": "invalid_search_filter",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
     }
     "###);
 }

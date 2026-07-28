@@ -32,7 +32,7 @@
         "message": "Using the /tasks/compact route requires enabling the `task queue compaction route` experimental feature. See https://github.com/orgs/meilisearch/discussions/883",
         "code": "feature_not_enabled",
         "type": "invalid_request",
-        "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
+        "link": "https://docs.hanzo.ai/docs/errors#feature_not_enabled"
       }
     },
     {

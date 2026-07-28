@@ -100,7 +100,7 @@ macro_rules! make_setting_route {
                             "message": "The Authorization header is missing. It must use the bearer authorization method.",
                             "code": "missing_authorization_header",
                             "type": "auth",
-                            "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                            "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
                         }
                     )),
                     (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -108,7 +108,7 @@ macro_rules! make_setting_route {
                             "message": "Index `movies` not found.",
                             "code": "index_not_found",
                             "type": "invalid_request",
-                            "link": "https://docs.hanzo.ai/errors#index_not_found"
+                            "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
                         }
                     )),
                 )
@@ -155,7 +155,7 @@ macro_rules! make_setting_route {
                             "message": "The Authorization header is missing. It must use the bearer authorization method.",
                             "code": "missing_authorization_header",
                             "type": "auth",
-                            "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                            "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
                         }
                     )),
                     (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -163,7 +163,7 @@ macro_rules! make_setting_route {
                             "message": "Index `movies` not found.",
                             "code": "index_not_found",
                             "type": "invalid_request",
-                            "link": "https://docs.hanzo.ai/errors#index_not_found"
+                            "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
                         }
                     )),
                 )
@@ -220,7 +220,7 @@ macro_rules! make_setting_route {
                             "message": "The Authorization header is missing. It must use the bearer authorization method.",
                             "code": "missing_authorization_header",
                             "type": "auth",
-                            "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                            "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
                         }
                     )),
                     (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -228,7 +228,7 @@ macro_rules! make_setting_route {
                             "message": "Index `movies` not found.",
                             "code": "index_not_found",
                             "type": "invalid_request",
-                            "link": "https://docs.hanzo.ai/errors#index_not_found"
+                            "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
                         }
                     )),
                 )
@@ -508,7 +508,7 @@ make_setting_routes!(
 
 #[routes::path(
     summary = "Update all settings",
-    description = "Updates one or more settings for the index. Only the fields sent in the body are changed. Pass null for a setting to reset it to its default. If the index does not exist, it is created.\n\nSee also: [Configuring index settings on the Cloud](https://docs.hanzo.ai/index/learn/configuration/configuring_index_settings).",
+    description = "Updates one or more settings for the index. Only the fields sent in the body are changed. Pass null for a setting to reset it to its default. If the index does not exist, it is created.\n\nSee also: [Configuring index settings on the Cloud](https://docs.hanzo.ai/docs/search).",
     security(("Bearer" = ["settings.update", "settings.*", "*"])),
     params(("index_uid" = String, example = "movies", description = "Unique identifier of the index.", nullable = false)),
     request_body(content = Settings<Unchecked>),
@@ -527,7 +527,7 @@ make_setting_routes!(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -535,7 +535,7 @@ make_setting_routes!(
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
     )
@@ -548,7 +548,7 @@ make_setting_routes!(
 ///
 /// If the index does not exist, it will be created.
 ///
-/// See also: [Configuring index settings on the Cloud](https://docs.hanzo.ai/index/learn/configuration/configuring_index_settings).
+/// See also: [Configuring index settings on the Cloud](https://docs.hanzo.ai/docs/search).
 pub async fn update_all(
     index_scheduler: GuardedData<ActionPolicy<{ actions::SETTINGS_UPDATE }>, Data<IndexScheduler>>,
     index_uid: web::Path<String>,
@@ -714,7 +714,7 @@ async fn register_new_settings(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -722,7 +722,7 @@ async fn register_new_settings(
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
     )
@@ -774,7 +774,7 @@ pub async fn get_all(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -782,7 +782,7 @@ pub async fn get_all(
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
     )

@@ -135,7 +135,7 @@ pub(super) struct WebhookResults {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
     )
@@ -310,13 +310,13 @@ fn check_changed(uuid: Uuid, webhook: &Webhook) -> Result<(), WebhooksError> {
             "message": "The webhook was not found.",
             "code": "webhook_not_found",
             "type": "invalid_request",
-            "link": "https://docs.hanzo.ai/errors#webhook_not_found"
+            "link": "https://docs.hanzo.ai/docs/errors#webhook_not_found"
         })),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!({
             "message": "The Authorization header is missing. It must use the bearer authorization method.",
             "code": "missing_authorization_header",
             "type": "auth",
-            "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+            "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
         })),
     ),
     params(
@@ -356,13 +356,13 @@ async fn get_webhook(
             "message": "The Authorization header is missing. It must use the bearer authorization method.",
             "code": "missing_authorization_header",
             "type": "auth",
-            "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+            "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
         })),
         (status = 400, description = "Bad request.", body = ResponseError, content_type = "application/json", example = json!({
             "message": "The webhook URL is invalid. Expected a valid URL.",
             "code": "invalid_webhook_url",
             "type": "invalid_request",
-            "link": "https://docs.hanzo.ai/errors#invalid_webhook_url"
+            "link": "https://docs.hanzo.ai/docs/errors#invalid_webhook_url"
         })),
     )
 )]
@@ -424,19 +424,19 @@ async fn post_webhook(
             "message": "The Authorization header is missing. It must use the bearer authorization method.",
             "code": "missing_authorization_header",
             "type": "auth",
-            "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+            "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
         })),
         (status = 400, description = "Bad request.", body = ResponseError, content_type = "application/json", example = json!({
             "message": "The webhook URL is invalid. Expected a valid URL.",
             "code": "invalid_webhook_url",
             "type": "invalid_request",
-            "link": "https://docs.hanzo.ai/errors#invalid_webhook_url"
+            "link": "https://docs.hanzo.ai/docs/errors#invalid_webhook_url"
         })),
         (status = 404, description = "Webhook not found.", body = ResponseError, content_type = "application/json", example = json!({
             "message": "The webhook was not found.",
             "code": "webhook_not_found",
             "type": "invalid_request",
-            "link": "https://docs.hanzo.ai/errors#webhook_not_found"
+            "link": "https://docs.hanzo.ai/docs/errors#webhook_not_found"
         })),
     ),
     params(
@@ -484,13 +484,13 @@ async fn patch_webhook(
             "message": "The webhook was not found.",
             "code": "webhook_not_found",
             "type": "invalid_request",
-            "link": "https://docs.hanzo.ai/errors#webhook_not_found"
+            "link": "https://docs.hanzo.ai/docs/errors#webhook_not_found"
         })),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!({
             "message": "The Authorization header is missing. It must use the bearer authorization method.",
             "code": "missing_authorization_header",
             "type": "auth",
-            "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+            "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
         })),
     ),
     params(

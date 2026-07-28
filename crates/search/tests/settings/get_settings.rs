@@ -531,7 +531,7 @@ async fn error_update_setting_unexisting_index_invalid_uid() {
       "message": "`test##!  ` is not a valid index uid. Index uid can be an integer or a string containing only alphanumeric characters, hyphens (-) and underscores (_), and can not be more than 512 bytes.",
       "code": "invalid_index_uid",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_index_uid"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_index_uid"
     }
     "###);
 }
@@ -549,7 +549,7 @@ async fn error_set_invalid_ranking_rules() {
       "message": "Invalid value at `.rankingRules[0]`: `manyTheFish` ranking rule is invalid. Valid ranking rules are words, typo, sort, proximity, attribute, exactness and custom ranking rules.",
       "code": "invalid_settings_ranking_rules",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_settings_ranking_rules"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_settings_ranking_rules"
     }
     "###);
 }

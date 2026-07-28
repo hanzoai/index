@@ -251,7 +251,7 @@ pub fn print_launch_resume(opt: &Opt, analytics: Analytics, config_read_from: Op
                 "
 Thank you for using Hanzo Index!
 
-\nWe collect anonymized analytics to improve our product and your experience. To learn more, including how to turn off analytics, visit https://docs.hanzo.ai/index/telemetry
+\nWe collect anonymized analytics to improve our product and your experience. To learn more, including how to turn off analytics, visit https://docs.hanzo.ai/docs/search
 
 Anonymous telemetry:\t\"Enabled\""
             );
@@ -283,7 +283,7 @@ Anonymous telemetry:\t\"Enabled\""
     }
 
     eprintln!();
-    eprintln!("Documentation:\t\t\thttps://docs.hanzo.ai/index");
+    eprintln!("Documentation:\t\t\thttps://docs.hanzo.ai/docs/search");
     eprintln!("Source code:\t\t\thttps://github.com/hanzoai/index");
     eprintln!();
 }

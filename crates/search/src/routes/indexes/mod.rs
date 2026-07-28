@@ -60,7 +60,7 @@ mod similar_analytics;
     tags(
         (
             name = "Indexes",
-            description = "An index is an entity that gathers a set of [documents](https://docs.hanzo.ai/index/learn/getting_started/documents) with its own [settings](https://docs.hanzo.ai/index/reference/api/settings). Learn more about indexes.",
+            description = "An index is an entity that gathers a set of [documents](https://docs.hanzo.ai/docs/search) with its own [settings](https://docs.hanzo.ai/docs/search). Learn more about indexes.",
         ),
     ),
 )]
@@ -78,7 +78,7 @@ pub struct IndexView {
     /// Latest date of index update, represented in RFC 3339 format
     #[serde(with = "time::serde::rfc3339")]
     pub updated_at: OffsetDateTime,
-    /// [Primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key) of the index
+    /// [Primary key](https://docs.hanzo.ai/docs/search) of the index
     pub primary_key: Option<String>,
 }
 
@@ -145,7 +145,7 @@ impl ListIndexes {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
     )
@@ -183,7 +183,7 @@ pub struct IndexCreateRequest {
     #[schema(required = true, example = "movies")]
     #[deserr(error = DeserrJsonError<InvalidIndexUid>, missing_field_error = DeserrJsonError::missing_index_uid)]
     uid: IndexUid,
-    /// [Primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key) of the index
+    /// [Primary key](https://docs.hanzo.ai/docs/search) of the index
     #[schema(required = false, example = "id")]
     #[deserr(default, error = DeserrJsonError<InvalidIndexPrimaryKey>)]
     primary_key: Option<String>,
@@ -210,9 +210,9 @@ impl Aggregate for IndexCreatedAggregate {
 
 /// Create index
 ///
-/// Create a new index with an optional [primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key).
+/// Create a new index with an optional [primary key](https://docs.hanzo.ai/docs/search).
 ///
-/// If no primary key is provided, Hanzo Index will [infer one](https://docs.hanzo.ai/index/learn/getting_started/primary_key#index-guesses-your-primary-key) from the first batch of documents.
+/// If no primary key is provided, Hanzo Index will [infer one](https://docs.hanzo.ai/docs/search) from the first batch of documents.
 #[routes::path(
     security(("Bearer" = ["indexes.create", "indexes.*", "*"])),
     request_body = IndexCreateRequest,
@@ -231,7 +231,7 @@ impl Aggregate for IndexCreatedAggregate {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
     )
@@ -309,7 +309,7 @@ fn deny_immutable_fields_index(
 
 /// Get index
 ///
-/// Retrieve the metadata of a single index: its uid, [primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key), and creation/update timestamps.
+/// Retrieve the metadata of a single index: its uid, [primary key](https://docs.hanzo.ai/docs/search), and creation/update timestamps.
 #[routes::path(
     security(("Bearer" = ["indexes.get", "indexes.*", "*"])),
     params(("index_uid" = String, example = "movies", description = "Unique identifier of the index.", nullable = false)),
@@ -327,7 +327,7 @@ fn deny_immutable_fields_index(
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -335,7 +335,7 @@ fn deny_immutable_fields_index(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
     )
@@ -379,7 +379,7 @@ impl Aggregate for IndexUpdatedAggregate {
 #[schema(rename_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateIndexRequest {
-    /// New [primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key) of the index
+    /// New [primary key](https://docs.hanzo.ai/docs/search) of the index
     #[schema(required = false)]
     #[deserr(default, error = DeserrJsonError<InvalidIndexPrimaryKey>)]
     primary_key: Option<String>,
@@ -391,9 +391,9 @@ pub struct UpdateIndexRequest {
 
 /// Update index
 ///
-/// Update the [primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key) or uid of an index.
+/// Update the [primary key](https://docs.hanzo.ai/docs/search) or uid of an index.
 ///
-/// Returns an error if the index does not exist or if it already contains documents ([primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key) cannot be changed in that case).
+/// Returns an error if the index does not exist or if it already contains documents ([primary key](https://docs.hanzo.ai/docs/search) cannot be changed in that case).
 #[routes::path(
     security(("Bearer" = ["indexes.update", "indexes.*", "*"])),
     params(("index_uid" = String, example = "movies", description = "Unique identifier of the index.", nullable = false)),
@@ -413,7 +413,7 @@ pub struct UpdateIndexRequest {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -421,7 +421,7 @@ pub struct UpdateIndexRequest {
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
     )
@@ -506,7 +506,7 @@ pub async fn update_index(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -514,7 +514,7 @@ pub async fn update_index(
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
     )
@@ -699,7 +699,7 @@ impl IndexStats {
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -707,7 +707,7 @@ impl IndexStats {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
     )

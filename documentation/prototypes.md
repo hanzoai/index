@@ -44,7 +44,7 @@ Steps to create a prototype:
 7. Check that the [Docker CI](https://github.com/hanzoai/index/actions/workflows/publish-docker-images.yml) is now running.
 
 🐳 Once the CI has finished to run, a Docker image named `prototype-v<version>-<name>.<iteration>` will be available on [DockerHub](https://hub.docker.com/repository/docker/getindex/index/general). People can use it with the following command: `docker run -p 7700:7700 -v $(pwd)/index_data:/index_data getindex/index:prototype-v<version>-<name>.<iteration>`. <br>
-More information about [how to run Hanzo Index with Docker](https://docs.hanzo.ai/learn/cookbooks/docker.html#download-index-with-docker).
+More information about [how to run Hanzo Index with Docker](https://docs.hanzo.ai/docs/search).
 
 ⚠️ However, no binaries will be created. If the users do not use Docker, they can go to the `prototype-v<version>-<name>.<iteration>` tag in the Hanzo Index repository and compile it from the source code.
 

@@ -93,7 +93,7 @@ pub struct DocumentParam {
     tags(
         (
             name = "Documents",
-            description = "Documents are objects composed of fields that can store any type of data. Each field contains an attribute and its associated value. Documents are stored inside [indexes](https://docs.hanzo.ai/index/learn/getting_started/indexes).",
+            description = "Documents are objects composed of fields that can store any type of data. Each field contains an attribute and its associated value. Documents are stored inside [indexes](https://docs.hanzo.ai/docs/search).",
         ),
     ),
 )]
@@ -179,7 +179,7 @@ impl<Method: AggregateMethod> Aggregate for DocumentsFetchAggregator<Method> {
 
 /// Get document
 ///
-/// Retrieve a single document by its [primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key) value.
+/// Retrieve a single document by its [primary key](https://docs.hanzo.ai/docs/search) value.
 #[routes::path(
     security(("Bearer" = ["documents.get", "documents.*", "*"])),
     params(
@@ -202,7 +202,7 @@ impl<Method: AggregateMethod> Aggregate for DocumentsFetchAggregator<Method> {
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
         (status = 404, description = "Document not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -210,7 +210,7 @@ impl<Method: AggregateMethod> Aggregate for DocumentsFetchAggregator<Method> {
               "message": "Document :uid not found.",
               "code": "document_not_found",
               "type": "invalid_request",
-              "link": "https://docs.hanzo.ai/errors#document_not_found"
+              "link": "https://docs.hanzo.ai/docs/errors#document_not_found"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -218,7 +218,7 @@ impl<Method: AggregateMethod> Aggregate for DocumentsFetchAggregator<Method> {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
     )
@@ -290,7 +290,7 @@ impl Aggregate for DocumentsDeletionAggregator {
 
 /// Delete document
 ///
-/// Delete a single document by its [primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key).
+/// Delete a single document by its [primary key](https://docs.hanzo.ai/docs/search).
 #[routes::path(
     security(("Bearer" = ["documents.delete", "documents.*", "*"])),
     params(
@@ -312,7 +312,7 @@ impl Aggregate for DocumentsDeletionAggregator {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -320,7 +320,7 @@ impl Aggregate for DocumentsDeletionAggregator {
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
     )
@@ -463,7 +463,7 @@ pub struct BrowseQuery {
     #[deserr(default, error = DeserrJsonError<InvalidDocumentRetrieveVectors>)]
     retrieve_vectors: bool,
     /// Array of specific document IDs to retrieve. Only documents with
-    /// matching [primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key) values will be returned. If not specified, all
+    /// matching [primary key](https://docs.hanzo.ai/docs/search) values will be returned. If not specified, all
     /// documents matching other criteria are returned. This is useful for
     /// fetching specific known documents.
     #[schema(required = false, value_type = Option<Vec<String>>, example = json!(["cody", "finn", "brandy", "gambit"]))]
@@ -527,7 +527,7 @@ pub struct BrowseQuery {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -535,7 +535,7 @@ pub struct BrowseQuery {
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
     )
@@ -609,7 +609,7 @@ pub async fn documents_by_query_post(
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -617,7 +617,7 @@ pub async fn documents_by_query_post(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
     )
@@ -756,7 +756,7 @@ async fn documents_by_query(
 #[deserr(error = DeserrQueryParamError, rename_all = camelCase, deny_unknown_fields)]
 #[into_params(parameter_in = Query, rename_all = "camelCase")]
 pub struct UpdateDocumentsQuery {
-    /// The [primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key) field for uniquely identifying each document.
+    /// The [primary key](https://docs.hanzo.ai/docs/search) field for uniquely identifying each document.
     /// This parameter is optional and can only be set the first time documents are added to an index.
     /// Subsequent attempts to specify it will be ignored if the primary key has already been set.
     #[param(required = false, example = "id")]
@@ -898,7 +898,7 @@ impl<Method: AggregateMethod> Aggregate for DocumentsAggregator<Method> {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -906,7 +906,7 @@ impl<Method: AggregateMethod> Aggregate for DocumentsAggregator<Method> {
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
     )
@@ -1010,7 +1010,7 @@ pub async fn replace_documents(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -1018,7 +1018,7 @@ pub async fn replace_documents(
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
     )
@@ -1296,7 +1296,7 @@ async fn copy_body_to_file(
 
 /// Delete documents by batch
 ///
-/// Delete multiple documents in one request by providing an array of [primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key) values.
+/// Delete multiple documents in one request by providing an array of [primary key](https://docs.hanzo.ai/docs/search) values.
 #[routes::path(
     security(("Bearer" = ["documents.delete", "documents.*", "*"])),
     params(
@@ -1318,7 +1318,7 @@ async fn copy_body_to_file(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -1326,7 +1326,7 @@ async fn copy_body_to_file(
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
     )
@@ -1432,7 +1432,7 @@ pub struct DocumentDeletionByFilter {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -1440,7 +1440,7 @@ pub struct DocumentDeletionByFilter {
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
     )
@@ -1593,7 +1593,7 @@ impl Aggregate for EditDocumentsByFunctionAggregator {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -1601,7 +1601,7 @@ impl Aggregate for EditDocumentsByFunctionAggregator {
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
     )
@@ -1724,7 +1724,7 @@ pub async fn edit_documents_by_function(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Index not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -1732,7 +1732,7 @@ pub async fn edit_documents_by_function(
                 "message": "Index `movies` not found.",
                 "code": "index_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#index_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
             }
         )),
     )

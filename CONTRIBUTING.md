@@ -2,7 +2,7 @@
 
 First, thank you for contributing to Hanzo Index! The goal of this document is to provide everything you need to start contributing.
 
-Remember that there are many ways to contribute other than writing code: improving [the documentation](https://docs.hanzo.ai/index), submitting [bug reports](https://github.com/hanzoai/index/issues/new?assignees=&labels=&template=bug_report.md&title=) and [feature requests](https://github.com/hanzoai/index/discussions)...
+Remember that there are many ways to contribute other than writing code: improving [the documentation](https://docs.hanzo.ai/docs/search), submitting [bug reports](https://github.com/hanzoai/index/issues/new?assignees=&labels=&template=bug_report.md&title=) and [feature requests](https://github.com/hanzoai/index/discussions)...
 
 Hanzo Index can manage multiple indexes, handle the update store, and expose an HTTP API. Search and indexation are the domain of the core engine, [`milli`](https://github.com/hanzoai/index/tree/main/milli), while tokenization is handled by [the `charabia` library](https://github.com/meilisearch/charabia/).
 
@@ -34,7 +34,7 @@ In particular, in generated contributions:
 ## Assumptions
 
 1. **You're familiar with [GitHub](https://github.com) and the [Pull Requests (PR)](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests) workflow.**
-2. **You've read the Hanzo Index [documentation](https://docs.hanzo.ai/index).**
+2. **You've read the Hanzo Index [documentation](https://docs.hanzo.ai/docs/search).**
 3. **You know about the [Hanzo community on Discord](https://discord.gg/hanzo).**
 
 ## How to Contribute
@@ -270,7 +270,7 @@ Before merging a PR, the maintainer should ensure the following requirements are
 - If some tests cannot be automated, manual rigorous tests should be applied.
 - If there is a change in the DB: it's mandatory to manually test the `--experimental-dumpless-upgrade` on a DB of the previous minor version.
 - If necessary, the feature has been tested in the production environment (with [prototypes](./documentation/prototypes.md)).
-- If necessary, the [documentation](https://docs.hanzo.ai/index) related to the implemented feature in the PR is ready.
+- If necessary, the [documentation](https://docs.hanzo.ai/docs/search) related to the implemented feature in the PR is ready.
 
 ## Publish Process (for internal team only)
 

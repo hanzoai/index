@@ -284,7 +284,7 @@ impl Code {
 
     /// return the doc url ascociated with the error
     fn url(&self) -> String {
-        format!("https://docs.hanzo.ai/errors#{}", self.name())
+        format!("https://docs.hanzo.ai/docs/errors#{}", self.name())
     }
 }
 

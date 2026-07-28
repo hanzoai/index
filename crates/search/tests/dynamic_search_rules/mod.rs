@@ -14,7 +14,7 @@ async fn routes_are_disabled_by_default() {
       "message": "Using the `/dynamic-search-rules` routes requires enabling the `dynamic search rules` experimental feature. See https://github.com/orgs/meilisearch/discussions/884",
       "code": "feature_not_enabled",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
+      "link": "https://docs.hanzo.ai/docs/errors#feature_not_enabled"
     }
     "#);
 }
@@ -407,7 +407,7 @@ async fn create_rejects_query_condition_with_both_is_empty_and_contains() {
       "message": "Invalid value at `.conditions[0]`: either `isEmpty` or `contains` can be used, not all at once",
       "code": "bad_request",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#bad_request"
+      "link": "https://docs.hanzo.ai/docs/errors#bad_request"
     }
     "#);
 }
@@ -514,7 +514,7 @@ async fn get_not_found() {
       "message": "Dynamic search rule `no-such-rule` not found.",
       "code": "dynamic_search_rule_not_found",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#dynamic_search_rule_not_found"
+      "link": "https://docs.hanzo.ai/docs/errors#dynamic_search_rule_not_found"
     }
     "#);
 }
@@ -584,7 +584,7 @@ async fn delete_not_found() {
       "message": "Dynamic search rule `phantom` not found.",
       "code": "dynamic_search_rule_not_found",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#dynamic_search_rule_not_found"
+      "link": "https://docs.hanzo.ai/docs/errors#dynamic_search_rule_not_found"
     }
     "#);
 }

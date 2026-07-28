@@ -26,7 +26,7 @@ pub struct MetricApi;
 
 /// Get Prometheus metrics
 ///
-/// Return metrics for the engine in Prometheus format. This is an [experimental feature](https://docs.hanzo.ai/index/learn/experimental/overview) and must be enabled before use.
+/// Return metrics for the engine in Prometheus format. This is an [experimental feature](https://docs.hanzo.ai/docs/search) and must be enabled before use.
 #[routes::path(
     security(("Bearer" = ["metrics.get", "metrics.*", "*"])),
     responses(
@@ -113,7 +113,7 @@ index_used_db_size_bytes 409600
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
     )

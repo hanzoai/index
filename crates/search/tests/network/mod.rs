@@ -15,7 +15,7 @@ async fn error_network_not_enabled() {
       "message": "Using the /network route requires enabling the `network` experimental feature. See https://github.com/orgs/meilisearch/discussions/805",
       "code": "feature_not_enabled",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
+      "link": "https://docs.hanzo.ai/docs/errors#feature_not_enabled"
     }
     "###);
 
@@ -27,7 +27,7 @@ async fn error_network_not_enabled() {
       "message": "Using the /network route requires enabling the `network` experimental feature. See https://github.com/orgs/meilisearch/discussions/805",
       "code": "feature_not_enabled",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
+      "link": "https://docs.hanzo.ai/docs/errors#feature_not_enabled"
     }
     "###);
 }
@@ -49,7 +49,7 @@ async fn errors_on_param() {
       "message": "Unknown field `selfie`: expected one of `remotes`, `shards`, `previousShards`, `self`, `leader`, `previousRemotes`",
       "code": "bad_request",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#bad_request"
+      "link": "https://docs.hanzo.ai/docs/errors#bad_request"
     }
     "###);
 
@@ -62,7 +62,7 @@ async fn errors_on_param() {
       "message": "Invalid value type at `.self`: expected a string, but found a positive integer: `42`",
       "code": "invalid_network_self",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_network_self"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_network_self"
     }
     "###);
 
@@ -75,7 +75,7 @@ async fn errors_on_param() {
       "message": "Invalid value type at `.remotes`: expected an object, but found a positive integer: `42`",
       "code": "invalid_network_remotes",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_network_remotes"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_network_remotes"
     }
     "###);
 
@@ -94,7 +94,7 @@ async fn errors_on_param() {
       "message": "Missing field `.remotes.new.url`",
       "code": "missing_network_url",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#missing_network_url"
+      "link": "https://docs.hanzo.ai/docs/errors#missing_network_url"
     }
     "###);
 
@@ -113,7 +113,7 @@ async fn errors_on_param() {
       "message": "Invalid value type at `.remotes.new.url`: expected a string, but found a positive integer: `7700`",
       "code": "invalid_network_url",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_network_url"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_network_url"
     }
     "###);
 
@@ -132,7 +132,7 @@ async fn errors_on_param() {
       "message": "Invalid `.remotes.new.url` (`no-http-scheme`): relative URL without a base",
       "code": "invalid_network_url",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_network_url"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_network_url"
     }
     "###);
 
@@ -152,7 +152,7 @@ async fn errors_on_param() {
       "message": "Unknown field `doggo` inside `.remotes.new`: expected one of `url`, `searchApiKey`, `writeApiKey`",
       "code": "invalid_network_remotes",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_network_remotes"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_network_remotes"
     }
     "###);
 
@@ -172,7 +172,7 @@ async fn errors_on_param() {
       "message": "Invalid value type at `.remotes.new.searchApiKey`: expected a string, but found a positive integer: `1204664602099962445`",
       "code": "invalid_network_search_api_key",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_network_search_api_key"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_network_search_api_key"
     }
     "###);
 
@@ -216,7 +216,7 @@ async fn errors_on_param() {
       "message": "Field `.remotes.kefir.url` cannot be set to `null`",
       "code": "invalid_network_url",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_network_url"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_network_url"
     }
     "###);
 }
@@ -238,7 +238,7 @@ async fn errors_on_param_sharding() {
       "message": "This remote is not the leader of the network.\n  - Note: only the leader `someoneelse` can receive new tasks.",
       "code": "not_leader",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#not_leader"
+      "link": "https://docs.hanzo.ai/docs/errors#not_leader"
     }
     "###);
     search_snap::snapshot!(code, @"400 Bad Request");
@@ -250,7 +250,7 @@ async fn errors_on_param_sharding() {
       "message": "leader `myself` is missing from remotes",
       "code": "invalid_network_remotes",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_network_remotes"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_network_remotes"
     }
     "###);
     search_snap::snapshot!(code, @"400 Bad Request");
@@ -267,7 +267,7 @@ async fn errors_on_param_sharding() {
       "message": "there must be at least one shard owned by at least one remote",
       "code": "invalid_network_shards",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_network_shards"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_network_shards"
     }
     "###);
     search_snap::snapshot!(code, @"400 Bad Request");
@@ -290,7 +290,7 @@ async fn errors_on_param_sharding() {
       "message": "there must be at least one shard owned by at least one remote",
       "code": "invalid_network_shards",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_network_shards"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_network_shards"
     }
     "###);
     search_snap::snapshot!(code, @"400 Bad Request");
@@ -313,7 +313,7 @@ async fn errors_on_param_sharding() {
       "message": "unknown remote `unknown` in `.all.remotes`",
       "code": "invalid_network_shards",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_network_shards"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_network_shards"
     }
     "###);
     search_snap::snapshot!(code, @"400 Bad Request");
@@ -372,7 +372,7 @@ async fn errors_on_param_sharding() {
       "message": "Renaming a remote is not supported when a leader is defined.\n  - Note: applying this change would rename `myself` to `someoneelse`.\n  - Hint: Send this change to `someoneelse` if it already exists.",
       "code": "invalid_network_self",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_network_self"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_network_self"
     }
     "###);
     search_snap::snapshot!(code, @"400 Bad Request");
@@ -492,7 +492,7 @@ async fn auth() {
       "message": "The provided API key is invalid.",
       "code": "invalid_api_key",
       "type": "auth",
-      "link": "https://docs.hanzo.ai/errors#invalid_api_key"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_api_key"
     }
     "###);
 
@@ -509,7 +509,7 @@ async fn auth() {
       "message": "The provided API key is invalid.",
       "code": "invalid_api_key",
       "type": "auth",
-      "link": "https://docs.hanzo.ai/errors#invalid_api_key"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_api_key"
     }
     "###);
     // try either with bad permission
@@ -522,7 +522,7 @@ async fn auth() {
       "message": "The provided API key is invalid.",
       "code": "invalid_api_key",
       "type": "auth",
-      "link": "https://docs.hanzo.ai/errors#invalid_api_key"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_api_key"
     }
     "###);
 
@@ -538,7 +538,7 @@ async fn auth() {
       "message": "The provided API key is invalid.",
       "code": "invalid_api_key",
       "type": "auth",
-      "link": "https://docs.hanzo.ai/errors#invalid_api_key"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_api_key"
     }
     "###);
 }

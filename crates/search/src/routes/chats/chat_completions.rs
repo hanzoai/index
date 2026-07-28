@@ -78,7 +78,7 @@ use crate::search_queue::SearchQueue;
               "message": "Chat :workspaceUid not found.",
               "code": "chat_not_found",
               "type": "invalid_request",
-              "link": "https://docs.hanzo.ai/errors#chat_not_found"
+              "link": "https://docs.hanzo.ai/docs/errors#chat_not_found"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -86,7 +86,7 @@ use crate::search_queue::SearchQueue;
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 200, description = "Start a conversation.", body = async_openai::types::CreateChatCompletionResponse, content_type = "application/json", example = json!(

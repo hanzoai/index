@@ -162,7 +162,7 @@ async fn experimental_feature_metrics() {
       "message": "Getting metrics requires enabling the `metrics` experimental feature. See https://github.com/meilisearch/product/discussions/625",
       "code": "feature_not_enabled",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
+      "link": "https://docs.hanzo.ai/docs/errors#feature_not_enabled"
     }
     "###);
 
@@ -189,7 +189,7 @@ async fn errors() {
       "message": "Unknown field `NotAFeature`: expected one of `metrics`, `logsRoute`, `editDocumentsByFunction`, `containsFilter`, `dynamicSearchRules`, `network`, `getTaskDocumentsRoute`, `taskQueueCompactionRoute`, `compositeEmbedders`, `chatCompletions`, `multimodal`, `foreignKeys`",
       "code": "bad_request",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#bad_request"
+      "link": "https://docs.hanzo.ai/docs/errors#bad_request"
     }
     "#);
 
@@ -202,7 +202,7 @@ async fn errors() {
       "message": "Invalid value type at `.metrics`: expected a boolean, but found a positive integer: `42`",
       "code": "bad_request",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#bad_request"
+      "link": "https://docs.hanzo.ai/docs/errors#bad_request"
     }
     "###);
 
@@ -215,7 +215,7 @@ async fn errors() {
       "message": "Invalid value type at `.metrics`: expected a boolean, but found a string: `\"true\"`",
       "code": "bad_request",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#bad_request"
+      "link": "https://docs.hanzo.ai/docs/errors#bad_request"
     }
     "###);
 }
@@ -257,7 +257,7 @@ async fn search_with_personalization_without_enabling_the_feature() {
       "message": "reranking search results requires enabling the `personalization` experimental feature. See https://github.com/orgs/meilisearch/discussions/866",
       "code": "feature_not_enabled",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
+      "link": "https://docs.hanzo.ai/docs/errors#feature_not_enabled"
     }
     "###);
 }
@@ -304,7 +304,7 @@ async fn multi_search_with_personalization_without_enabling_the_feature() {
       "message": "Inside `.queries[0]`: reranking search results requires enabling the `personalization` experimental feature. See https://github.com/orgs/meilisearch/discussions/866",
       "code": "feature_not_enabled",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
+      "link": "https://docs.hanzo.ai/docs/errors#feature_not_enabled"
     }
     "###);
 
@@ -330,7 +330,7 @@ async fn multi_search_with_personalization_without_enabling_the_feature() {
       "message": "Inside `.queries[0]`: Using `.personalize` is not allowed in federated queries.\n - Hint: remove `personalize` from query #0 or remove `federation` from the request",
       "code": "invalid_multi_search_query_personalization",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_personalization"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_multi_search_query_personalization"
     }
     "###);
 }

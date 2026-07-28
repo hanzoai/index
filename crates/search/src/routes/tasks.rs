@@ -41,7 +41,7 @@ use crate::{aggregate_methods, Opt};
     tag = "Async task management",
     tags((
         name = "Tasks",
-        description = "The tasks route gives information about the progress of the [asynchronous operations](https://docs.hanzo.ai/index/learn/advanced/asynchronous_operations.html).",
+        description = "The tasks route gives information about the progress of the [asynchronous operations](https://docs.hanzo.ai/docs/search).",
     )),
 )]
 pub struct TaskApi;
@@ -334,7 +334,7 @@ impl<Method: AggregateMethod + 'static> Aggregate for TaskFilterAnalytics<Method
 
 /// Cancel tasks
 ///
-/// Cancel enqueued and/or processing [tasks](https://docs.hanzo.ai/index/learn/async/asynchronous_operations). You must provide at least one filter (e.g. `uids`, `indexUids`, `statuses`) to specify which tasks to cancel.
+/// Cancel enqueued and/or processing [tasks](https://docs.hanzo.ai/docs/search). You must provide at least one filter (e.g. `uids`, `indexUids`, `statuses`) to specify which tasks to cancel.
 #[routes::path(
     security(("Bearer" = ["tasks.cancel", "tasks.*", "*"])),
     params(TaskDeletionOrCancelationQuery),
@@ -353,7 +353,7 @@ impl<Method: AggregateMethod + 'static> Aggregate for TaskFilterAnalytics<Method
                 "message": "Query parameters to filter the tasks to cancel are missing. Available query parameters are: `uids`, `indexUids`, `statuses`, `types`, `canceledBy`, `beforeEnqueuedAt`, `afterEnqueuedAt`, `beforeStartedAt`, `afterStartedAt`, `beforeFinishedAt`, `afterFinishedAt`.",
                 "code": "missing_task_filters",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#missing_task_filters"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_task_filters"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -361,7 +361,7 @@ impl<Method: AggregateMethod + 'static> Aggregate for TaskFilterAnalytics<Method
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         ))
     )
@@ -418,7 +418,7 @@ async fn cancel_tasks(
 
 /// Delete tasks
 ///
-/// Permanently delete [tasks](https://docs.hanzo.ai/index/learn/advanced/asynchronous_operations.html) matching the given filters. You must provide at least one filter (e.g. `uids`, `indexUids`, `statuses`) to specify which tasks to delete.
+/// Permanently delete [tasks](https://docs.hanzo.ai/docs/search) matching the given filters. You must provide at least one filter (e.g. `uids`, `indexUids`, `statuses`) to specify which tasks to delete.
 #[routes::path(
     security(("Bearer" = ["tasks.delete", "tasks.*", "*"])),
     params(TaskDeletionOrCancelationQuery),
@@ -437,7 +437,7 @@ async fn cancel_tasks(
                 "message": "Query parameters to filter the tasks to delete are missing. Available query parameters are: `uids`, `indexUids`, `statuses`, `types`, `canceledBy`, `beforeEnqueuedAt`, `afterEnqueuedAt`, `beforeStartedAt`, `afterStartedAt`, `beforeFinishedAt`, `afterFinishedAt`.",
                 "code": "missing_task_filters",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#missing_task_filters"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_task_filters"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -445,7 +445,7 @@ async fn cancel_tasks(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "The task uid does not exist.", body = ResponseError, content_type = "application/json", example = json!(
@@ -453,7 +453,7 @@ async fn cancel_tasks(
                 "message": "Task :taskUid not found.",
                 "code": "task_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#task_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#task_not_found"
             }
         ))
     )
@@ -524,7 +524,7 @@ pub struct AllTasks {
 
 /// List tasks
 ///
-/// The `/tasks` route returns information about [asynchronous operations](https://docs.hanzo.ai/index/learn/advanced/asynchronous_operations.html) (indexing, document updates, settings changes, and so on).
+/// The `/tasks` route returns information about [asynchronous operations](https://docs.hanzo.ai/docs/search) (indexing, document updates, settings changes, and so on).
 ///
 /// Tasks are returned in descending order of uid by default, so the most recently created or updated tasks appear first. Results are paginated and can be filtered using query parameters such as `indexUids`, `statuses`, `types`, and date ranges.
 #[routes::path(
@@ -559,7 +559,7 @@ pub struct AllTasks {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
     )
@@ -590,7 +590,7 @@ async fn get_tasks(
 
 /// Get task
 ///
-/// Retrieve a single [task](https://docs.hanzo.ai/index/learn/async/asynchronous_operations) by its uid.
+/// Retrieve a single [task](https://docs.hanzo.ai/docs/search) by its uid.
 #[routes::path(
     security(("Bearer" = ["tasks.get", "tasks.*", "*"])),
     params(("task_id" = u32, format = UInt32, example = 0, description = "The task identifier.", nullable = false)),
@@ -615,7 +615,7 @@ async fn get_tasks(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "The task uid does not exist.", body = ResponseError, content_type = "application/json", example = json!(
@@ -623,7 +623,7 @@ async fn get_tasks(
                 "message": "Task :taskUid not found.",
                 "code": "task_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#task_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#task_not_found"
             }
         ))
     )
@@ -655,7 +655,7 @@ async fn get_task(
 
 /// Get task's document payload
 ///
-/// Retrieve the document payload that was sent with this [task](https://docs.hanzo.ai/index/learn/async/asynchronous_operations).
+/// Retrieve the document payload that was sent with this [task](https://docs.hanzo.ai/docs/search).
 /// Only available for document-related tasks that are enqueued or processing.
 #[routes::path(
     security(("Bearer" = ["tasks.get", "tasks.*", "*"])),
@@ -667,7 +667,7 @@ async fn get_task(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "The task uid does not exist.", body = ResponseError, content_type = "application/json", example = json!(
@@ -675,7 +675,7 @@ async fn get_task(
                 "message": "Task :taskUid not found.",
                 "code": "task_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#task_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#task_not_found"
             }
         ))
     )

@@ -30,7 +30,7 @@ async fn error_feature() {
       "message": "Performing a remote federated search requires enabling the `network` experimental feature. See https://github.com/orgs/meilisearch/discussions/805",
       "code": "feature_not_enabled",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
+      "link": "https://docs.hanzo.ai/docs/errors#feature_not_enabled"
     }
     "###);
 
@@ -52,7 +52,7 @@ async fn error_feature() {
       "message": "Using `federationOptions.queryPosition` requires enabling the `network` experimental feature. See https://github.com/orgs/meilisearch/discussions/805",
       "code": "feature_not_enabled",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
+      "link": "https://docs.hanzo.ai/docs/errors#feature_not_enabled"
     }
     "###);
 }
@@ -79,7 +79,7 @@ async fn error_params() {
       "message": "Invalid value type at `.queries[0].federationOptions.remote`: expected a string, but found a positive integer: `42`",
       "code": "invalid_multi_search_remote",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_remote"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_multi_search_remote"
     }
     "###);
 
@@ -101,7 +101,7 @@ async fn error_params() {
       "message": "Invalid value type at `.queries[0].federationOptions.queryPosition`: expected a positive integer, but found a string: `\"toto\"`",
       "code": "invalid_multi_search_query_position",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_query_position"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_multi_search_query_position"
     }
     "###);
 }
@@ -2456,7 +2456,7 @@ async fn error_unregistered_remote() {
       "message": "Invalid `queries[2].federation_options.remote`: remote `ms2` is not registered",
       "code": "invalid_multi_search_remote",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_remote"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_multi_search_remote"
     }
     "###);
     let (response, _status_code) = ms1.multi_search(request.clone()).await;
@@ -2466,7 +2466,7 @@ async fn error_unregistered_remote() {
       "message": "Invalid `queries[2].federation_options.remote`: remote `ms2` is not registered",
       "code": "invalid_multi_search_remote",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_multi_search_remote"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_multi_search_remote"
     }
     "###);
 }
@@ -2604,7 +2604,7 @@ async fn error_no_weighted_score() {
           "message": "remote hit does not contain `._federation.weightedScoreValues`\n  - hint: check that the remote instance runs the same version",
           "code": "remote_bad_response",
           "type": "system",
-          "link": "https://docs.hanzo.ai/errors#remote_bad_response"
+          "link": "https://docs.hanzo.ai/docs/errors#remote_bad_response"
         }
       }
     }
@@ -2748,7 +2748,7 @@ async fn error_bad_response() {
           "message": "could not parse response from the remote host as a federated search response:\n  - response from remote: <html>Returning an HTML page</html>\n  - hint: check that the remote instance runs the same version",
           "code": "remote_bad_response",
           "type": "system",
-          "link": "https://docs.hanzo.ai/errors#remote_bad_response"
+          "link": "https://docs.hanzo.ai/docs/errors#remote_bad_response"
         }
       }
     }
@@ -2882,10 +2882,10 @@ async fn error_bad_request() {
       "requestUid": "[uuid]",
       "remoteErrors": {
         "ms1": {
-          "message": "remote host responded with code 400:\n  - response from remote: {\"message\":\"Inside `.queries[1]`: Index `nottest` not found.\",\"code\":\"index_not_found\",\"type\":\"invalid_request\",\"link\":\"https://docs.hanzo.ai/errors#index_not_found\"}\n  - hint: check that the remote instance has the correct index configuration for that request\n  - hint: check that the `network` experimental feature is enabled on the remote instance",
+          "message": "remote host responded with code 400:\n  - response from remote: {\"message\":\"Inside `.queries[1]`: Index `nottest` not found.\",\"code\":\"index_not_found\",\"type\":\"invalid_request\",\"link\":\"https://docs.hanzo.ai/docs/errors#index_not_found\"}\n  - hint: check that the remote instance has the correct index configuration for that request\n  - hint: check that the `network` experimental feature is enabled on the remote instance",
           "code": "remote_bad_request",
           "type": "invalid_request",
-          "link": "https://docs.hanzo.ai/errors#remote_bad_request"
+          "link": "https://docs.hanzo.ai/docs/errors#remote_bad_request"
         }
       }
     }
@@ -3030,10 +3030,10 @@ async fn error_bad_request_facets_by_index() {
       "requestUid": "[uuid]",
       "remoteErrors": {
         "ms1": {
-          "message": "remote host responded with code 400:\n  - response from remote: {\"message\":\"Inside `.federation.facetsByIndex.test0`: Index `test0` not found.\\n - Note: index `test0` is not used in queries\",\"code\":\"index_not_found\",\"type\":\"invalid_request\",\"link\":\"https://docs.hanzo.ai/errors#index_not_found\"}\n  - hint: check that the remote instance has the correct index configuration for that request\n  - hint: check that the `network` experimental feature is enabled on the remote instance",
+          "message": "remote host responded with code 400:\n  - response from remote: {\"message\":\"Inside `.federation.facetsByIndex.test0`: Index `test0` not found.\\n - Note: index `test0` is not used in queries\",\"code\":\"index_not_found\",\"type\":\"invalid_request\",\"link\":\"https://docs.hanzo.ai/docs/errors#index_not_found\"}\n  - hint: check that the remote instance has the correct index configuration for that request\n  - hint: check that the `network` experimental feature is enabled on the remote instance",
           "code": "remote_bad_request",
           "type": "invalid_request",
-          "link": "https://docs.hanzo.ai/errors#remote_bad_request"
+          "link": "https://docs.hanzo.ai/docs/errors#remote_bad_request"
         }
       }
     }
@@ -3186,10 +3186,10 @@ async fn error_bad_request_facets_by_index_facet() {
       "requestUid": "[uuid]",
       "remoteErrors": {
         "ms1": {
-          "message": "remote host responded with code 400:\n  - response from remote: {\"message\":\"Inside `.federation.facetsByIndex.test`: Invalid facet distribution: Attribute `id` is not filterable. This index does not have configured filterable attributes.\\n - Note: index `test` used in `.queries[1]`\",\"code\":\"invalid_multi_search_facets\",\"type\":\"invalid_request\",\"link\":\"https://docs.hanzo.ai/errors#invalid_multi_search_facets\"}\n  - hint: check that the remote instance has the correct index configuration for that request\n  - hint: check that the `network` experimental feature is enabled on the remote instance",
+          "message": "remote host responded with code 400:\n  - response from remote: {\"message\":\"Inside `.federation.facetsByIndex.test`: Invalid facet distribution: Attribute `id` is not filterable. This index does not have configured filterable attributes.\\n - Note: index `test` used in `.queries[1]`\",\"code\":\"invalid_multi_search_facets\",\"type\":\"invalid_request\",\"link\":\"https://docs.hanzo.ai/docs/errors#invalid_multi_search_facets\"}\n  - hint: check that the remote instance has the correct index configuration for that request\n  - hint: check that the `network` experimental feature is enabled on the remote instance",
           "code": "remote_bad_request",
           "type": "invalid_request",
-          "link": "https://docs.hanzo.ai/errors#remote_bad_request"
+          "link": "https://docs.hanzo.ai/docs/errors#remote_bad_request"
         }
       }
     }
@@ -3343,7 +3343,7 @@ async fn error_remote_does_not_answer() {
           "message": "error sending request",
           "code": "remote_could_not_send_request",
           "type": "system",
-          "link": "https://docs.hanzo.ai/errors#remote_could_not_send_request"
+          "link": "https://docs.hanzo.ai/docs/errors#remote_could_not_send_request"
         }
       }
     }
@@ -3393,7 +3393,7 @@ async fn error_remote_does_not_answer() {
           "message": "error sending request",
           "code": "remote_could_not_send_request",
           "type": "system",
-          "link": "https://docs.hanzo.ai/errors#remote_could_not_send_request"
+          "link": "https://docs.hanzo.ai/docs/errors#remote_could_not_send_request"
         }
       }
     }
@@ -3532,7 +3532,7 @@ async fn error_remote_404() {
           "message": "remote host responded with code 404:\n  - response from remote: null\n  - hint: check that the remote instance has the correct index configuration for that request\n  - hint: check that the `network` experimental feature is enabled on the remote instance",
           "code": "remote_bad_request",
           "type": "invalid_request",
-          "link": "https://docs.hanzo.ai/errors#remote_bad_request"
+          "link": "https://docs.hanzo.ai/docs/errors#remote_bad_request"
         }
       }
     }
@@ -3747,13 +3747,13 @@ async fn error_remote_sharding_auth() {
           "message": "could not authenticate against the remote host\n  - hint: check that the remote instance was registered with a valid API key having the `search` action",
           "code": "remote_invalid_api_key",
           "type": "auth",
-          "link": "https://docs.hanzo.ai/errors#remote_invalid_api_key"
+          "link": "https://docs.hanzo.ai/docs/errors#remote_invalid_api_key"
         },
         "ms1-nottest": {
           "message": "could not authenticate against the remote host\n  - hint: check that the remote instance was registered with a valid API key having the `search` action",
           "code": "remote_invalid_api_key",
           "type": "auth",
-          "link": "https://docs.hanzo.ai/errors#remote_invalid_api_key"
+          "link": "https://docs.hanzo.ai/docs/errors#remote_invalid_api_key"
         }
       }
     }
@@ -4065,10 +4065,10 @@ async fn error_remote_500() {
       "requestUid": "[uuid]",
       "remoteErrors": {
         "ms1": {
-          "message": "remote host responded with code 500:\n  - response from remote: {\"error\":\"provoked error\",\"code\":\"test_error\",\"link\":\"https://docs.hanzo.ai/errors#test_error\"}",
+          "message": "remote host responded with code 500:\n  - response from remote: {\"error\":\"provoked error\",\"code\":\"test_error\",\"link\":\"https://docs.hanzo.ai/docs/errors#test_error\"}",
           "code": "remote_remote_error",
           "type": "system",
-          "link": "https://docs.hanzo.ai/errors#remote_remote_error"
+          "link": "https://docs.hanzo.ai/docs/errors#remote_remote_error"
         }
       }
     }
@@ -4441,7 +4441,7 @@ async fn error_remote_timeout() {
           "message": "remote host did not answer before the deadline",
           "code": "remote_timeout",
           "type": "system",
-          "link": "https://docs.hanzo.ai/errors#remote_timeout"
+          "link": "https://docs.hanzo.ai/docs/errors#remote_timeout"
         }
       }
     }
@@ -4605,7 +4605,7 @@ fn fail(override_response_body: Option<&str>) -> ResponseTemplate {
     if let Some(override_response_body) = override_response_body {
         response.set_body_string(override_response_body)
     } else {
-        response.set_body_json(json!({"error": "provoked error", "code": "test_error", "link": "https://docs.hanzo.ai/errors#test_error"}))
+        response.set_body_json(json!({"error": "provoked error", "code": "test_error", "link": "https://docs.hanzo.ai/docs/errors#test_error"}))
     }
 }
 
@@ -5973,7 +5973,7 @@ async fn sharding_not_enterprise() {
       "message": "Hanzo Index Enterprise Edition is required to set `network.leader`",
       "code": "requires_enterprise_edition",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#requires_enterprise_edition"
+      "link": "https://docs.hanzo.ai/docs/errors#requires_enterprise_edition"
     }
     "###);
 }

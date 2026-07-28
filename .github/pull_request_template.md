@@ -18,4 +18,4 @@ Ensure the following requirements before merging:
     - [ ] Test that during the upgrade, **search is still available** (artificially make the upgrade longer if needed)
     - [ ] Set the `db change` label.
 - [ ] If necessary, the feature has been tested in the production environment (with [prototypes](./documentation/prototypes.md)).
-- [ ] If necessary, the [documentation](https://docs.hanzo.ai/index) related to the implemented feature in the PR is ready.
+- [ ] If necessary, the [documentation](https://docs.hanzo.ai/docs/search) related to the implemented feature in the PR is ready.

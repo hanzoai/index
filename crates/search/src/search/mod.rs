@@ -73,7 +73,7 @@ pub const DEFAULT_HIGHLIGHT_POST_TAG: fn() -> String = || "</em>".to_string();
 pub const DEFAULT_SEMANTIC_RATIO: fn() -> SemanticRatio = || SemanticRatio(0.5);
 pub const INCLUDE_METADATA_HEADER: &str = "Index-Include-Metadata";
 
-/// Configuration for [personalized search](https://docs.hanzo.ai/index/learn/personalization/making_personalized_search_queries) results.
+/// Configuration for [personalized search](https://docs.hanzo.ai/docs/search) results.
 ///
 /// When enabled, results are tailored to the user profile described in `userContext`.
 #[derive(Clone, Default, PartialEq, Deserr, ToSchema, Debug)]
@@ -95,11 +95,11 @@ pub struct SearchQuery {
     ///
     /// Hanzo Index returns documents that match this query.
     ///
-    /// The query supports [prefix search](https://docs.hanzo.ai/index/learn/engine/prefix) and [typo tolerance](https://docs.hanzo.ai/index/learn/relevancy/typo_tolerance_settings).
+    /// The query supports [prefix search](https://docs.hanzo.ai/docs/search) and [typo tolerance](https://docs.hanzo.ai/docs/search).
     ///
     /// Hanzo Index only considers the first ten words; terms are normalized (lowercase, accents ignored).
     ///
-    /// Omit or leave empty for a placeholder search: no query terms are applied, so Hanzo Index returns all searchable documents in the index, ordered by [ranking rules](https://docs.hanzo.ai/index/learn/relevancy/ranking_rules).
+    /// Omit or leave empty for a placeholder search: no query terms are applied, so Hanzo Index returns all searchable documents in the index, ordered by [ranking rules](https://docs.hanzo.ai/docs/search).
     ///
     /// Enclose terms in double quotes (`"`) for phrase search: only documents containing that exact sequence of words are returned (e.g. `"Winter Feast"`).
     ///
@@ -109,7 +109,7 @@ pub struct SearchQuery {
     pub q: Option<String>,
     /// Number of documents to skip at the start of the results.
     ///
-    /// Use together with `limit` for [pagination](https://docs.hanzo.ai/index/guides/front_end/pagination) (e.g. offset=20 and limit=20 returns results 21–40).
+    /// Use together with `limit` for [pagination](https://docs.hanzo.ai/docs/search) (e.g. offset=20 and limit=20 returns results 21–40).
     ///
     /// This parameter is ignored when `page` or `hitsPerPage` is set; in that case the response includes `totalHits` and `totalPages` instead of `estimatedTotalHits`.
     #[deserr(default = DEFAULT_SEARCH_OFFSET(), error = DeserrJsonError<InvalidSearchOffset>)]
@@ -117,9 +117,9 @@ pub struct SearchQuery {
     pub offset: usize,
     /// Maximum number of documents to return in the response.
     ///
-    /// Use with `offset` for [pagination](https://docs.hanzo.ai/index/guides/front_end/pagination).
+    /// Use with `offset` for [pagination](https://docs.hanzo.ai/docs/search).
     ///
-    /// This parameter is ignored when `page` or `hitsPerPage` is set. The value cannot exceed the index [maxTotalHits](https://docs.hanzo.ai/index/reference/api/settings/update-pagination#body-max-total-hits-one-of-0) setting.
+    /// This parameter is ignored when `page` or `hitsPerPage` is set. The value cannot exceed the index [maxTotalHits](https://docs.hanzo.ai/docs/search) setting.
     #[deserr(default = DEFAULT_SEARCH_LIMIT(), error = DeserrJsonError<InvalidSearchLimit>)]
     #[schema(required = false, default = DEFAULT_SEARCH_LIMIT)]
     pub limit: usize,
@@ -133,7 +133,7 @@ pub struct SearchQuery {
     #[schema(required = false)]
     #[deserr(default, error = DeserrJsonError<InvalidSearchPage>)]
     pub page: Option<usize>,
-    /// Maximum number of documents per page for [pagination](https://docs.hanzo.ai/index/guides/front_end/pagination).
+    /// Maximum number of documents per page for [pagination](https://docs.hanzo.ai/docs/search).
     ///
     /// This value determines `totalPages`; use it together with `page`.
     ///
@@ -145,9 +145,9 @@ pub struct SearchQuery {
     pub hits_per_page: Option<usize>,
     /// List of attributes to include in each returned document.
     ///
-    /// Use `["*"]` to return all attributes; if not set, the index [displayed attributes](https://docs.hanzo.ai/index/learn/relevancy/displayed_searchable_attributes) list is used.
+    /// Use `["*"]` to return all attributes; if not set, the index [displayed attributes](https://docs.hanzo.ai/docs/search) list is used.
     ///
-    /// Attributes that are not in [displayedAttributes](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-displayed-attributes-one-of-0) are omitted from the response.
+    /// Attributes that are not in [displayedAttributes](https://docs.hanzo.ai/docs/search) are omitted from the response.
     #[schema(required = false)]
     #[deserr(default, error = DeserrJsonError<InvalidSearchAttributesToRetrieve>)]
     pub attributes_to_retrieve: Option<BTreeSet<String>>,
@@ -167,7 +167,7 @@ pub struct SearchQuery {
     ///
     /// This parameter only applies when `attributesToCrop` is set.
     ///
-    /// Both query terms and [stop words](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-stop-words-one-of-0) count toward this length.
+    /// Both query terms and [stop words](https://docs.hanzo.ai/docs/search) count toward this length.
     #[deserr(error = DeserrJsonError<InvalidSearchCropLength>, default = DEFAULT_CROP_LENGTH())]
     #[schema(required = false, default = DEFAULT_CROP_LENGTH)]
     pub crop_length: usize,
@@ -187,7 +187,7 @@ pub struct SearchQuery {
     ///
     /// By default, matches are wrapped in `<em>` and `</em>`; you can override this with `highlightPreTag` and `highlightPostTag`.
     ///
-    /// Highlighting also applies to [synonyms](https://docs.hanzo.ai/index/learn/relevancy/synonyms) and [stop words](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-stop-words-one-of-0).
+    /// Highlighting also applies to [synonyms](https://docs.hanzo.ai/docs/search) and [stop words](https://docs.hanzo.ai/docs/search).
     ///
     /// Supported value types are string, number, array, and object.
     #[schema(required = false)]
@@ -215,35 +215,35 @@ pub struct SearchQuery {
     #[schema(required = false)]
     #[deserr(default, error = DeserrJsonError<InvalidSearchShowMatchesPosition>)]
     pub show_matches_position: bool,
-    /// A [filter](https://docs.hanzo.ai/index/learn/filtering_and_sorting/filter_search_results) expression to narrow results.
+    /// A [filter](https://docs.hanzo.ai/docs/search) expression to narrow results.
     ///
-    /// All attributes used in the expression must be in [filterableAttributes](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-filterable-attributes-one-of-0).
+    /// All attributes used in the expression must be in [filterableAttributes](https://docs.hanzo.ai/docs/search).
     ///
     /// You can pass a string (e.g. `"(genres = horror OR genres = mystery) AND director = 'Jordan Peele'"`) or an array (e.g. `[["genres = horror", "genres = mystery"], "director = 'Jordan Peele'"]`).
     ///
-    /// For [geo search](https://docs.hanzo.ai/index/learn/filtering_and_sorting/geosearch), use `_geoRadius(lat, lng, distance_in_meters)`, `_geoBoundingBox([lat,lng],[lat,lng])`, or `_geoPolygon([lat,lng], ...)` (GeoJSON only for polygon).
+    /// For [geo search](https://docs.hanzo.ai/docs/search), use `_geoRadius(lat, lng, distance_in_meters)`, `_geoBoundingBox([lat,lng],[lat,lng])`, or `_geoPolygon([lat,lng], ...)` (GeoJSON only for polygon).
     #[schema(required = false)]
     #[deserr(default, error = DeserrJsonError<InvalidSearchFilter>)]
     pub filter: Option<Value>,
     /// Sort results by one or more attributes and their order.
     ///
-    /// Use the format `["attribute:asc", "attribute:desc"]`; only attributes in [sortableAttributes](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-sortable-attributes-one-of-0) can be used.
+    /// Use the format `["attribute:asc", "attribute:desc"]`; only attributes in [sortableAttributes](https://docs.hanzo.ai/docs/search) can be used.
     ///
-    /// For [geo search](https://docs.hanzo.ai/index/learn/filtering_and_sorting/geosearch), use `_geoPoint(lat,lng):asc` or `:desc`; the response then includes `_geoDistance` in meters.
+    /// For [geo search](https://docs.hanzo.ai/docs/search), use `_geoPoint(lat,lng):asc` or `:desc`; the response then includes `_geoDistance` in meters.
     ///
     /// The first attribute in the list has precedence.
     ///
-    /// See [sorting search results](https://docs.hanzo.ai/index/learn/filtering_and_sorting/sort_search_results).
+    /// See [sorting search results](https://docs.hanzo.ai/docs/search).
     #[schema(required = false)]
     #[deserr(default, error = DeserrJsonError<InvalidSearchSort>)]
     pub sort: Option<Vec<String>>,
     /// Return only one document per distinct value of the given attribute (e.g. deduplicate by product_id).
     ///
-    /// The attribute must be in [filterableAttributes](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-filterable-attributes-one-of-0).
+    /// The attribute must be in [filterableAttributes](https://docs.hanzo.ai/docs/search).
     ///
-    /// This overrides the index [distinctAttribute](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-distinct-attribute-one-of-0) setting for this request.
+    /// This overrides the index [distinctAttribute](https://docs.hanzo.ai/docs/search) setting for this request.
     ///
-    /// See [distinct attribute](https://docs.hanzo.ai/index/learn/relevancy/distinct_attribute).
+    /// See [distinct attribute](https://docs.hanzo.ai/docs/search).
     #[schema(required = false)]
     #[deserr(default, error = DeserrJsonError<InvalidSearchDistinct>)]
     pub distinct: Option<String>,
@@ -251,11 +251,11 @@ pub struct SearchQuery {
     ///
     /// The response includes `facetDistribution` and, for numeric facets, `facetStats` (min/max).
     ///
-    /// Use `["*"]` to request counts for all [filterableAttributes](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-filterable-attributes-one-of-0).
+    /// Use `["*"]` to request counts for all [filterableAttributes](https://docs.hanzo.ai/docs/search).
     ///
-    /// The number of values returned per facet is limited by the index [maxValuesPerFacet](https://docs.hanzo.ai/index/reference/api/settings/update-faceting#body-max-values-per-facet-one-of-0) setting; attributes not in filterableAttributes are ignored.
+    /// The number of values returned per facet is limited by the index [maxValuesPerFacet](https://docs.hanzo.ai/docs/search) setting; attributes not in filterableAttributes are ignored.
     ///
-    /// More info: [faceting](https://docs.hanzo.ai/index/learn/filtering_and_sorting/search_with_facet_filters).
+    /// More info: [faceting](https://docs.hanzo.ai/docs/search).
     #[schema(required = false)]
     #[deserr(default, error = DeserrJsonError<InvalidSearchFacets>)]
     pub facets: Option<Vec<String>>,
@@ -273,13 +273,13 @@ pub struct SearchQuery {
     pub matching_strategy: MatchingStrategy,
     /// Restrict the search to the listed attributes only.
     ///
-    /// Each attribute must be in the index [searchable attributes](https://docs.hanzo.ai/index/learn/relevancy/displayed_searchable_attributes) list.
+    /// Each attribute must be in the index [searchable attributes](https://docs.hanzo.ai/docs/search) list.
     ///
     /// The order of attributes in this parameter does not affect relevancy.
     #[schema(required = false)]
     #[deserr(default, error = DeserrJsonError<InvalidSearchAttributesToSearchOn>)]
     pub attributes_to_search_on: Option<Vec<String>>,
-    /// Exclude from the results any document whose [ranking score](https://docs.hanzo.ai/index/learn/relevancy/ranking_score) is below this value (between 0.0 and 1.0).
+    /// Exclude from the results any document whose [ranking score](https://docs.hanzo.ai/docs/search) is below this value (between 0.0 and 1.0).
     ///
     /// Excluded hits do not count toward `estimatedTotalHits`, `totalHits`, or facet distribution.
     ///
@@ -289,15 +289,15 @@ pub struct SearchQuery {
     pub ranking_score_threshold: Option<RankingScoreThreshold>,
     /// Explicitly specify the language(s) of the query.
     ///
-    /// Pass an array of [supported ISO-639 locales](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-localized-attributes-one-of-0).
+    /// Pass an array of [supported ISO-639 locales](https://docs.hanzo.ai/docs/search).
     ///
     /// This overrides auto-detection; use it when auto-detection is wrong for the query or the documents.
     ///
-    /// See also the [localizedAttributes](https://docs.hanzo.ai/index/reference/api/settings/list-all-settings#response-localized-attributes-one-of-0) settings and [Language](https://docs.hanzo.ai/index/learn/resources/language).
+    /// See also the [localizedAttributes](https://docs.hanzo.ai/docs/search) settings and [Language](https://docs.hanzo.ai/docs/search).
     #[schema(required = false)]
     #[deserr(default, error = DeserrJsonError<InvalidSearchLocales>)]
     pub locales: Option<Vec<Locale>>,
-    /// [Hybrid search](https://docs.hanzo.ai/index/learn/ai_powered_search/getting_started_with_ai_search): combines keyword and semantic search.
+    /// [Hybrid search](https://docs.hanzo.ai/docs/search): combines keyword and semantic search.
     ///
     /// The `embedder` field (required) must match an embedder name in index settings.
     ///
@@ -307,11 +307,11 @@ pub struct SearchQuery {
     #[deserr(default, error = DeserrJsonError<InvalidSearchHybridQuery>)]
     #[schema(required = false, value_type = Option<HybridQuery>)]
     pub hybrid: Option<HybridQuery>,
-    /// Custom query vector for [vector or hybrid search](https://docs.hanzo.ai/index/learn/ai_powered_search/getting_started_with_ai_search).
+    /// Custom query vector for [vector or hybrid search](https://docs.hanzo.ai/docs/search).
     ///
     /// The array length must match the dimensions of the embedder configured in the index.
     ///
-    /// This parameter is mandatory when using a [user-provided embedder](https://docs.hanzo.ai/index/learn/ai_powered_search/search_with_user_provided_embeddings).
+    /// This parameter is mandatory when using a [user-provided embedder](https://docs.hanzo.ai/docs/search).
     ///
     /// When used with `hybrid`, documents are ranked by vector similarity.
     ///
@@ -321,11 +321,11 @@ pub struct SearchQuery {
     pub vector: Option<Vec<f32>>,
     /// When true, the response includes document and query embeddings in each hit's `_vectors` field.
     ///
-    /// The `_vectors` field must be listed in [displayedAttributes](https://docs.hanzo.ai/index/reference/api/settings/update-all-settings#body-displayed-attributes-one-of-0) for it to appear.
+    /// The `_vectors` field must be listed in [displayedAttributes](https://docs.hanzo.ai/docs/search) for it to appear.
     #[schema(required = false)]
     #[deserr(default, error = DeserrJsonError<InvalidSearchRetrieveVectors>)]
     pub retrieve_vectors: bool,
-    /// For [multimodal search](https://docs.hanzo.ai/index/learn/ai_powered_search/image_search_with_multimodal_embeddings): provide data (e.g. image, text) that populates a single search fragment configured in index settings.
+    /// For [multimodal search](https://docs.hanzo.ai/docs/search): provide data (e.g. image, text) that populates a single search fragment configured in index settings.
     ///
     /// A search fragment is a named slot that defines which media or fields are sent to the embedder.
     ///
@@ -335,11 +335,11 @@ pub struct SearchQuery {
     #[schema(required = false)]
     #[deserr(default, error = DeserrJsonError<InvalidSearchMedia>)]
     pub media: Option<serde_json::Value>,
-    /// [Personalized search](https://docs.hanzo.ai/index/learn/personalization/making_personalized_search_queries): provide an object with a `userContext` field (a string describing the user, e.g. preferences or behavior).
+    /// [Personalized search](https://docs.hanzo.ai/docs/search): provide an object with a `userContext` field (a string describing the user, e.g. preferences or behavior).
     ///
     /// Results are then tailored to that profile.
     ///
-    /// Personalization must be [enabled](https://docs.hanzo.ai/index/reference/api/experimental-features/configure-experimental-features) (e.g. Cohere key for self-hosted instances).
+    /// Personalization must be [enabled](https://docs.hanzo.ai/docs/search) (e.g. Cohere key for self-hosted instances).
     #[deserr(default, error = DeserrJsonError<InvalidSearchPersonalize>, default)]
     #[schema(required = false, value_type = Option<Personalize>)]
     pub personalize: Option<Personalize>,
@@ -364,13 +364,13 @@ pub struct SearchQuery {
     pub use_network: Option<bool>,
     /// When true, each document includes a `_rankingScore` between 0.0 and 1.0; a higher value means the document is more relevant.
     ///
-    /// See [ranking score](https://docs.hanzo.ai/index/learn/relevancy/ranking_score).
+    /// See [ranking score](https://docs.hanzo.ai/docs/search).
     ///
     /// The `sort` ranking rule does not affect the value of `_rankingScore`.
     #[schema(required = false)]
     #[deserr(default, error = DeserrJsonError<InvalidSearchShowRankingScore>)]
     pub show_ranking_score: bool,
-    /// When true, each document includes `_rankingScoreDetails`, which breaks down the score contribution of each [ranking rule](https://docs.hanzo.ai/index/learn/relevancy/ranking_rules).
+    /// When true, each document includes `_rankingScoreDetails`, which breaks down the score contribution of each [ranking rule](https://docs.hanzo.ai/docs/search).
     ///
     /// Useful for debugging relevancy.
     #[schema(required = false)]
@@ -1310,7 +1310,7 @@ pub struct SearchHit {
     #[serde(default, rename = "_matchesPosition", skip_serializing_if = "Option::is_none")]
     #[schema(value_type = Option<BTreeMap<String, Vec<MatchBounds>>>)]
     pub matches_position: Option<MatchesPosition>,
-    /// Global [ranking score](https://docs.hanzo.ai/index/learn/relevancy/ranking_score) from 0.0 to 1.0.
+    /// Global [ranking score](https://docs.hanzo.ai/docs/search) from 0.0 to 1.0.
     ///
     /// Present when `showRankingScore` was true.
     #[serde(default, rename = "_rankingScore", skip_serializing_if = "Option::is_none")]
@@ -1393,7 +1393,7 @@ pub struct SearchMetadata {
     pub query_uid: Uuid,
     /// UID of the index that was searched.
     pub index_uid: String,
-    /// [Primary key](https://docs.hanzo.ai/index/learn/getting_started/primary_key) of the index.
+    /// [Primary key](https://docs.hanzo.ai/docs/search) of the index.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub primary_key: Option<String>,
     /// Remote that processed the query (federated search only).

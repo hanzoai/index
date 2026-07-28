@@ -316,7 +316,7 @@ async fn search_with_pattern_filter_settings_scenario_1() {
                   "message": "Index `[uuid]`: Filter operator `>` is not allowed for the attribute `doggos.age`.\n  - Note: allowed operators: OR, AND, NOT, =, !=, IN, IS EMPTY, IS NULL, EXISTS.\n  - Note: field `doggos.age` matched rule #0 in `filterableAttributes`\n  - Hint: enable comparison in rule #0 by modifying the features.filter object\n  - Hint: prepend another rule matching `doggos.age` with appropriate filter features before rule #0",
                   "code": "invalid_search_filter",
                   "type": "invalid_request",
-                  "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+                  "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
                 }
                 "###);
             },
@@ -460,7 +460,7 @@ async fn search_with_pattern_filter_settings_scenario_1() {
                   "message": "Index `[uuid]`: Filter operator `=` is not allowed for the attribute `cattos`.\n  - Note: allowed operators: OR, AND, NOT, <, >, <=, >=, TO, IS EMPTY, IS NULL, EXISTS.\n  - Note: field `cattos` matched rule #0 in `filterableAttributes`\n  - Hint: enable equality in rule #0 by modifying the features.filter object\n  - Hint: prepend another rule matching `cattos` with appropriate filter features before rule #0",
                   "code": "invalid_search_filter",
                   "type": "invalid_request",
-                  "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+                  "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
                 }
                 "###);
             },
@@ -591,7 +591,7 @@ async fn search_with_pattern_filter_settings_scenario_1() {
                   "message": "Index `[uuid]`: Filter operator `>` is not allowed for the attribute `doggos.age`.\n  - Note: allowed operators: OR, AND, NOT, =, !=, IN, IS EMPTY, IS NULL, EXISTS.\n  - Note: field `doggos.age` matched rule #0 in `filterableAttributes`\n  - Hint: enable comparison in rule #0 by modifying the features.filter object\n  - Hint: prepend another rule matching `doggos.age` with appropriate filter features before rule #0",
                   "code": "invalid_search_filter",
                   "type": "invalid_request",
-                  "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+                  "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
                 }
                 "###);
             },
@@ -762,7 +762,7 @@ async fn test_filterable_attributes_priority() {
               "message": "Index `[uuid]`: Attribute `doggos.age` is not filterable. Available filterable attribute patterns are: `doggos.*`.\n1:11 doggos.age > 2",
               "code": "invalid_search_filter",
               "type": "invalid_request",
-              "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+              "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
             }
             "###);
         },
@@ -788,7 +788,7 @@ async fn test_filterable_attributes_priority() {
               "message": "Index `[uuid]`: Attribute `doggos` is not filterable. Available filterable attribute patterns are: `doggos.*`.\n1:7 doggos EXISTS",
               "code": "invalid_search_filter",
               "type": "invalid_request",
-              "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+              "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
             }
             "###);
         },
@@ -847,7 +847,7 @@ async fn vector_filter_missing_fragment() {
       "message": "The vector filter is missing a fragment name.\n24:31 _vectors.rest.fragments EXISTS",
       "code": "invalid_search_filter",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
     }
     "#);
 }
@@ -867,7 +867,7 @@ async fn vector_filter_nonexistent_embedder() {
       "message": "Index `[uuid]`: The embedder `other` does not exist. Available embedders are: `rest`.\n10:15 _vectors.other EXISTS",
       "code": "invalid_search_filter",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
     }
     "#);
 }
@@ -889,7 +889,7 @@ async fn vector_filter_all_embedders_user_provided() {
       "message": "Index `[uuid]`: The embedder `userProvided` does not exist. Available embedders are: `rest`.\n10:22 _vectors.userProvided EXISTS",
       "code": "invalid_search_filter",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
     }
     "#);
 }
@@ -1030,7 +1030,7 @@ async fn vector_filter_non_existant_fragment() {
       "message": "Index `[uuid]`: The fragment `withBred` does not exist on embedder `rest`. Available fragments on this embedder are: `basic`, `withBreed`. Did you mean `withBreed`?\n25:33 _vectors.rest.fragments.withBred EXISTS",
       "code": "invalid_search_filter",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_search_filter"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_search_filter"
     }
     "#);
 }
@@ -1131,7 +1131,7 @@ async fn vector_filter_feature_gate() {
       "message": "using a vector filter requires enabling the `multimodal` experimental feature. See https://github.com/orgs/meilisearch/discussions/846\n1:9 _vectors EXISTS",
       "code": "feature_not_enabled",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#feature_not_enabled"
+      "link": "https://docs.hanzo.ai/docs/errors#feature_not_enabled"
     }
     "#);
 }

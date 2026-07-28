@@ -288,7 +288,7 @@ async fn reserved_names() {
       "message": "Webhook `[uuid]` is immutable. The webhook defined from the command line cannot be modified using the API.",
       "code": "immutable_webhook",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#immutable_webhook"
+      "link": "https://docs.hanzo.ai/docs/errors#immutable_webhook"
     }
     "#);
     snapshot!(code, @"400 Bad Request");
@@ -299,7 +299,7 @@ async fn reserved_names() {
       "message": "Webhook `[uuid]` is immutable. The webhook defined from the command line cannot be modified using the API.",
       "code": "immutable_webhook",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#immutable_webhook"
+      "link": "https://docs.hanzo.ai/docs/errors#immutable_webhook"
     }
     "#);
     snapshot!(code, @"400 Bad Request");
@@ -323,7 +323,7 @@ async fn over_limits() {
       "message": "Defining too many webhooks would crush the server. Please limit the number of webhooks to 20. You may use a third-party proxy server to dispatch events to more than 20 endpoints.",
       "code": "invalid_webhooks",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_webhooks"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_webhooks"
     }
     "#);
 
@@ -351,7 +351,7 @@ async fn over_limits() {
       "message": "Too many headers for the webhook `[uuid]`. Please limit the number of headers to 200. Hint: To remove an already defined header set its value to `null`",
       "code": "invalid_webhook_headers",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_webhook_headers"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_webhook_headers"
     }
     "#);
 }
@@ -411,7 +411,7 @@ async fn create_and_patch() {
       "message": "The URL for the webhook `[uuid]` is missing.",
       "code": "invalid_webhook_url",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_webhook_url"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_webhook_url"
     }
     "#);
 
@@ -477,7 +477,7 @@ async fn create_and_patch() {
       "message": "The URL for the webhook `[uuid]` is missing.",
       "code": "invalid_webhook_url",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_webhook_url"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_webhook_url"
     }
     "#);
 }
@@ -494,7 +494,7 @@ async fn invalid_url_and_headers() {
       "message": "Invalid URL `not-a-valid-url`: relative URL without a base",
       "code": "invalid_webhook_url",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_webhook_url"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_webhook_url"
     }
     "#);
 
@@ -511,7 +511,7 @@ async fn invalid_url_and_headers() {
       "message": "Invalid header name `invalid header name`: invalid HTTP header name",
       "code": "invalid_webhook_headers",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_webhook_headers"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_webhook_headers"
     }
     "#);
 
@@ -528,7 +528,7 @@ async fn invalid_url_and_headers() {
       "message": "Invalid header value `authorization`: failed to parse header value",
       "code": "invalid_webhook_headers",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_webhook_headers"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_webhook_headers"
     }
     "#);
 }
@@ -545,7 +545,7 @@ async fn invalid_uuid() {
       "message": "Invalid UUID: invalid character: expected an optional prefix of `urn:uuid:` followed by [0-9a-fA-F-], found `i` at 1",
       "code": "invalid_webhook_uuid",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_webhook_uuid"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_webhook_uuid"
     }
     "#);
 
@@ -558,7 +558,7 @@ async fn invalid_uuid() {
       "message": "Invalid UUID: invalid character: expected an optional prefix of `urn:uuid:` followed by [0-9a-fA-F-], found `i` at 1",
       "code": "invalid_webhook_uuid",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_webhook_uuid"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_webhook_uuid"
     }
     "#);
 
@@ -570,7 +570,7 @@ async fn invalid_uuid() {
       "message": "Invalid UUID: invalid character: expected an optional prefix of `urn:uuid:` followed by [0-9a-fA-F-], found `i` at 1",
       "code": "invalid_webhook_uuid",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_webhook_uuid"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_webhook_uuid"
     }
     "#);
 }
@@ -594,7 +594,7 @@ async fn forbidden_fields() {
       "message": "Immutable field `uuid`: expected one of `url`, `headers`",
       "code": "immutable_webhook_uuid",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#immutable_webhook_uuid"
+      "link": "https://docs.hanzo.ai/docs/errors#immutable_webhook_uuid"
     }
     "#);
 
@@ -612,7 +612,7 @@ async fn forbidden_fields() {
       "message": "Immutable field `isEditable`: expected one of `url`, `headers`",
       "code": "immutable_webhook_is_editable",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#immutable_webhook_is_editable"
+      "link": "https://docs.hanzo.ai/docs/errors#immutable_webhook_is_editable"
     }
     "#);
 
@@ -632,7 +632,7 @@ async fn forbidden_fields() {
       "message": "Immutable field `uuid`: expected one of `url`, `headers`",
       "code": "immutable_webhook_uuid",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#immutable_webhook_uuid"
+      "link": "https://docs.hanzo.ai/docs/errors#immutable_webhook_uuid"
     }
     "#);
 
@@ -652,7 +652,7 @@ async fn forbidden_fields() {
       "message": "Immutable field `isEditable`: expected one of `url`, `headers`",
       "code": "immutable_webhook_is_editable",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#immutable_webhook_is_editable"
+      "link": "https://docs.hanzo.ai/docs/errors#immutable_webhook_is_editable"
     }
     "#);
 }

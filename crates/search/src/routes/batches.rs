@@ -22,14 +22,14 @@ use crate::extractors::authentication::GuardedData;
     ),
     tags((
         name = "Batches",
-        description = "Hanzo Index groups compatible tasks ([asynchronous operations](https://docs.hanzo.ai/index/learn/async/asynchronous_operations)) into batches for efficient processing. For example, multiple document additions to the same index may be batched together. The /batches routes give information about the progress of these batches and let you monitor batch progress and performance.",
+        description = "Hanzo Index groups compatible tasks ([asynchronous operations](https://docs.hanzo.ai/docs/search)) into batches for efficient processing. For example, multiple document additions to the same index may be batched together. The /batches routes give information about the progress of these batches and let you monitor batch progress and performance.",
     )),
 )]
 pub struct BatchesApi;
 
 /// Get batch
 ///
-/// Hanzo Index groups compatible tasks ([asynchronous operations](https://docs.hanzo.ai/index/learn/async/asynchronous_operations)) into batches for efficient processing.
+/// Hanzo Index groups compatible tasks ([asynchronous operations](https://docs.hanzo.ai/docs/search)) into batches for efficient processing.
 ///
 /// For example, multiple document additions to the same index may be batched together. Retrieve a single batch by its unique identifier to monitor its progress and performance.
 #[routes::path(
@@ -69,7 +69,7 @@ pub struct BatchesApi;
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 404, description = "Batch not found.", body = ResponseError, content_type = "application/json", example = json!(
@@ -77,7 +77,7 @@ pub struct BatchesApi;
                 "message": "Batch not found.",
                 "code": "batch_not_found",
                 "type": "invalid_request",
-                "link": "https://docs.hanzo.ai/errors#batch_not_found"
+                "link": "https://docs.hanzo.ai/docs/errors#batch_not_found"
             }
         )),
     )
@@ -126,7 +126,7 @@ pub struct AllBatches {
 
 /// List batches
 ///
-/// Hanzo Index groups compatible tasks ([asynchronous operations](https://docs.hanzo.ai/index/learn/async/asynchronous_operations)) into batches for efficient processing.
+/// Hanzo Index groups compatible tasks ([asynchronous operations](https://docs.hanzo.ai/docs/search)) into batches for efficient processing.
 ///
 /// For example, multiple document additions to the same index may be batched together. List batches to monitor their progress and performance.
 ///
@@ -175,7 +175,7 @@ pub struct AllBatches {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
     )

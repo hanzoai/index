@@ -226,7 +226,7 @@
                 "prod2": {
                   "error": {
                     "code": "remote_could_not_send_request",
-                    "link": "https://docs.hanzo.ai/errors#remote_could_not_send_request",
+                    "link": "https://docs.hanzo.ai/docs/errors#remote_could_not_send_request",
                     "message": "error sending request",
                     "type": "system"
                   }
@@ -234,7 +234,7 @@
                 "prod3": {
                   "error": {
                     "code": "remote_could_not_send_request",
-                    "link": "https://docs.hanzo.ai/errors#remote_could_not_send_request",
+                    "link": "https://docs.hanzo.ai/docs/errors#remote_could_not_send_request",
                     "message": "error sending request",
                     "type": "system"
                   }
@@ -242,7 +242,7 @@
                 "prod4": {
                   "error": {
                     "code": "remote_could_not_send_request",
-                    "link": "https://docs.hanzo.ai/errors#remote_could_not_send_request",
+                    "link": "https://docs.hanzo.ai/docs/errors#remote_could_not_send_request",
                     "message": "error sending request",
                     "type": "system"
                   }
@@ -250,7 +250,7 @@
                 "prod5": {
                   "error": {
                     "code": "remote_could_not_send_request",
-                    "link": "https://docs.hanzo.ai/errors#remote_could_not_send_request",
+                    "link": "https://docs.hanzo.ai/docs/errors#remote_could_not_send_request",
                     "message": "error sending request",
                     "type": "system"
                   }

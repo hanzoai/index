@@ -5,5 +5,5 @@ source: crates/indexsearch/tests/dynamic_search_rules/mod.rs
   "message": "Unknown field `bogusField`: expected one of `description`, `priority`, `active`, `conditions`, `actions`",
   "code": "bad_request",
   "type": "invalid_request",
-  "link": "https://docs.hanzo.ai/errors#bad_request"
+  "link": "https://docs.hanzo.ai/docs/errors#bad_request"
 }

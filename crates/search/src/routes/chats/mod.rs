@@ -78,7 +78,7 @@ pub struct ChatsParam {
               "message": "Chat :workspaceUid not found.",
               "code": "chat_not_found",
               "type": "invalid_request",
-              "link": "https://docs.hanzo.ai/errors#chat_not_found"
+              "link": "https://docs.hanzo.ai/docs/errors#chat_not_found"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -86,7 +86,7 @@ pub struct ChatsParam {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 200, description = "Chat workspace retrieved.", content_type = "application/json", example = json!(
@@ -122,7 +122,7 @@ pub async fn get_chat(
               "message": "Chat :workspaceUid not found.",
               "code": "chat_not_found",
               "type": "invalid_request",
-              "link": "https://docs.hanzo.ai/errors#chat_not_found"
+              "link": "https://docs.hanzo.ai/docs/errors#chat_not_found"
             }
         )),
         (status = 401, description = "The authorization header is missing.", body = ResponseError, content_type = "application/json", example = json!(
@@ -130,7 +130,7 @@ pub async fn get_chat(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 204, description = "Chat workspace deleted."),
@@ -188,7 +188,7 @@ pub struct ChatWorkspaceView {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
         (status = 200, description = "Chat workspaces retrieved.", content_type = "application/json", example = json!(

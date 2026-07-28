@@ -84,7 +84,7 @@ static INVALID_RESPONSE: Lazy<Value> = Lazy::new(|| {
     json!({"message": null,
         "code": "invalid_api_key",
         "type": "auth",
-        "link": "https://docs.hanzo.ai/errors#invalid_api_key"
+        "link": "https://docs.hanzo.ai/docs/errors#invalid_api_key"
     })
 });
 
@@ -92,7 +92,7 @@ static INVALID_METRICS_RESPONSE: Lazy<Value> = Lazy::new(|| {
     json!({"message": "The provided API key is invalid. The API key for the `/metrics` route must allow access to all indexes.",
         "code": "invalid_api_key",
         "type": "auth",
-        "link": "https://docs.hanzo.ai/errors#invalid_api_key"
+        "link": "https://docs.hanzo.ai/docs/errors#invalid_api_key"
     })
 });
 
@@ -742,7 +742,7 @@ async fn error_creating_index_without_action() {
         "message": "Index `test` not found.",
         "code": "index_not_found",
         "type": "invalid_request",
-        "link": "https://docs.hanzo.ai/errors#index_not_found"
+        "link": "https://docs.hanzo.ai/docs/errors#index_not_found"
     });
 
     // try to create a index via add documents route

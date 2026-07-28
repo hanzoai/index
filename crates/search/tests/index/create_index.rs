@@ -191,7 +191,7 @@ async fn error_create_existing_index() {
         "message": msg,
         "code": "index_already_exists",
         "type": "invalid_request",
-        "link":"https://docs.hanzo.ai/errors#index_already_exists"
+        "link":"https://docs.hanzo.ai/docs/errors#index_already_exists"
     });
 
     assert_eq!(response["error"], expected_response);
@@ -209,7 +209,7 @@ async fn error_create_with_invalid_index_uid() {
       "message": "Invalid value at `.uid`: `test test#!` is not a valid index uid. Index uid can be an integer or a string containing only alphanumeric characters, hyphens (-) and underscores (_), and can not be more than 512 bytes.",
       "code": "invalid_index_uid",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#invalid_index_uid"
+      "link": "https://docs.hanzo.ai/docs/errors#invalid_index_uid"
     }
     "###);
 }
@@ -285,7 +285,7 @@ async fn send_task_id() {
       "message": "Received bad task id: 12 should be >= to 26.",
       "code": "bad_request",
       "type": "invalid_request",
-      "link": "https://docs.hanzo.ai/errors#bad_request"
+      "link": "https://docs.hanzo.ai/docs/errors#bad_request"
     }
     "###);
 }

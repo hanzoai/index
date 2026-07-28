@@ -221,7 +221,7 @@
       "expectedStatus": 403,
       "expectedResponse": {
         "code": "invalid_api_key",
-        "link": "https://docs.hanzo.ai/errors#invalid_api_key",
+        "link": "https://docs.hanzo.ai/docs/errors#invalid_api_key",
         "message": "The provided API key is invalid.",
         "type": "auth"
       },

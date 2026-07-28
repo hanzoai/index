@@ -71,7 +71,7 @@ pub struct NetworkApi;
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
     )
@@ -96,7 +96,7 @@ pub struct Remote {
     ///
     /// - If the URL of the remote instance is resolving to a non-global IP, make sure that
     ///   `--experimental-allowed-ip-networks` allows it. For details on how use this parameter,
-    ///   refer to [this documentation](https://docs.hanzo.ai/index/learn/self_hosted/configure_index_at_launch#allow-requests-to-private-networks).
+    ///   refer to [this documentation](https://docs.hanzo.ai/docs/search).
     #[schema(value_type = Option<String>, example = "http://localhost:7700")]
     #[deserr(default, error = DeserrJsonError<InvalidNetworkUrl>)]
     #[serde(default)]
@@ -309,7 +309,7 @@ impl Aggregate for PatchNetworkAnalytics {
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
     )
@@ -339,7 +339,7 @@ async fn patch_network(
                 "message": "The Authorization header is missing. It must use the bearer authorization method.",
                 "code": "missing_authorization_header",
                 "type": "auth",
-                "link": "https://docs.hanzo.ai/errors#missing_authorization_header"
+                "link": "https://docs.hanzo.ai/docs/errors#missing_authorization_header"
             }
         )),
     )

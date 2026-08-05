@@ -35,7 +35,7 @@ In particular, in generated contributions:
 
 1. **You're familiar with [GitHub](https://github.com) and the [Pull Requests (PR)](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests) workflow.**
 2. **You've read the Hanzo Index [documentation](https://docs.hanzo.ai/docs/search).**
-3. **You know about the [Hanzo community on Discord](https://discord.gg/hanzo).**
+3. **You know about the [Hanzo community on Discord](https://discord.gg/CJCyAsm9Vr).**
 
 ## How to Contribute
 

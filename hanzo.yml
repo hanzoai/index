@@ -1,0 +1,27 @@
+# hanzoai/index — the search engine behind ghcr.io/hanzoai/index (Rust
+# workspace: routes, milli, index-scheduler, filter-parser, dump, and the rest).
+#
+# Gate only, no `images:`. .hanzo/workflows/deploy.yml is the sole producer of
+# that image and, since actions-runner-controller was decommissioned, the only
+# other CI this repo has. Two lanes pushing one image name is two builds that
+# can disagree about what `index` is.
+#
+# This gate is strictly cheaper than the failure it prevents. Today a break in
+# milli is discovered by the release image build, after a full release-mode
+# compile; `cargo check` runs the compiler's front end over the same 24 crates —
+# resolution, typeck, borrowck, no codegen — and fails in a fraction of that.
+# --locked so an out-of-date Cargo.lock is a red run rather than a silent
+# re-resolve to versions the image will never contain.
+#
+# The C toolchain is provisioned here because hanzoai/ci installs one only for
+# Go repos (its step is guarded on go.mod), and this workspace does not get past
+# its build scripts without a cc — heed/LMDB compiles C. Guarded, so it is a
+# no-op the moment a runner image bakes it in.
+test:
+  - name: cargo-check
+    run: |
+      set -euo pipefail
+      if ! command -v cc >/dev/null 2>&1; then
+        sudo apt-get update -qq && sudo apt-get install -y -qq build-essential
+      fi
+      cargo check --workspace --locked

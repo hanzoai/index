@@ -6,16 +6,14 @@ Meili SAS.
 
     Project:    Meilisearch
     Source:     https://github.com/meilisearch/meilisearch
-    License:    MIT AND BUSL-1.1
+    License:    MIT
     Copyright:  Copyright (c) 2019-2025 Meili SAS
 
-Meilisearch is dual-licensed:
+Upstream dual-licenses Meilisearch: an MIT core plus an Enterprise Edition
+under the Business Source License 1.1. This repository contains and uses the
+MIT core only. The BUSL-1.1 Licensed Work -- upstream's sharding, networked
+search and S3-streaming snapshot code -- is NOT included in this repository,
+and no BUSL-1.1 terms apply to anything here.
 
-  - The core is licensed under the MIT License; see LICENSE-MIT.
-  - Files marked "Enterprise Edition (EE)" are licensed under the Business
-    Source License 1.1; see LICENSE-EE. BUSL-1.1 is a source-available,
-    non-open-source license. Production use of that Licensed Work requires a
-    commercial license from Meili SAS; its Change License is MIT.
+Upstream copyright and license notices are retained in LICENSE and LICENSE-MIT.
 
-Upstream copyright notices and license terms are retained in LICENSE,
-LICENSE-MIT, and LICENSE-EE.

@@ -16,9 +16,8 @@
 
 Hanzo Index helps you shape a delightful search experience in a snap, offering features that work out of the box to speed up your workflow.
 
-Forked from [hanzoai/index](https://github.com/hanzoai/index) (MIT AND BUSL-1.1).
 
-> **License:** Hanzo Index is distributed under the MIT License (see [`LICENSE-MIT`](./LICENSE-MIT)). This distribution uses **only** the MIT-licensed core; it does **not** include or use the Business Source License 1.1 (BUSL-1.1) Enterprise Edition code ([`LICENSE-EE`](./LICENSE-EE)). See [License](#-license) below.
+> **License:** Hanzo Index is distributed under the MIT License (see [`LICENSE-MIT`](./LICENSE-MIT)). Upstream's Business Source License 1.1 Enterprise Edition code is not included in this repository. See [License](#-license) below.
 
 ## ✨ Features
 - **Hybrid search:** Combine the best of both semantic & full-text search to get the most relevant results
@@ -69,7 +68,7 @@ Hanzo Index is distributed under the [MIT License](./LICENSE-MIT).
 
 This distribution uses **only** the MIT-licensed core search engine: fast and relevant full-text, semantic, or hybrid search, free to use for anyone, including commercial usage.
 
-It does **not** include or use the upstream Business Source License 1.1 (BUSL-1.1) Enterprise Edition code ([`LICENSE-EE`](./LICENSE-EE)) — for example, the BUSL-licensed sharding and S3-streaming snapshot features. Those components are governed by a separate commercial/BUSL-1.1 license held by the upstream project and are not part of this MIT distribution.
+Upstream's Business Source License 1.1 (BUSL-1.1) Enterprise Edition code — the sharding, networked-search and S3-streaming snapshot features — is not included in this repository, is not built, and is not distributed. Nothing here is governed by BUSL-1.1.
 
 ### 📦 Upstream attribution
 

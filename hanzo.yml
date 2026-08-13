@@ -1,17 +1,35 @@
 # hanzoai/index — the search engine behind ghcr.io/hanzoai/index (Rust
 # workspace: routes, milli, index-scheduler, filter-parser, dump, and the rest).
 #
-# Gate only, no `images:`. .hanzo/workflows/deploy.yml is the sole producer of
-# that image and, since actions-runner-controller was decommissioned, the only
-# other CI this repo has. Two lanes pushing one image name is two builds that
-# can disagree about what `index` is.
+# ONE lane: this file and .hanzo/workflows/cicd.yml. The gate below runs, then
+# hanzoai/ci's build.yml builds and publishes the image. It replaces
+# .hanzo/workflows/deploy.yml, a hand-rolled buildx job that tagged a branch
+# build `sha-<sha7>` and nothing else, so this image had no version to pin and
+# the deployment that runs it could only name a commit. Two lanes pushing one
+# image name is two builds that can disagree about what `index` is.
 #
-# This gate is strictly cheaper than the failure it prevents. Today a break in
-# milli is discovered by the release image build, after a full release-mode
-# compile; `cargo check` runs the compiler's front end over the same 24 crates —
-# resolution, typeck, borrowck, no codegen — and fails in a fraction of that.
-# --locked so an out-of-date Cargo.lock is a red run rather than a silent
-# re-resolve to versions the image will never contain.
+# THE VERSION IS NOT TYPED HERE. bin/imgver reads `version` from Cargo.toml's
+# [workspace.package] — the number every crate in this workspace already
+# publishes under, 1.45.2 today — and takes max(it, the highest semver already
+# at the registry) plus a patch. So the series starts where the workspace says
+# it is and moves when a human edits Cargo.toml, which stays the one place this
+# repo states its version.
+#
+# The sha tag changes shape with the lane: `sha-<sha7>-amd64`, what the rest of
+# the fleet publishes, alongside the semver. amd64 only — DOKS schedules no
+# other architecture.
+images:
+  - name: index
+    context: .
+    dockerfile: Dockerfile
+    repo: ghcr.io/hanzoai/index
+
+# This gate is strictly cheaper than the failure it prevents. A break in milli
+# used to surface in the image build, after a full release-mode compile; `cargo
+# check` runs the compiler's front end over the same 24 crates — resolution,
+# typeck, borrowck, no codegen — and fails in a fraction of that, before buildx
+# starts. --locked so an out-of-date Cargo.lock is a red run rather than a
+# silent re-resolve to versions the image will never contain.
 #
 # The C toolchain is provisioned here because hanzoai/ci installs one only for
 # Go repos (its step is guarded on go.mod), and this workspace does not get past

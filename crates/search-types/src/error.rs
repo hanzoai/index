@@ -460,7 +460,7 @@ InvalidIndexFieldsFilterSortable               , InvalidRequest       , BAD_REQU
 InvalidIndexFieldsFilterDistinct               , InvalidRequest       , BAD_REQUEST ;
 InvalidIndexFieldsFilterRankingRule            , InvalidRequest       , BAD_REQUEST ;
 InvalidIndexFieldsFilterFilterable             , InvalidRequest       , BAD_REQUEST ;
-RequiresEnterpriseEdition                      , InvalidRequest       , UNAVAILABLE_FOR_LEGAL_REASONS ;
+FeatureNotSupported                            , InvalidRequest       , NOT_IMPLEMENTED ;
 // Webhooks
 InvalidWebhooks                                , InvalidRequest       , BAD_REQUEST ;
 InvalidWebhookUrl                              , InvalidRequest       , BAD_REQUEST ;

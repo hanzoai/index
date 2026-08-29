@@ -3,7 +3,6 @@
   "name": "movies",
   "binary": {
     "source": "release",
-    "edition": "community",
     "version": "1.12.0"
   },
   "assets": {
@@ -171,7 +170,6 @@
     {
       "binary": {
         "source": "build",
-        "edition": "community",
         "extraCliArgs": [
           "--experimental-dumpless-upgrade"
         ]

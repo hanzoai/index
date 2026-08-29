@@ -6,24 +6,17 @@ use anyhow::Context;
 use cargo_metadata::semver::Version;
 use serde::{Deserialize, Serialize};
 
-use super::Edition;
 use crate::common::assets::{Asset, AssetFormat};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Release {
-    #[serde(default)]
-    pub edition: Edition,
     pub version: Version,
 }
 
 impl Display for Release {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "v{}", self.version)?;
-        match self.edition {
-            Edition::Community => f.write_str(" Community Edition"),
-            Edition::Enterprise => f.write_str(" Enterprise Edition"),
-        }
+        write!(f, "v{}", self.version)
     }
 }
 
@@ -39,14 +32,14 @@ impl Release {
     fn local_filename(&self) -> anyhow::Result<String> {
         let version = &self.version;
         let arch = get_arch()?;
-        let base = self.edition.binary_base();
+        let base = "search";
 
         Ok(format!("{base}-{version}-{arch}"))
     }
 
     fn remote_filename(&self) -> anyhow::Result<String> {
         let arch = get_arch()?;
-        let base = self.edition.binary_base();
+        let base = "search";
 
         Ok(format!("{base}-{arch}"))
     }

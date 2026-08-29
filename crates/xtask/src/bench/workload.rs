@@ -157,9 +157,7 @@ async fn execute_run(
         },
         None => Binary {
             description: Some("initial binary for the workloard".into()),
-            source: crate::common::instance::BinarySource::Build {
-                edition: crate::common::instance::Edition::Community,
-            },
+            source: crate::common::instance::BinarySource::Build,
             extra_cli_args: workload.extra_cli_args.clone(),
         },
     };

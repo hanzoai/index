@@ -164,7 +164,6 @@ mini-dashboard = [
 ]
 chinese = ["search-types/chinese"]
 chinese-pinyin = ["search-types/chinese-pinyin"]
-enterprise = ["search-types/enterprise", "index-scheduler/enterprise"]
 hebrew = ["search-types/hebrew"]
 japanese = ["search-types/japanese"]
 korean = ["search-types/korean"]

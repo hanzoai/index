@@ -60,5 +60,3 @@ insta = { version = "=1.39.0", features = ["json", "redactions"] }
 maplit = "1.0.2"
 search-snap = { path = "../search-snap" }
 
-[features]
-enterprise = ["search-types/enterprise"]

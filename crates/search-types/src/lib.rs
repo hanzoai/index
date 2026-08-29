@@ -2,17 +2,9 @@
 
 pub mod batch_view;
 pub mod batches;
-#[cfg(not(feature = "enterprise"))]
-pub mod community_edition;
 pub mod compression;
 pub mod deserr;
 pub mod document_formats;
-#[cfg(feature = "enterprise")]
-pub mod enterprise_edition;
-#[cfg(not(feature = "enterprise"))]
-pub use community_edition as current_edition;
-#[cfg(feature = "enterprise")]
-pub use enterprise_edition as current_edition;
 pub mod archive_ext;
 pub mod dynamic_search_rules;
 pub mod error;

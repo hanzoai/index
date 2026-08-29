@@ -1,6 +1,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::time::{Duration, Instant};
 
+use milli::sharding::Shards;
 use papaya::HashMap;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -21,6 +22,21 @@ pub struct Network {
     pub leader: Option<String>,
     #[serde(default)]
     pub version: Uuid,
+}
+
+impl Network {
+    /// The shards this instance indexes into.
+    ///
+    /// Always `None`: this distribution is single-node and indexes every
+    /// document locally.
+    pub fn shards(&self) -> Option<Shards> {
+        None
+    }
+
+    /// Whether documents are sharded across remotes. Always `false` here.
+    pub fn sharding(&self) -> bool {
+        false
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]

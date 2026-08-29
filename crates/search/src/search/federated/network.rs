@@ -1,21 +1,12 @@
 use std::collections::BTreeMap;
 
-use search_types::error::ResponseError;
+use search_types::error::{Code, ResponseError};
 use search_types::index_uid::IndexUid;
 use search_types::network::{Network, Remote, RemoteAvailability};
 use serde_json::Value;
 
 use crate::routes::indexes::facet_search::FacetSearchQuery;
 use crate::search::{Federation, FederationOptions, SearchQuery, SearchQueryWithIndex};
-
-#[cfg(not(feature = "enterprise"))]
-mod community_edition;
-#[cfg(feature = "enterprise")]
-mod enterprise_edition;
-#[cfg(not(feature = "enterprise"))]
-use community_edition as current_edition;
-#[cfg(feature = "enterprise")]
-use enterprise_edition as current_edition;
 
 #[derive(Clone)]
 pub enum Partition {
@@ -71,7 +62,7 @@ impl Partition {
     pub fn new(network: Network, remote_availability: &RemoteAvailability) -> Self {
         if network.leader.is_some() {
             Partition::ByShard {
-                remote_for_shard: current_edition::remote_for_shard(network, remote_availability),
+                remote_for_shard: remote_for_shard(network, remote_availability),
             }
         } else {
             Partition::ByRemote { remotes: network.remotes }
@@ -87,7 +78,7 @@ impl Partition {
                 remotes.keys().map(move |remote| query.proxy_with_remote(remote.clone())),
             ),
             Partition::ByShard { remote_for_shard } => {
-                either::Right(current_edition::partition_shards(
+                either::Right(partition_shards(
                     query,
                     remote_for_shard.iter().map(|(shard, remote)| (shard, remote.clone())),
                 )?)
@@ -104,7 +95,7 @@ impl Partition {
                 either::Left(remotes.into_keys().map(move |remote| query.proxy_with_remote(remote)))
             }
             Partition::ByShard { remote_for_shard } => either::Right(
-                current_edition::partition_shards(query, remote_for_shard.into_iter())?,
+                partition_shards(query, remote_for_shard.into_iter())?,
             ),
         })
     }
@@ -225,4 +216,25 @@ fn fixup_query_federation(
     }
 
     query
+}
+
+/// Split a query across the shards of a sharded network.
+///
+/// Sharding is not supported by this distribution, so this always fails.
+fn partition_shards<Q: ProxyQuery>(
+    _query: Q,
+    _remote_for_shard: impl Iterator<Item = (impl AsRef<str>, String)>,
+) -> Result<impl Iterator<Item = Q::ProxiedQuery>, ResponseError> {
+    Err::<std::iter::Empty<Q::ProxiedQuery>, _>(ResponseError::from_msg(
+        "`useNetwork` with a `network.leader` set is not supported by this distribution".into(),
+        Code::FeatureNotSupported,
+    ))
+}
+
+/// The remote responsible for each shard. Empty: this distribution does not shard.
+fn remote_for_shard(
+    _network: Network,
+    _remotes_statuses: &RemoteAvailability,
+) -> BTreeMap<String, String> {
+    Default::default()
 }

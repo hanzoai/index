@@ -1,11 +1,7 @@
 mod autobatcher;
 #[cfg(test)]
 mod autobatcher_test;
-#[cfg(not(feature = "enterprise"))]
-pub mod community_edition;
 mod create_batch;
-#[cfg(feature = "enterprise")]
-pub mod enterprise_edition;
 
 mod process_batch;
 mod process_dump_creation;
@@ -28,9 +24,12 @@ use std::sync::Arc;
 
 use search_types::error::ResponseError;
 use search_types::heed::{Env, WithoutTls};
+use search_types::milli::progress::Progress;
 use search_types::milli::update::S3SnapshotOptions;
 use search_types::milli::{self, MustStopProcessing};
-use search_types::tasks::Status;
+use search_types::network::Remote;
+use search_types::tasks::network::Origin;
+use search_types::tasks::{Status, Task};
 use process_batch::ProcessBatchInfo;
 use rayon::current_num_threads;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
@@ -38,6 +37,8 @@ use roaring::RoaringBitmap;
 use synchronoise::SignalEvent;
 
 use crate::processing::{AtomicTaskStep, BatchProgress};
+use crate::scheduler::create_batch::Batch;
+use crate::utils::ProcessingBatch;
 use crate::{Error, IndexScheduler, IndexSchedulerOptions, Result, TickOutcome};
 
 pub struct Scheduler {
@@ -483,5 +484,66 @@ impl IndexScheduler {
         } else {
             Ok(TickOutcome::TickAgain(processed_tasks))
         }
+    }
+}
+
+
+/// Operations of a networked, multi-node deployment.
+///
+/// This distribution is single-node: it neither proxies tasks to remotes nor
+/// streams snapshots to S3, so these report the feature as unsupported.
+impl IndexScheduler {
+    pub(in crate::scheduler) fn notify_import_finished<
+        'a,
+        I: Iterator<Item = (&'a str, &'a Remote)>,
+    >(
+        &self,
+        _remotes: I,
+        _in_name: String,
+        _origin: &Origin,
+    ) -> Result<()> {
+        Ok(())
+    }
+
+    pub(in crate::scheduler) fn process_network_index_batch(
+        &self,
+        _network_task: Task,
+        _inner_batch: Box<Batch>,
+        _current_batch: &mut ProcessingBatch,
+        _progress: Progress,
+    ) -> Result<(Vec<Task>, ProcessBatchInfo)> {
+        Err(Error::FeatureNotSupported { action: "Processing a network task" })
+    }
+
+    pub(in crate::scheduler) fn process_network_ready(
+        &self,
+        _task: Task,
+        _progress: Progress,
+    ) -> Result<(Vec<Task>, ProcessBatchInfo)> {
+        Err(Error::FeatureNotSupported { action: "Processing a network task" })
+    }
+
+    pub fn mark_remote_unavailable(&self, _remote_name: String) -> Result<()> {
+        Err(Error::FeatureNotSupported { action: "Marking a remote as unavailable" })
+    }
+
+    pub fn mark_remote_unavailable_indefinitely(&self, _remote_name: String) -> Result<()> {
+        Err(Error::FeatureNotSupported {
+            action: "Marking a remote as unavailable indefinitely",
+        })
+    }
+
+    pub fn mark_remote_available(&self, _remote_name: &str) -> Result<()> {
+        Err(Error::FeatureNotSupported { action: "Marking a remote as available" })
+    }
+
+    #[cfg(unix)]
+    pub(in crate::scheduler) async fn process_snapshot_to_s3(
+        &self,
+        _progress: Progress,
+        _opts: S3SnapshotOptions,
+        _tasks: Vec<Task>,
+    ) -> Result<Vec<Task>> {
+        Err(Error::FeatureNotSupported { action: "Processing an S3-streaming snapshot task" })
     }
 }

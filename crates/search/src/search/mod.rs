@@ -352,7 +352,8 @@ pub struct SearchQuery {
     /// - If the instance has sharding enabled (has a leader), defaults to `true`.
     /// - Otherwise defaults to `false`.
     ///
-    /// **Enterprise Edition only.** This feature is available in the Enterprise Edition.
+    /// Sharding across a leader-elected network is not supported by this
+    /// distribution, so `true` is rejected when a `network.leader` is set.
     ///
     /// It also requires the `network` [experimental feature](http://localhost:3000/reference/api/experimental-features/configure-experimental-features).
     ///
@@ -930,7 +931,8 @@ pub struct SearchQueryWithIndex {
     /// - If the instance has sharding enabled (has a leader), defaults to `true`.
     /// - Otherwise defaults to `false`.
     ///
-    /// **Enterprise Edition only.** This feature is available in the Enterprise Edition.
+    /// Sharding across a leader-elected network is not supported by this
+    /// distribution, so `true` is rejected when a `network.leader` is set.
     ///
     /// It also requires the `network` [experimental feature](http://localhost:3000/reference/api/experimental-features/configure-experimental-features).
     ///

@@ -13,7 +13,7 @@ jobs:
   run-benchmarks-on-comment:
     if: startsWith(github.event.comment.body, '/bench')
     name: Run and upload benchmarks
-    runs-on: benchmarks
+    runs-on: [benchmarks]
     timeout-minutes: 180 # 3h
     steps:
       - name: Check permissions

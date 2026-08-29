@@ -8,7 +8,7 @@ on:
 jobs:
   benchmarks:
     name: Run and upload benchmarks
-    runs-on: benchmarks
+    runs-on: [benchmarks]
     timeout-minutes: 180 # 3h
     steps:
       - uses: actions/checkout@v6

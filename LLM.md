@@ -60,3 +60,12 @@ platform builds on our own runner fabric; pipelines live in `.hanzo/workflows`.
 - `crates/index-scheduler/` -- async task scheduling, batching, upgrade steps
 - `Dockerfile` -- container build
 - `docs/index.mdx` -- the reference
+## Version pin (kept here, not in customer docs)
+
+Current workspace version **1.45.2**, 23 workspace members. Naming as shipped:
+server binary `search`, operator CLI `searchtool`, auth crate `search-auth`,
+core index engine `milli` (unchanged), env var prefix `INDEX_*`.
+
+docs.hanzo.ai/docs/skills/hanzo-search no longer pins the upstream release in
+its introduction — it had drifted (it said v1.37.0) and it is an engineering
+fact, not a customer-facing one. Update the version above when the base moves.

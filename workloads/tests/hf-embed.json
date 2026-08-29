@@ -3,7 +3,6 @@
   "name": "hf-embed",
   "binary": {
     "source": "release",
-    "edition": "community",
     "version": "1.27.0"
   },
   "assets": {
@@ -148,7 +147,6 @@
         "description": "last version where arroy is available, no update task",
         "source": "release",
         "version": "1.35.1",
-        "edition": "community",
         "extraCliArgs": [
           "--experimental-dumpless-upgrade",
           "--experimental-max-number-of-batched-tasks=0"
@@ -255,7 +253,6 @@
         "description": "perform upgrade task",
         "source": "release",
         "version": "1.35.1",
-        "edition": "community",
         "extraCliArgs": [
           "--experimental-dumpless-upgrade"
         ]
@@ -461,7 +458,6 @@
       "binary": {
         "description": "current binary migrates arroy indexes to hannoy indexes, no upgrade task",
         "source": "build",
-        "edition": "community",
         "extraCliArgs": [
           "--experimental-dumpless-upgrade",
           "--experimental-max-number-of-batched-tasks=0"
@@ -524,7 +520,6 @@
       "binary": {
         "description": "apply upgrade task",
         "source": "build",
-        "edition": "community",
         "extraCliArgs": [
           "--experimental-dumpless-upgrade"
         ]

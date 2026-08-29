@@ -206,8 +206,8 @@ pub enum Error {
     ImportTaskAlreadyReceived(DocumentId),
     #[error("Invalid remote url `{url}`: {cause}")]
     InvalidRemoteUrl { url: String, cause: String },
-    #[error("{action} requires the Enterprise Edition")]
-    RequiresEnterpriseEdition { action: &'static str },
+    #[error("{action} is not supported by this distribution")]
+    FeatureNotSupported { action: &'static str },
 
     #[cfg(test)]
     #[error("Planned failure for tests.")]
@@ -270,7 +270,7 @@ impl Error {
             | Error::NetworkVersionMismatch { .. }
             | Error::ImportTaskAlreadyReceived(_)
             | Error::ImportTaskUnknownRemote(_)
-            | Error::RequiresEnterpriseEdition { .. }
+            | Error::FeatureNotSupported { .. }
             | Error::Anyhow(_) => true,
             Error::CreateBatch(_)
             | Error::CorruptedTaskQueue
@@ -340,7 +340,7 @@ impl ErrorCode for Error {
             Error::ReceiveImportFinishedUnknownRemote(_) => {
                 Code::ReceiveImportFinishedUnknownRemote
             }
-            Error::RequiresEnterpriseEdition { .. } => Code::RequiresEnterpriseEdition,
+            Error::FeatureNotSupported { .. } => Code::FeatureNotSupported,
             Error::S3Error { status, .. } if status.is_client_error() => {
                 Code::InvalidS3SnapshotRequest
             }

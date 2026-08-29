@@ -26,16 +26,6 @@ use crate::error::HttpError;
 use crate::extractors::authentication::policies::ActionPolicy;
 use crate::extractors::authentication::GuardedData;
 
-#[cfg(not(feature = "enterprise"))]
-mod community_edition;
-
-#[cfg(feature = "enterprise")]
-mod enterprise_edition;
-#[cfg(not(feature = "enterprise"))]
-use community_edition as current_edition;
-#[cfg(feature = "enterprise")]
-use enterprise_edition as current_edition;
-
 #[routes::routes(
     routes(
         "" => [get(get_network), patch(patch_network)],
@@ -321,7 +311,35 @@ async fn patch_network(
     analytics: Data<Analytics>,
 ) -> Result<HttpResponse, ResponseError> {
     index_scheduler.features().check_network("Using the /network route")?;
-    current_edition::patch_network(index_scheduler, new_network, req, analytics).await
+
+    let new_network = new_network.0;
+    let old_network = index_scheduler.network();
+    debug!(parameters = ?new_network, "Patch network");
+
+    if new_network.leader.as_ref().set().is_some() {
+        return Err(ResponseError::from_msg(
+            "Electing a `network.leader` is not supported by this distribution".into(),
+            Code::FeatureNotSupported,
+        ));
+    }
+
+    if !matches!(new_network.previous_remotes, Setting::NotSet) {
+        return Err(HttpError::UnexpectedNetworkPreviousRemotes.into());
+    }
+
+    let merged_network = merge_networks(old_network.clone(), new_network)?;
+    let wtxn = index_scheduler.env.write_txn()?;
+    index_scheduler.put_network(wtxn, merged_network.clone())?;
+
+    analytics.publish(
+        PatchNetworkAnalytics {
+            network_size: merged_network.remotes.len(),
+            network_has_self: merged_network.local.is_some(),
+        },
+        &req,
+    );
+
+    Ok(HttpResponse::Ok().json(merged_network))
 }
 
 /// Network control
@@ -346,10 +364,13 @@ async fn patch_network(
 )]
 async fn post_network_change(
     index_scheduler: GuardedData<ActionPolicy<{ actions::NETWORK_UPDATE }>, Data<IndexScheduler>>,
-    payload: Json<route::NetworkChange>,
+    _payload: Json<route::NetworkChange>,
 ) -> Result<HttpResponse, ResponseError> {
     index_scheduler.features().check_network("Using the /network/control route")?;
-    current_edition::post_network_change(index_scheduler, payload.into_inner()).await
+    Err(ResponseError::from_msg(
+        "Network topology changes are not supported by this distribution".into(),
+        Code::FeatureNotSupported,
+    ))
 }
 
 /// Merges existing network from the DB with the incoming network patch.

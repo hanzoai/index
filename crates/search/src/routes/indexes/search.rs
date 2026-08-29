@@ -312,7 +312,8 @@ pub struct SearchQueryGet {
     ///
     /// When `false` or omitted, the query runs locally.
     ///
-    /// **Enterprise Edition only.** This feature is available in the Enterprise Edition.
+    /// Sharding across a leader-elected network is not supported by this
+    /// distribution, so `true` is rejected when a `network.leader` is set.
     ///
     /// It also requires the `network` [experimental feature](http://localhost:3000/reference/api/experimental-features/configure-experimental-features).
     ///

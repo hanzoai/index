@@ -7,7 +7,7 @@ use tokio::time;
 
 use crate::common::client::Client;
 use crate::common::command::{health_command, run as run_command};
-use crate::common::instance::{Binary, BinarySource, Edition};
+use crate::common::instance::{Binary, BinarySource};
 
 #[tracing::instrument]
 pub async fn kill_index(mut search: tokio::process::Child) {
@@ -50,13 +50,9 @@ pub async fn kill_index(mut search: tokio::process::Child) {
 }
 
 #[tracing::instrument]
-async fn build(edition: Edition) -> anyhow::Result<()> {
+async fn build() -> anyhow::Result<()> {
     let mut command = TokioCommand::new("cargo");
     command.arg("build").arg("--release").arg("-p").arg("search");
-    if let Edition::Enterprise = edition {
-        command.arg("--features=enterprise");
-    }
-
     command.kill_on_drop(true);
 
     let mut builder = command.spawn().context("error building Hanzo Index")?;
@@ -76,8 +72,8 @@ pub async fn start_index(
     asset_folder: &str,
 ) -> anyhow::Result<tokio::process::Child> {
     let mut command = match &binary.source {
-        BinarySource::Build { edition } => {
-            build(*edition).await?;
+        BinarySource::Build => {
+            build().await?;
             let mut command = tokio::process::Command::new("cargo");
 
             command
@@ -87,9 +83,6 @@ pub async fn start_index(
                 .arg("search")
                 .arg("--bin")
                 .arg("search");
-            if let Edition::Enterprise = *edition {
-                command.arg("--features=enterprise");
-            }
             command.arg("--");
             command
         }

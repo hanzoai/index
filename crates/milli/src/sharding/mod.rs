@@ -1,7 +1,3 @@
-#[cfg(not(feature = "enterprise"))]
-pub mod community_edition;
-#[cfg(feature = "enterprise")]
-pub mod enterprise_edition;
 use std::collections::BTreeSet;
 
 use heed::types::{Bytes, DecodeIgnore, Str};
@@ -23,6 +19,13 @@ impl Shards {
     /// The shards as a slice of shards sorted alphabetically
     pub fn as_sorted_slice(&self) -> &[Shard] {
         &self.0
+    }
+
+    /// The shard that processes the specified document.
+    ///
+    /// Always `None`: this distribution indexes every document locally.
+    pub fn processing_shard<'a>(&'a self, _docid: &str) -> Option<&'a Shard> {
+        None
     }
 }
 

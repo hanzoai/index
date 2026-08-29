@@ -1,23 +1,41 @@
-#[cfg(not(feature = "enterprise"))]
-pub mod community_edition;
-#[cfg(feature = "enterprise")]
-pub mod enterprise_edition;
 use actix_http::header::CONTENT_TYPE;
 use actix_http::uri::PathAndQuery;
 use actix_web::HttpRequest;
-#[cfg(not(feature = "enterprise"))]
-pub use community_edition::{proxy, task_network_and_check_leader_and_version};
-#[cfg(feature = "enterprise")]
-pub use enterprise_edition::{
-    import_data_from_req, import_metadata_from_req, origin_from_req, proxy, send_request,
-    task_network_and_check_leader_and_version,
-};
+use index_scheduler::IndexScheduler;
+use search_types::network::{Network, Remote};
+use search_types::tasks::network::{DbTaskNetwork, TaskNetwork};
+use search_types::tasks::Task;
 
 mod body;
 mod error;
 
 pub use body::Body;
 pub use error::{ProxyError, ReqwestErrorWithoutUrl};
+
+use crate::error::HttpError;
+
+pub fn task_network_and_check_leader_and_version(
+    _req: &HttpRequest,
+    _network: &Network,
+) -> Result<Option<TaskNetwork>, HttpError> {
+    Ok(None)
+}
+
+pub async fn proxy<T, F, E: Endpoint>(
+    _index_scheduler: &IndexScheduler,
+    _index_uid: Option<&str>,
+    _req: &E,
+    _task_network: DbTaskNetwork,
+    _network: Network,
+    _body: Body<T, F>,
+    task: &Task,
+) -> Result<Task, HttpError>
+where
+    T: serde::Serialize,
+    F: FnMut(&str, &Remote, &mut T),
+{
+    Ok(task.clone())
+}
 
 pub trait Endpoint {
     fn content_type(&self) -> Option<&[u8]>;

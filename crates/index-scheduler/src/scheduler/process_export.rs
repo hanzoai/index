@@ -111,7 +111,6 @@ impl IndexScheduler {
                 index_uid: uid,
                 payload_size,
                 override_settings: *override_settings,
-                export_mode: ExportMode::ExportRoute,
             };
             let total_documents = self.export_one_index(target, options, ctx)?;
 
@@ -417,47 +416,6 @@ impl IndexScheduler {
         Ok(total_documents as u64)
     }
 
-    #[cfg(feature = "enterprise")] // only used in enterprise edition for now
-    pub(super) fn export_no_index(
-        &self,
-        target: TargetInstance<'_>,
-        export_old_remote_name: &str,
-        network_change_origin: &Origin,
-        agent: &http_client::ureq::Agent,
-        must_stop_processing: &MustStopProcessing,
-    ) -> Result<(), Error> {
-        let bearer = target.api_key.map(|api_key| format!("Bearer {api_key}"));
-        let url = route::url_from_base_and_route(target.base_url, route::network_control_path())
-            .map_err(|error| Error::InvalidRemoteUrl {
-                url: target.base_url.to_owned(),
-                cause: error.to_string(),
-            })?;
-
-        {
-            let _ = handle_response(
-                target.remote_name,
-                retry(must_stop_processing, || {
-                    use http_client::ureq::http::header::CONTENT_TYPE;
-
-                    let mut request = agent.post(url.to_string());
-                    let body = route::NetworkChange {
-                        origin: network_change_origin.clone(),
-                        message: route::Message::ExportNoIndexForRemote {
-                            remote: export_old_remote_name.to_string(),
-                        },
-                    };
-
-                    request = request.header(CONTENT_TYPE, "application/json");
-                    if let Some(bearer) = &bearer {
-                        request = request.header(AUTHORIZATION, bearer);
-                    }
-                    request.send_json(body)
-                }),
-            )?;
-        }
-
-        Ok(())
-    }
 }
 
 fn set_network_ureq_headers<P>(
@@ -642,32 +600,18 @@ pub(super) struct ExportOptions<'a> {
     pub(super) index_uid: &'a str,
     pub(super) payload_size: Option<&'a Byte>,
     pub(super) override_settings: bool,
-    pub(super) export_mode: ExportMode<'a>,
 }
 
 impl ExportOptions<'_> {
+    /// The network import this export is part of.
+    ///
+    /// Always `None`: exports here are always driven by the `/export` route,
+    /// never by a network rebalance.
     fn task_network(
         &self,
-        total_index_documents: u64,
+        _total_index_documents: u64,
     ) -> Option<(ImportData, Origin, ImportMetadata)> {
-        if let ExportMode::NetworkBalancing {
-            index_count,
-            export_old_remote_name,
-            network_change_origin,
-        } = self.export_mode
-        {
-            Some((
-                ImportData {
-                    remote_name: export_old_remote_name.to_string(),
-                    index_name: Some(self.index_uid.to_string()),
-                    document_count: 0,
-                },
-                network_change_origin.clone(),
-                ImportMetadata { index_count, task_key: None, total_index_documents },
-            ))
-        } else {
-            None
-        }
+        None
     }
 }
 
@@ -678,17 +622,6 @@ pub(super) struct ExportContext<'a> {
     pub(super) progress: &'a Progress,
     pub(super) agent: &'a http_client::ureq::Agent,
     pub(super) must_stop_processing: &'a MustStopProcessing,
-}
-
-pub(super) enum ExportMode<'a> {
-    ExportRoute,
-    #[cfg_attr(not(feature = "enterprise"), allow(dead_code))]
-    NetworkBalancing {
-        index_count: u64,
-
-        export_old_remote_name: &'a str,
-        network_change_origin: &'a Origin,
-    },
 }
 
 // progress related

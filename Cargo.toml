@@ -22,6 +22,7 @@ members = [
     "crates/http-client",
     "crates/routes-macros",
     "crates/routes",
+    "crates/rag-eval",
     "external-crates/async-openai",
     "external-crates/async-openai-macros",
 ]

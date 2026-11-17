@@ -10,6 +10,6 @@ pub struct FactualityReport {
 }
 
 #[async_trait]
-pub trait Verifier {
+pub trait Verifier: Send + Sync {
     async fn verify(&self, claim: &str, evidence: &str) -> anyhow::Result<bool>;
 }

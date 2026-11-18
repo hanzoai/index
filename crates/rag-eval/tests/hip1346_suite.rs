@@ -320,3 +320,197 @@ fn hip1346_end_to_end_pipeline_and_reproducible_metrics() {
         matryoshka_rejections,
     );
 }
+
+
+#[test]
+fn hip1346_bounty24_hyde_prefix_contract_and_cost_recall_benchmark() {
+    use rag_eval::{
+        evaluate_hyde_benchmark, CallerAccessContext, DeterministicHashedEmbedder, DocumentOrigin,
+        HydeBenchmarkCase, HydeBenchmarkStrategy, HydeConfig, HydeCostModel, HydeDocument,
+        HydeError, HydeIndex, HydeQuerySlice, StructuralKaiHydeClassifier, ZenHypotheticalPassage,
+        ZenHypothesisGenerator,
+    };
+
+    struct SuiteZenHyde;
+    impl ZenHypothesisGenerator for SuiteZenHyde {
+        fn generate_hypotheses(
+            &self,
+            raw_query: &str,
+            num_hypotheses: usize,
+        ) -> Result<Vec<ZenHypotheticalPassage>, HydeError> {
+            let q = raw_query.to_ascii_lowercase();
+            let text = if q.contains("mixing") || q.contains("incompatible") {
+                "ImmutableIndexContract enforces query_prefix and doc_prefix parity and Matryoshka dimensions 128 256 512 768."
+            } else if q.contains("avoid unnecessary") || q.contains("easy prompt") {
+                "RetrieveOrAnswerGate uses Kai discrete probabilities and calibrated theta so ZenParametric skips redundant retrieval."
+            } else if q.contains("backup search") || q.contains("corrupted") {
+                "CorrectiveRetrievalPolicy grades top-k evidence with Kai and runs KeywordQueryReformulator secondary retrieval."
+            } else if q.contains("individual statements") || q.contains("atomic claims") {
+                "FactScoreEvaluator splits compound sentences via AtomicClaimDecomposer and checks spans via SpanEvidenceBinder."
+            } else if q.contains("four buckets") || q.contains("four failure") {
+                "RagChecker separates retrieval_miss, irrelevant_evidence, unsupported_claim, and answer_omission."
+            } else if q.contains("probability reliability") || q.contains("expected calibration") {
+                "compute_ece aggregates CalibrationSample confidence bins to quantify Kai verifier calibration error."
+            } else {
+                "General retrieval overview covering vector indexing, query routing, and response synthesis."
+            };
+            Ok((0..num_hypotheses)
+                .map(|idx| ZenHypotheticalPassage {
+                    hypothesis_index: idx,
+                    raw_passage: format!("{text} Hypothesis sample {}.", idx + 1),
+                    generated_tokens: 24,
+                    zen_latency_ms: 26.0 + (idx as f64) * 3.0,
+                })
+                .collect())
+        }
+    }
+
+    let meta = IndexEmbeddingMetadata::new(
+        "hanzo/zen-embed-v1",
+        "sha256:88c1e2a0f9d4",
+        256,
+        NormalizationPolicy::L2,
+        "search_query: ",
+        "search_document: ",
+    )
+    .unwrap();
+    let embedder = DeterministicHashedEmbedder;
+    let mut index = HydeIndex::new();
+    index.register_collection("hip1346_hyde", meta.clone()).unwrap();
+
+    let corpus = [
+        ("d_meta", "ImmutableIndexContract enforces query_prefix and doc_prefix parity and Matryoshka dimensions 128 256 512 768."),
+        ("d_self", "RetrieveOrAnswerGate uses Kai discrete probabilities and calibrated theta so ZenParametric skips redundant retrieval."),
+        ("d_crag", "CorrectiveRetrievalPolicy grades top-k evidence with Kai and runs KeywordQueryReformulator secondary retrieval."),
+        ("d_fact", "FactScoreEvaluator splits compound sentences via AtomicClaimDecomposer and checks spans via SpanEvidenceBinder."),
+        ("d_diag", "RagChecker separates retrieval_miss, irrelevant_evidence, unsupported_claim, and answer_omission."),
+        ("d_ece", "compute_ece aggregates CalibrationSample confidence bins to quantify Kai verifier calibration error."),
+        ("d_sym1", "MetadataError::SwappedTaskPrefix rejects search_document prefix during IndexOperation::Query."),
+        ("d_sym2", "HydeError::EphemeralHypothesisInsertForbidden blocks SyntheticHypothesis persistence into canonical collections."),
+        ("d_dist1", "Mutual TLS certificate rotation validates X509 subject alternative names across ingress proxies."),
+        ("d_dist2", "Consensus leader election increments term counters and replicates append entries across quorum peers."),
+        ("d_dist3", "Tetragon kprobe policies enforce syscall sandboxing and socket egress allowlists inside container cgroups."),
+        ("d_dist4", "Usage metering aggregates per-minute token invoices and reconciles x402 stablecoin settlement receipts."),
+        ("d_dist5", "OpenTelemetry span exporters batch W3C traceparent headers toward collector endpoints."),
+        ("d_dist6", "Unified adapter paging allocates rank-heterogeneous LoRA weight slabs in device memory."),
+    ];
+    for (id, text) in corpus {
+        index
+            .insert_document(
+                "hip1346_hyde",
+                &meta,
+                HydeDocument {
+                    doc_id: id.to_string(),
+                    source_revision: "git:331c4f16".to_string(),
+                    tenant_id: "org_main".to_string(),
+                    allowed_roles: vec![],
+                    origin: DocumentOrigin::CanonicalSource,
+                    raw_text: text.to_string(),
+                },
+                &embedder,
+            )
+            .unwrap();
+    }
+
+    let cases = vec![
+        HydeBenchmarkCase {
+            case_id: "v1".to_string(),
+            slice: HydeQuerySlice::VocabularyMismatch,
+            raw_query: "prevent mixing incompatible embedding versions inside one store".to_string(),
+            relevant_doc_ids: vec!["d_meta".to_string()],
+        },
+        HydeBenchmarkCase {
+            case_id: "v2".to_string(),
+            slice: HydeQuerySlice::VocabularyMismatch,
+            raw_query: "avoid unnecessary database lookups on an easy prompt".to_string(),
+            relevant_doc_ids: vec!["d_self".to_string()],
+        },
+        HydeBenchmarkCase {
+            case_id: "v3".to_string(),
+            slice: HydeQuerySlice::VocabularyMismatch,
+            raw_query: "fallback to backup search after noisy primary hits".to_string(),
+            relevant_doc_ids: vec!["d_crag".to_string()],
+        },
+        HydeBenchmarkCase {
+            case_id: "v4".to_string(),
+            slice: HydeQuerySlice::VocabularyMismatch,
+            raw_query: "break generated paragraphs into individual statements".to_string(),
+            relevant_doc_ids: vec!["d_fact".to_string()],
+        },
+        HydeBenchmarkCase {
+            case_id: "v5".to_string(),
+            slice: HydeQuerySlice::VocabularyMismatch,
+            raw_query: "categorize answer defects into four buckets".to_string(),
+            relevant_doc_ids: vec!["d_diag".to_string()],
+        },
+        HydeBenchmarkCase {
+            case_id: "v6".to_string(),
+            slice: HydeQuerySlice::VocabularyMismatch,
+            raw_query: "measure probability reliability across buckets".to_string(),
+            relevant_doc_ids: vec!["d_ece".to_string()],
+        },
+        HydeBenchmarkCase {
+            case_id: "s1".to_string(),
+            slice: HydeQuerySlice::ExactIdentifier,
+            raw_query: "MetadataError::SwappedTaskPrefix IndexOperation::Query".to_string(),
+            relevant_doc_ids: vec!["d_sym1".to_string()],
+        },
+        HydeBenchmarkCase {
+            case_id: "s2".to_string(),
+            slice: HydeQuerySlice::ExactIdentifier,
+            raw_query: "HydeError::EphemeralHypothesisInsertForbidden SyntheticHypothesis".to_string(),
+            relevant_doc_ids: vec!["d_sym2".to_string()],
+        },
+    ];
+
+    let strategies = [
+        HydeBenchmarkStrategy::QueryOnly,
+        HydeBenchmarkStrategy::AlwaysHydePassageOnly { num_hypotheses: 2 },
+        HydeBenchmarkStrategy::AlwaysHydeAnchored { num_hypotheses: 2, query_anchor_weight: 0.35 },
+        HydeBenchmarkStrategy::KaiSelectiveHyde {
+            num_hypotheses: 2,
+            query_anchor_weight: 0.35,
+            theta: 0.50,
+        },
+    ];
+    let caller = CallerAccessContext::new("org_main", vec![]);
+    let cost = HydeCostModel::default();
+    let reports = evaluate_hyde_benchmark(
+        &index,
+        "hip1346_hyde",
+        &meta,
+        &caller,
+        &cases,
+        &strategies,
+        &StructuralKaiHydeClassifier,
+        &SuiteZenHyde,
+        &embedder,
+        &cost,
+    )
+    .unwrap();
+
+    for r in &reports {
+        println!(
+            "HYDE_BENCH strategy={:?} R@1={:.3} R@3={:.3} MRR={:.3} nDCG@3={:.3} vocab_R@3={:.3} exact_R@1={:.3} expand_rate={:.2} embeds={} zen_toks={} mean_lat_ms={:.2} total_cost_usd=${:.6}",
+            r.strategy,
+            r.recall_at_1,
+            r.recall_at_3,
+            r.mrr,
+            r.ndcg_at_3,
+            r.vocab_mismatch_recall_at_3,
+            r.exact_identifier_recall_at_1,
+            r.hyde_expansion_rate,
+            r.total_embed_calls,
+            r.total_zen_tokens,
+            r.mean_latency_ms,
+            r.total_cost_usd,
+        );
+    }
+
+    assert!(reports[2].recall_at_3 > reports[0].recall_at_3);
+    assert!(reports[1].exact_identifier_recall_at_1 < reports[2].exact_identifier_recall_at_1);
+    assert!((reports[3].recall_at_3 - reports[2].recall_at_3).abs() < 1e-9);
+    assert!(reports[3].total_cost_usd < reports[2].total_cost_usd);
+    assert!(reports[3].mean_latency_ms < reports[2].mean_latency_ms);
+    let _ = HydeConfig::default();
+}

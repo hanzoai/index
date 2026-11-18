@@ -391,3 +391,7 @@ The URL of the server is in our password manager (look for "benchboard").
   systemctl status benchboard
   ```
 9. Check the availability of the service by going to <https://bench.meilisearch.dev> on your browser.
+
+## Hybrid RRF Ablation Study
+Run `python ablation_study.py` to reproduce the empirical k-value ablation results in `ablation_study.json`.
+

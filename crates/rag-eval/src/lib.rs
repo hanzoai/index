@@ -21,6 +21,9 @@
 //! - [`factscore`] — Bounty #30 (`hanzoai/index#31`) atomic claim decomposer,
 //!   span evidence binder, supported-claim precision (`FActScore`), and Expected
 //!   Calibration Error (`compute_ece`).
+//! - [`tiered_rerank`] — Bounty #14 (`hanzoai/index#14`, `HIP-1347`) 3-stage
+//!   cascaded cross-encoder reranking with pre-stage tenant/ACL isolation, Kai
+//!   margin/entropy escalation gating, and teacher-to-student distillation.
 
 pub mod corrective;
 pub mod diagnostics;
@@ -28,6 +31,7 @@ pub mod factscore;
 pub mod metadata;
 pub mod self_rag;
 mod text;
+pub mod tiered_rerank;
 
 pub use corrective::{
     CorrectiveAction, CorrectiveConfig, CorrectiveDiagnostics, CorrectiveError, CorrectivePlan,
@@ -54,4 +58,17 @@ pub use self_rag::{
     GateError, GateSimulationReport, GateSimulationSample, KaiDecisionHead, KaiRetrieveProbs,
     RetrievalAction, RetrievalCostModel, RetrieveGateDecision, RetrieveOrAnswerGate,
     RoutedAnswer, SynthesisTarget, ZenSynthesizer,
+};
+pub use tiered_rerank::{
+    default_distillation_training_set, default_multi_tenant_benchmark, enforce_tenant_acl,
+    evaluate_policy, evaluate_tiered_reranking, extract_pair_features, pre_stage_access_filter,
+    rebuild_stage1_candidates, AccessContext, AccessDenialReason, AccessFilteredAudit,
+    BenchmarkQueryCase, BroadStageCandidate, CalibratedFastCrossEncoder, CanonicalPassageRecord,
+    DeterministicZenGrounded, DistillationConfig, DistillationReport, DistillationTrainer,
+    DistilledDomainReranker, EscalationAction, EscalationDecision, EscalationGate,
+    FastCrossEncoder, HeavyCrossEncoder, PassageIdentity, PolicyEvaluationReport, QueryDifficulty,
+    RankedPassage, RerankPolicy, SourceKind, SpanAlignedHeavyCrossEncoder,
+    StudentDistillationLift, TeacherJudgment, TieredBenchmarkSummary, TieredCostModel,
+    TieredQueryRun, TieredRerankConfig, TieredRerankError, TieredRerankPipeline,
+    DISTILL_FEATURE_DIM, DISTILL_HIDDEN_DIM,
 };

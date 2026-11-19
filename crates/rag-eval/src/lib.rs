@@ -26,6 +26,7 @@ pub mod corrective;
 pub mod diagnostics;
 pub mod factscore;
 pub mod metadata;
+pub mod rrf;
 pub mod self_rag;
 mod text;
 
@@ -55,3 +56,5 @@ pub use self_rag::{
     RetrievalAction, RetrievalCostModel, RetrieveGateDecision, RetrieveOrAnswerGate,
     RoutedAnswer, SynthesisTarget, ZenSynthesizer,
 };
+
+pub use rrf::{fuse_rrf, rrf_k_ablation, FusedDoc, RankedDoc, RrfConfig};

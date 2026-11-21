@@ -8,6 +8,10 @@
 //! decision head) vs. **Zen** (generative synthesis) architectural boundary.
 //!
 //! ## Modules
+//! - [`ann_insert`] — Bounty #21 (`hanzoai/index#19`) stable online ANN
+//!   insertion (OdinANN): maintenance-policy benchmark over a file-backed
+//!   on-disk ANN under continuous query traffic with shared brute-force
+//!   `recall@10` ground truth and immutable-metadata gating.
 //! - [`metadata`] — HIP-1346 §1 immutable vector index metadata contract
 //!   (`model_id`, `model_revision`, `dimensions`, `normalization`, `query_prefix`,
 //!   `doc_prefix`, Matryoshka `128`/`256`/`512`/`768` validation).
@@ -25,6 +29,7 @@
 //!   span evidence binder, supported-claim precision (`FActScore`), and Expected
 //!   Calibration Error (`compute_ece`).
 
+pub mod ann_insert;
 pub mod corrective;
 pub mod diagnostics;
 pub mod factscore;
@@ -33,6 +38,11 @@ pub mod metadata;
 pub mod self_rag;
 mod text;
 
+pub use ann_insert::{
+    generate_workload, run_full_matrix, write_results_json, AnnInsertError, AnnMaintenanceRunner,
+    BenchConfig, GraphAnn, IoCostModel, MaintenancePolicy, Op, RunResult, RunStats, SplitMix64,
+    Workload,
+};
 pub use corrective::{
     CorrectiveAction, CorrectiveConfig, CorrectiveDiagnostics, CorrectiveError, CorrectivePlan,
     CorrectiveRetrievalPolicy, CorrectiveRunResult, EvidenceGrade, KeywordQueryReformulator,

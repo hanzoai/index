@@ -2,6 +2,8 @@
 
 <h1 align="center">Hanzo Index</h1>
 
+[![Open in Hanzo](https://hanzo.app/badges/open-in-hanzo.svg)](https://hanzo.app/dev/open?repo=github.com/hanzoai/index&ref=main&action=open) [![Edit with Hanzo](https://hanzo.app/badges/edit-with-hanzo.svg)](https://hanzo.app/dev/open?repo=github.com/hanzoai/index&ref=main&action=edit) [![Deploy with Hanzo](https://hanzo.app/badges/deploy-with-hanzo.svg)](https://hanzo.app/dev/open?repo=github.com/hanzoai/index&ref=main&action=deploy)
+
 <h4 align="center">
   <a href="https://hanzo.ai">Website</a> |
   <a href="https://docs.hanzo.ai">Documentation</a>

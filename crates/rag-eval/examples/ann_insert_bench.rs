@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
-//! Bounty #21 (`hanzoai/index#25`) reproducible runner.
+//! Bounty #21 (`hanzoai/index#19`) reproducible runner.
 //!
 //! Runs the full (maintenance-policy × insert-rate) matrix and writes the
 //! results JSON. Default output: `results/ann-insert-results.json` relative to

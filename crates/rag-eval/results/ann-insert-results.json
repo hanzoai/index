@@ -1,5 +1,5 @@
 {
-  "bounty": "hanzoai/index#25 [Bounty #21] Stable online ANN insertion (OdinANN)",
+  "bounty": "hanzoai/index#19 [Bounty #21] Stable online ANN insertion (OdinANN)",
   "hip": "HIP-1346: Evidence-Grounded Retrieval and Decision Evaluation",
   "host_note": "single-host CPU timing + simulated page-read penalty; not Hanzo hardware",
   "honesty_labels": [

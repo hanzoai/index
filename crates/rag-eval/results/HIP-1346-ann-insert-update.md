@@ -1,4 +1,4 @@
-# HIP-1346 status update — Bounty #21 (hanzoai/index#25, OdinANN)
+# HIP-1346 status update — Bounty #21 (hanzoai/index#19, OdinANN)
 
 **Status: research delivered (draft PR), pending maintainer review.**
 

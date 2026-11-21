@@ -8,7 +8,7 @@
 //! decision head) vs. **Zen** (generative synthesis) architectural boundary.
 //!
 //! ## Modules
-//! - [`ann_insert`] — Bounty #21 (`hanzoai/index#25`) stable online ANN
+//! - [`ann_insert`] — Bounty #21 (`hanzoai/index#19`) stable online ANN
 //!   insertion (OdinANN): maintenance-policy benchmark over a file-backed
 //!   on-disk ANN under continuous query traffic with shared brute-force
 //!   `recall@10` ground truth and immutable-metadata gating.

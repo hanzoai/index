@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
-//! Bounty #21 (`hanzoai/index#25`) test suite for [`rag_eval::ann_insert`]:
+//! Bounty #21 (`hanzoai/index#19`) test suite for [`rag_eval::ann_insert`]:
 //! immutable-metadata isolation, ground-truth sanity, policy behavior
 //! (batch rebuild / in-place / delta merge), and schedule determinism.
 

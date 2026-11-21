@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
-//! HIP-1346 / [Bounty #21] (`hanzoai/index#25`): **Stable online ANN insertion** (OdinANN).
+//! HIP-1346 / [Bounty #21] (`hanzoai/index#19`): **Stable online ANN insertion** (OdinANN).
 //!
 //! Clean-room, deterministic, stdlib-only simulation harness that benchmarks
 //! *direct online vector insertion into a file-backed on-disk ANN index under
@@ -1200,7 +1200,7 @@ pub fn run_full_matrix(cfg: &BenchConfig) -> Result<BenchReport, AnnInsertError>
     }
 
     Ok(BenchReport {
-        bounty: "hanzoai/index#25 [Bounty #21] Stable online ANN insertion (OdinANN)".into(),
+        bounty: "hanzoai/index#19 [Bounty #21] Stable online ANN insertion (OdinANN)".into(),
         hip: "HIP-1346: Evidence-Grounded Retrieval and Decision Evaluation".into(),
         host_note: "single-host CPU timing + simulated page-read penalty; not Hanzo hardware"
             .into(),

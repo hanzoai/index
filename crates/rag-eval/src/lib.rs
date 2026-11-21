@@ -15,6 +15,9 @@
 //!   retrieve-or-answer gating via Kai probabilities and calibrated `theta`.
 //! - [`corrective`] — Bounty #23 (`hanzoai/index#27`) Corrective RAG detector,
 //!   query reformulation, and secondary retrieval recovery.
+//! - [`hyde`] - Bounty #24 (`hanzoai/index#28`) Hypothetical-Document Retrieval
+//!   (`HyDE`) with Zen synthesis, Kai selective routing, and immutable
+//!   `doc_prefix` / `query_prefix` enforcement.
 //! - [`diagnostics`] — Bounty #25 (`hanzoai/index#29`) RAGChecker diagnostics
 //!   separating `retrieval_miss`, `irrelevant_evidence`, `unsupported_claim`,
 //!   and `answer_omission`.
@@ -25,6 +28,7 @@
 pub mod corrective;
 pub mod diagnostics;
 pub mod factscore;
+pub mod hyde;
 pub mod metadata;
 pub mod self_rag;
 mod text;
@@ -54,4 +58,14 @@ pub use self_rag::{
     GateError, GateSimulationReport, GateSimulationSample, KaiDecisionHead, KaiRetrieveProbs,
     RetrievalAction, RetrievalCostModel, RetrieveGateDecision, RetrieveOrAnswerGate,
     RoutedAnswer, SynthesisTarget, ZenSynthesizer,
+};
+
+pub use hyde::{
+    evaluate_hyde_benchmark, CallerAccessContext, DeterministicHashedEmbedder,
+    DocumentOrigin, HydeBenchmarkCase, HydeBenchmarkStrategy, HydeConfig,
+    HydeCostModel, HydeDocument, HydeError, HydeIndex, HydeQuerySlice,
+    HydeRouteAction, HydeScoredHit, HydeSearchOutcome, HydeStrategyReport,
+    KaiHydeClassifier, KaiHydeDecision, KaiHydeGate, KaiHydeProbs,
+    PrefixedTextEmbedder, StructuralKaiHydeClassifier, ZenHypotheticalPassage,
+    ZenHypothesisGenerator,
 };

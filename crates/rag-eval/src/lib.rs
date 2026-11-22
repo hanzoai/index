@@ -33,12 +33,18 @@
 //!   cascaded cross-encoder reranking with pre-stage tenant/ACL isolation, Kai
 //!   margin/entropy escalation gating, and teacher-to-student distillation.
 
+//! - [`hybrid_rrf`] — HIP-1347 p0 (`hanzoai/index#11` / Roadmap `#16` Item #1)
+//!   Hybrid Lexical, Vector & Structural Search Planner with Reciprocal Rank
+//!   Fusion (`RRF`), mandatory pre-scoring ACL/scope isolation, and derived
+//!   index rebuild verification.
+
 pub mod ann_insert;
 pub mod corrective;
 pub mod diagnostics;
 pub mod factscore;
 pub mod hyde;
 pub mod metadata;
+pub mod hybrid_rrf;
 pub mod self_rag;
 mod text;
 pub mod tiered_rerank;
@@ -97,4 +103,19 @@ pub use tiered_rerank::{
     StudentDistillationLift, TeacherJudgment, TieredBenchmarkSummary, TieredCostModel,
     TieredQueryRun, TieredRerankConfig, TieredRerankError, TieredRerankPipeline,
     DISTILL_FEATURE_DIM, DISTILL_HIDDEN_DIM,
+};
+
+pub use hybrid_rrf::{
+    build_canonical_hybrid_index, canonical_hybrid_corpus, canonical_hybrid_embedding_metadata,
+    canonical_hybrid_queries, compare_search_hits_deterministic, evaluate_hybrid_benchmark,
+    extract_code_identifiers, glob_matches, is_record_authorized_and_in_scope,
+    split_identifier_subtokens, tokenize_code_and_prose, Bm25LexicalIndex,
+    CanonicalEvidenceRecord, DenseVectorIndex, DeterministicCodeEditZenSynthesizer,
+    DeterministicKaiQueryPlanner, DeterministicSemanticCodeEmbedder, DownstreamCodeEditJudge,
+    HybridAccessFilter, HybridBenchmarkCase, HybridBenchmarkSuiteReport, HybridCostModel,
+    HybridQueryClass, HybridQueryPlan, HybridRrfConfig, HybridSearchError, HybridSearchIndex,
+    HybridSearchOutcome, HybridStrategy, HybridStrategyReport, KaiHybridQueryPlanner,
+    LegContribution, LegWeights, RankExplanation, ReciprocalRankFusion, SearchHit,
+    SourceArtifactKind, SourceIdentity, StructuralAstIndex, StructuralNodeKind,
+    StructuralSymbolNode, TokenizedCodeSpan, DEFAULT_BM25_B, DEFAULT_BM25_K1, DEFAULT_RRF_K,
 };

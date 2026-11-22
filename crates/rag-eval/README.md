@@ -13,6 +13,7 @@ Lightweight, pure-Rust, Apache-2.0 library implementing **HIP-1346** (*Evidence-
 | `hyde` | Bounty #24 (`hanzoai/index#28`) | HyDE (Gao et al., ACL '23; `texttron/hyde`) | `HydeIndex`, `ZenHypothesisGenerator`, `KaiHydeGate`, immutable `doc_prefix`/`query_prefix` centroid & cost/recall harness |
 | `diagnostics` | Bounty #25 (`hanzoai/index#29`) | RAGChecker (Ru et al., NeurIPS '24) | `RagChecker`, fine-grained `retrieval_miss`, `irrelevant_evidence`, `unsupported_claim`, `answer_omission` diagnostics |
 | `factscore` | Bounty #30 (`hanzoai/index#31`) | FActScore (Min et al., EMNLP '23) | `AtomicClaimDecomposer`, `SpanEvidenceBinder`, `FactScoreEvaluator`, `compute_ece` calibration |
+| `hybrid_rrf` | HIP-1347 p0 (`hanzoai/index#11` / `#16` #1) | RRF (Cormack et al., SIGIR '09) + BM25 + AST Call-Graph | `HybridSearchIndex`, `DeterministicKaiQueryPlanner`, `Bm25LexicalIndex`, `DenseVectorIndex`, `StructuralAstIndex`, `ReciprocalRankFusion`, pre-scoring `HybridAccessFilter`, `rebuild_derived_indexes` |
 
 ## Architectural Boundary
 

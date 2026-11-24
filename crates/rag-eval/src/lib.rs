@@ -42,6 +42,10 @@
 //!   comparative harness for ModernBERT/Laya, Qwen3 Embedding (`0.6B`/`4B`/`8B`),
 //!   BGE-M3 (dense + sparse + multi-vector), and distilled code/memory retrievers.
 
+//! - [`late_interaction`] - Bounty #12 (`hanzoai/index#12`, `HIP-1347`)
+//!   ColBERTv2/PLAID 2-bit residual compressed multi-vector index and unrolled
+//!   SIMD-friendly `MaxSim` operator over centroid-pruned shortlists.
+
 pub mod ann_insert;
 pub mod corrective;
 pub mod diagnostics;
@@ -50,6 +54,7 @@ pub mod hyde;
 pub mod metadata;
 pub mod hybrid_rrf;
 pub mod domain_embeddings;
+pub mod late_interaction;
 pub mod self_rag;
 mod text;
 pub mod tiered_rerank;
@@ -131,4 +136,11 @@ pub use domain_embeddings::{
     DerivedEmbeddingEntry, DistillationJustificationDecision, DistillationJustificationGate,
     DomainAccessContext, DomainEmbeddingError, DomainQueryCase, DomainSlice, EncoderEvaluationReport,
     EncoderFamily, EncoderSpec, ModelLicenseAudit, SourceRecordIdentity,
+};
+
+pub use late_interaction::{
+    check_late_access, default_late_interaction_benchmark, embed_token, evaluate_late_system,
+    maxsim_scalar, maxsim_simd_unrolled, CompressedTokenVec, LateAccessContext, LateArtifactKind,
+    LateBenchmarkSlice, LateInteractionError, LatePassageRecord, LateQueryCase, LateRecordIdentity,
+    LateSystemReport, MultiVecCompression, PlaidMultiVectorIndex, TOKEN_VEC_DIM,
 };

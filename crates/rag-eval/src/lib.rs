@@ -38,6 +38,10 @@
 //!   Fusion (`RRF`), mandatory pre-scoring ACL/scope isolation, and derived
 //!   index rebuild verification.
 
+//! - [`domain_embeddings`] - Bounty #13 (`hanzoai/index#13`, `HIP-1347`)
+//!   comparative harness for ModernBERT/Laya, Qwen3 Embedding (`0.6B`/`4B`/`8B`),
+//!   BGE-M3 (dense + sparse + multi-vector), and distilled code/memory retrievers.
+
 pub mod ann_insert;
 pub mod corrective;
 pub mod diagnostics;
@@ -45,6 +49,7 @@ pub mod factscore;
 pub mod hyde;
 pub mod metadata;
 pub mod hybrid_rrf;
+pub mod domain_embeddings;
 pub mod self_rag;
 mod text;
 pub mod tiered_rerank;
@@ -118,4 +123,12 @@ pub use hybrid_rrf::{
     LegContribution, LegWeights, RankExplanation, ReciprocalRankFusion, SearchHit,
     SourceArtifactKind, SourceIdentity, StructuralAstIndex, StructuralNodeKind,
     StructuralSymbolNode, TokenizedCodeSpan, DEFAULT_BM25_B, DEFAULT_BM25_K1, DEFAULT_RRF_K,
+};
+
+pub use domain_embeddings::{
+    check_record_access, default_domain_benchmark, encode_text, evaluate_encoder,
+    standard_encoder_specs, ArtifactKind, CanonicalRecord, DerivedDomainIndex,
+    DerivedEmbeddingEntry, DistillationJustificationDecision, DistillationJustificationGate,
+    DomainAccessContext, DomainEmbeddingError, DomainQueryCase, DomainSlice, EncoderEvaluationReport,
+    EncoderFamily, EncoderSpec, ModelLicenseAudit, SourceRecordIdentity,
 };

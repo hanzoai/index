@@ -29,6 +29,10 @@
 //!   span evidence binder, supported-claim precision (`FActScore`), and Expected
 //!   Calibration Error (`compute_ece`).
 
+//! - [`tiered_rerank`] - Bounty #14 (`hanzoai/index#14`, `HIP-1347`) 3-stage
+//!   cascaded cross-encoder reranking with pre-stage tenant/ACL isolation, Kai
+//!   margin/entropy escalation gating, and teacher-to-student distillation.
+
 pub mod ann_insert;
 pub mod corrective;
 pub mod diagnostics;
@@ -37,6 +41,7 @@ pub mod hyde;
 pub mod metadata;
 pub mod self_rag;
 mod text;
+pub mod tiered_rerank;
 
 pub use ann_insert::{
     generate_workload, run_full_matrix, write_results_json, AnnInsertError, AnnMaintenanceRunner,
@@ -78,4 +83,18 @@ pub use hyde::{
     KaiHydeClassifier, KaiHydeDecision, KaiHydeGate, KaiHydeProbs,
     PrefixedTextEmbedder, StructuralKaiHydeClassifier, ZenHypotheticalPassage,
     ZenHypothesisGenerator,
+};
+
+pub use tiered_rerank::{
+    default_distillation_training_set, default_multi_tenant_benchmark, enforce_tenant_acl,
+    evaluate_policy, evaluate_tiered_reranking, extract_pair_features, pre_stage_access_filter,
+    rebuild_stage1_candidates, AccessContext, AccessDenialReason, AccessFilteredAudit,
+    BenchmarkQueryCase, BroadStageCandidate, CalibratedFastCrossEncoder, CanonicalPassageRecord,
+    DeterministicZenGrounded, DistillationConfig, DistillationReport, DistillationTrainer,
+    DistilledDomainReranker, EscalationAction, EscalationDecision, EscalationGate,
+    FastCrossEncoder, HeavyCrossEncoder, PassageIdentity, PolicyEvaluationReport, QueryDifficulty,
+    RankedPassage, RerankPolicy, SourceKind, SpanAlignedHeavyCrossEncoder,
+    StudentDistillationLift, TeacherJudgment, TieredBenchmarkSummary, TieredCostModel,
+    TieredQueryRun, TieredRerankConfig, TieredRerankError, TieredRerankPipeline,
+    DISTILL_FEATURE_DIM, DISTILL_HIDDEN_DIM,
 };

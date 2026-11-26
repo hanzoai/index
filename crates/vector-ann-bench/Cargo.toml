@@ -1,0 +1,15 @@
+[package]
+name = "vector-ann-bench"
+description = "Clean-room ANN and object-storage-native vector index benchmark harness (DiskANN, USearch, LanceDB references; HIP-1347 / hanzoai/index#15)"
+readme = "README.md"
+publish = false
+
+version.workspace = true
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+license = "Apache-2.0 OR MIT"
+
+[dependencies]
+# Intentionally empty: zero external crate dependencies (pure Rust std).

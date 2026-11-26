@@ -1,0 +1,12 @@
+[package]
+name = "colpali-eval"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0 OR MIT"
+description = "Clean-room ColPali late-interaction visual document retrieval benchmark and derived index (HIP-1347)"
+repository = "https://github.com/hanzoai/index"
+publish = false
+
+[dependencies]
+
+[dev-dependencies]

@@ -502,7 +502,13 @@ pub fn build_benchmark_corpus(
             );
 
             let mut relevance = BTreeMap::new();
-            relevance.insert(target.key.clone(), 2);
+            for candidate in &eligible {
+                if candidate.query_prompt_text == target.query_prompt_text
+                    && candidate.concept_labels == target.concept_labels
+                {
+                    relevance.insert(candidate.key.clone(), 2);
+                }
+            }
 
             modality_queries.push(EvalQuery {
                 query: VisualQuery {

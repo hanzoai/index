@@ -437,3 +437,136 @@ fn benchmark_json_receipt_separates_measured_and_projected_sections() {
     assert!(json.contains("\"is_projected\": true"));
     assert!(json.contains("\"all_passed\": true"));
 }
+
+#[test]
+fn binary_two_stage_sq8_reranking_is_genuinely_disk_backed_and_footprint_honest() {
+    let corpus =
+        build_benchmark_corpus(Path::new("."), 1347, 128, 64, DEFAULT_EMBEDDING_DIM, 4).unwrap();
+    let bin = ColPaliBinaryTwoStageIndex::build(&corpus.store).unwrap();
+
+    let expected_sq8_disk = bin.total_patches() * (4 + DEFAULT_EMBEDDING_DIM);
+    assert_eq!(bin.sq8_disk_bytes_on_disk(), expected_sq8_disk);
+    assert_eq!(bin.footprint().disk_bytes, bin.to_bytes().len());
+    assert!(
+        bin.footprint().ram_bytes < expected_sq8_disk / 4,
+        "hot RAM ({}) must exclude cold disk-backed SQ8 slab ({expected_sq8_disk})",
+        bin.footprint().ram_bytes
+    );
+
+    assert_eq!(bin.sq8_disk_bytes_read(), 0);
+    assert_eq!(bin.sq8_disk_page_fetches(), 0);
+
+    let q = &corpus.modality_queries[0].query;
+    let hits = bin.search(q).unwrap();
+    assert_eq!(hits.len(), q.top_k);
+    let fetches = bin.sq8_disk_page_fetches();
+    let bytes_read = bin.sq8_disk_bytes_read() as usize;
+    assert!(
+        fetches > 0 && fetches <= ColPaliBinaryTwoStageIndex::DEFAULT_SHORTLIST_MIN as u64,
+        "expected shortlisted disk fetches in 1..={}, got {fetches}",
+        ColPaliBinaryTwoStageIndex::DEFAULT_SHORTLIST_MIN
+    );
+    assert!(
+        bytes_read > 0 && bytes_read < expected_sq8_disk,
+        "Stage-2 must read only shortlisted pages ({bytes_read} B) instead of full slab ({expected_sq8_disk} B)"
+    );
+
+    // Serialized roundtrip must restore a working disk-backed SQ8 slab with bit-exact hits.
+    let loaded = ColPaliBinaryTwoStageIndex::from_bytes(&bin.to_bytes()).unwrap();
+    assert_eq!(loaded.sq8_disk_bytes_on_disk(), expected_sq8_disk);
+    assert_eq!(loaded.sq8_disk_bytes_read(), 0);
+    let loaded_hits = loaded.search(q).unwrap();
+    assert!(hits_bit_exact(&hits, &loaded_hits));
+    assert!(loaded.sq8_disk_bytes_read() > 0);
+}
+
+#[test]
+fn checksum_crc32_excludes_trailer_and_detects_content_and_version_changes() {
+    const CRC32_FIXED_RESIDUE: u32 = 0x2144_df1c;
+
+    let empty_store = colpali_eval::canonical::CanonicalPageStore::new(DEFAULT_EMBEDDING_DIM);
+    let empty_ocr = OcrBm25HybridIndex::build(&empty_store).unwrap();
+    let empty_fp32 = ColPaliFp32Index::build(&empty_store).unwrap();
+    let empty_bin = ColPaliBinaryTwoStageIndex::build(&empty_store).unwrap();
+    let empty_router = HybridVisualRouterIndex::build(&empty_store).unwrap();
+
+    let mut corpus =
+        build_benchmark_corpus(Path::new("."), 1347, 64, 32, DEFAULT_EMBEDDING_DIM, 4).unwrap();
+    let ocr1 = OcrBm25HybridIndex::build(&corpus.store).unwrap();
+    let fp32_1 = ColPaliFp32Index::build(&corpus.store).unwrap();
+    let bin1 = ColPaliBinaryTwoStageIndex::build(&corpus.store).unwrap();
+    let router1 = HybridVisualRouterIndex::build(&corpus.store).unwrap();
+
+    // Mutate version of a visual page (so all 4 indexes including router's visual_index change).
+    let visual_rec =
+        corpus.store.iter().find(|r| r.page_modality == PageModality::ScientificFigure).unwrap();
+    let mut mutated = visual_rec.clone();
+    mutated.version += 1;
+    corpus.store.upsert(mutated).unwrap();
+
+    let ocr2 = OcrBm25HybridIndex::build(&corpus.store).unwrap();
+    let fp32_2 = ColPaliFp32Index::build(&corpus.store).unwrap();
+    let bin2 = ColPaliBinaryTwoStageIndex::build(&corpus.store).unwrap();
+    let router2 = HybridVisualRouterIndex::build(&corpus.store).unwrap();
+
+    for (name, c_empty, c_pop, c_mut) in [
+        ("ocr", empty_ocr.checksum_crc32(), ocr1.checksum_crc32(), ocr2.checksum_crc32()),
+        ("fp32", empty_fp32.checksum_crc32(), fp32_1.checksum_crc32(), fp32_2.checksum_crc32()),
+        ("binary", empty_bin.checksum_crc32(), bin1.checksum_crc32(), bin2.checksum_crc32()),
+        (
+            "router",
+            empty_router.checksum_crc32(),
+            router1.checksum_crc32(),
+            router2.checksum_crc32(),
+        ),
+    ] {
+        assert_ne!(c_empty, CRC32_FIXED_RESIDUE, "{name} empty checksum hit fixed CRC residue");
+        assert_ne!(c_pop, CRC32_FIXED_RESIDUE, "{name} populated checksum hit fixed CRC residue");
+        assert_ne!(c_mut, CRC32_FIXED_RESIDUE, "{name} mutated checksum hit fixed CRC residue");
+        assert_ne!(c_empty, c_pop, "{name} empty and populated checksums must differ");
+        assert_ne!(c_pop, c_mut, "{name} version mutation must change checksum");
+    }
+}
+
+#[test]
+fn equivalent_generated_pages_are_all_judged_relevant_and_unauthorized_excluded() {
+    let corpus =
+        build_benchmark_corpus(Path::new("."), 1347, 512, 64, DEFAULT_EMBEDDING_DIM, 24).unwrap();
+
+    let mut by_text: std::collections::BTreeMap<&str, Vec<&colpali_eval::corpus::EvalQuery>> =
+        std::collections::BTreeMap::new();
+    for eq in &corpus.modality_queries {
+        by_text.entry(eq.query.text.as_str()).or_default().push(eq);
+        assert!(!eq.relevance.is_empty());
+        // Every page judged relevant must be authorized under the query's AccessScope.
+        for key in eq.relevance.keys() {
+            let rec = corpus.store.get(key).expect("relevant key must exist in canonical store");
+            assert!(
+                eq.query.scope.permits(&rec.tenant_id, &rec.acl_group),
+                "unauthorized page {key:?} must never be judged relevant"
+            );
+        }
+    }
+
+    let mut verified_multi_page_equivalence = false;
+    for (prompt, group) in by_text {
+        if group.len() > 1 {
+            verified_multi_page_equivalence = true;
+            let expected_rel = &group[0].relevance;
+            assert!(
+                expected_rel.len() >= 2,
+                "repeated query prompt `{prompt}` must include all equivalent authorized pages in relevance"
+            );
+            for eq in &group[1..] {
+                assert_eq!(
+                    &eq.relevance, expected_rel,
+                    "queries with identical prompt `{prompt}` must share identical relevance maps"
+                );
+            }
+        }
+    }
+    assert!(
+        verified_multi_page_equivalence,
+        "expected default 512-page corpus to exercise multi-page equivalence judgments"
+    );
+}

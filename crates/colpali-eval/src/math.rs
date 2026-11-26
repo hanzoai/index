@@ -255,6 +255,26 @@ impl Sq8Vector {
         (acc as f32) * self.scale * other.scale
     }
 
+    /// Inner product against raw serialized SQ8 codes (`scale` + `D` raw `i8` bytes stored as `u8`),
+    /// enabling zero-allocation Stage-2 disk-backed reranking.
+    #[inline]
+    pub fn dot_sq8_raw_bytes(&self, other_scale: f32, other_raw_codes: &[u8]) -> f32 {
+        debug_assert_eq!(self.codes.len(), other_raw_codes.len());
+        let mut acc: i32 = 0;
+        let chunks = self.codes.len() / 4;
+        for i in 0..chunks {
+            let idx = i * 4;
+            acc += i32::from(self.codes[idx]) * i32::from(other_raw_codes[idx] as i8)
+                + i32::from(self.codes[idx + 1]) * i32::from(other_raw_codes[idx + 1] as i8)
+                + i32::from(self.codes[idx + 2]) * i32::from(other_raw_codes[idx + 2] as i8)
+                + i32::from(self.codes[idx + 3]) * i32::from(other_raw_codes[idx + 3] as i8);
+        }
+        for (&a, &b) in self.codes[chunks * 4..].iter().zip(&other_raw_codes[chunks * 4..]) {
+            acc += i32::from(a) * i32::from(b as i8);
+        }
+        (acc as f32) * self.scale * other_scale
+    }
+
     /// Inner product against an FP32 query vector.
     #[inline]
     pub fn dot_f32(&self, query: &[f32]) -> f32 {

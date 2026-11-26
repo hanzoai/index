@@ -87,6 +87,12 @@ impl OcrBm25HybridIndex {
             (total_tokens as f32 / pages.len() as f32).max(1.0)
         };
 
+        for plist in postings.values_mut() {
+            plist.shrink_to_fit();
+        }
+        pages.shrink_to_fit();
+        dense_vectors.shrink_to_fit();
+
         Ok(Self { dim, avg_doc_len, pages, dense_vectors, postings })
     }
 
@@ -331,28 +337,33 @@ impl OcrBm25HybridIndex {
         Ok(Self { dim, avg_doc_len, pages, dense_vectors, postings })
     }
 
-    /// Deterministic CRC32 checksum of the serialized index bytes.
+    /// Deterministic IEEE CRC32 content fingerprint over the serialized payload
+    /// (excludes the 4-byte CRC32 trailer appended by `to_bytes()` so rebuild differences
+    /// anywhere in the index produce distinct checksums instead of constant residue `0x2144df1c`).
     pub fn checksum_crc32(&self) -> u32 {
-        crc32_ieee(&self.to_bytes())
+        let bytes = self.to_bytes();
+        let payload_len = bytes.len().saturating_sub(4);
+        u32::from_le_bytes(bytes[payload_len..].try_into().expect("4-byte CRC32 trailer"))
     }
 
     /// Exact RAM and serialized disk footprint accounting.
     pub fn footprint(&self) -> IndexFootprint {
-        let meta_bytes: usize = self
-            .pages
-            .iter()
-            .map(|p| {
-                p.doc_id.len()
-                    + p.tenant_id.len()
-                    + p.acl_group.len()
-                    + std::mem::size_of::<OcrPageMeta>()
-            })
-            .sum();
-        let dense_bytes = self.dense_vectors.len() * std::mem::size_of::<f32>();
+        let meta_bytes: usize = self.pages.capacity() * std::mem::size_of::<OcrPageMeta>()
+            + self
+                .pages
+                .iter()
+                .map(|p| p.doc_id.capacity() + p.tenant_id.capacity() + p.acl_group.capacity())
+                .sum::<usize>();
+        let dense_bytes = self.dense_vectors.capacity() * std::mem::size_of::<f32>();
         let postings_bytes: usize = self
             .postings
             .iter()
-            .map(|(k, v)| k.len() + 24 + v.len() * std::mem::size_of::<(u32, u32)>())
+            .map(|(k, v)| {
+                k.capacity()
+                    + std::mem::size_of::<String>()
+                    + std::mem::size_of::<Vec<(u32, u32)>>()
+                    + v.capacity() * std::mem::size_of::<(u32, u32)>()
+            })
             .sum();
         let ram_bytes = meta_bytes + dense_bytes + postings_bytes;
         let disk_bytes = self.to_bytes().len();

@@ -250,7 +250,11 @@ impl ObjectStoreRandomGraphIndex {
     }
 
     pub fn footprint(&self) -> IndexFootprint {
-        let ram = self.quantizer.serialized_bytes() + self.store.cached_bytes();
+        let meta_ram: usize = self.meta.iter().map(|m| m.memory_bytes()).sum();
+        let ram = self.quantizer.serialized_bytes()
+            + meta_ram
+            + self.object_key.capacity()
+            + self.store.cached_bytes();
         let obj = self.store.total_stored_bytes();
         IndexFootprint::new(self.node_count, 0, ram, obj)
     }

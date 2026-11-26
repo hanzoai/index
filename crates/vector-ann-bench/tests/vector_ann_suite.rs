@@ -639,3 +639,158 @@ fn vamana_on_disk_crc32_detects_bit_corruption() {
         "CRC32 integrity check must catch single-byte corruption"
     );
 }
+
+#[test]
+fn object_store_footprints_account_for_resident_metadata_and_id_maps() {
+    use vector_ann_bench::DerivedRecordMeta;
+
+    let corpus = build_benchmark_corpus(
+        None,
+        &CorpusConfig {
+            seed: 1347,
+            dim: 64,
+            target_vectors: 256,
+            num_clusters: 8,
+            queries_per_selectivity: 4,
+            downstream_task_count: 0,
+        },
+    )
+    .unwrap();
+
+    let expected_meta_bytes: usize = corpus
+        .store
+        .snapshot_live()
+        .iter()
+        .map(|r| DerivedRecordMeta::from_record(r).memory_bytes())
+        .sum();
+    let expected_fp32_vec_bytes = corpus.total_vectors * corpus.dim * std::mem::size_of::<f32>();
+
+    let flat = ExactFlatBaseline::build_from_canonical(&corpus.store).unwrap();
+    let vamana = LocalMmapVamanaIndex::build_from_canonical(
+        &corpus.store,
+        VamanaConfig { max_degree: 12, build_beam: 24, search_beam: 24, ..VamanaConfig::default() },
+        None,
+    )
+    .unwrap();
+    vamana.evict_page_cache();
+
+    let ivf_store =
+        Arc::new(InstrumentedObjectStore::new(ObjectStoreCostModel::default(), 16 * 1024 * 1024));
+    let mut ivf = ObjectNativeIvfPqIndex::build_from_canonical(
+        &corpus.store,
+        ivf_store,
+        IvfPqConfig {
+            num_partitions: 16,
+            nprobe: 4,
+            pq_subspaces: 8,
+            pq_k_sub: 16,
+            ..IvfPqConfig::default()
+        },
+    )
+    .unwrap();
+    ivf.clear_local_cache().unwrap();
+
+    let neg_store = Arc::new(InstrumentedObjectStore::new(ObjectStoreCostModel::default(), 0));
+    let neg = ObjectStoreRandomGraphIndex::build_from_canonical(
+        &corpus.store,
+        neg_store,
+        VamanaConfig { max_degree: 12, build_beam: 24, search_beam: 24, ..VamanaConfig::default() },
+    )
+    .unwrap();
+
+    let flat_fp = flat.footprint();
+    let vamana_fp = vamana.footprint();
+    let ivf_fp = ivf.footprint();
+    let neg_fp = neg.footprint();
+
+    assert!(
+        flat_fp.ram_bytes >= expected_meta_bytes + expected_fp32_vec_bytes,
+        "flat RAM ({}) must include resident metadata ({expected_meta_bytes}) + FP32 vectors ({expected_fp32_vec_bytes})",
+        flat_fp.ram_bytes
+    );
+    assert!(
+        vamana_fp.ram_bytes >= expected_meta_bytes + corpus.total_vectors,
+        "vamana RAM ({}) must include resident metadata ({expected_meta_bytes}) + tombstones/maps",
+        vamana_fp.ram_bytes
+    );
+    assert!(
+        ivf_fp.ram_bytes >= expected_meta_bytes + corpus.total_vectors,
+        "object_native_ivf_pq RAM ({}) must include resident metadata ({expected_meta_bytes}) + ID maps + tombstones",
+        ivf_fp.ram_bytes
+    );
+    assert!(
+        neg_fp.ram_bytes >= expected_meta_bytes,
+        "object_store_random_graph_hops RAM ({}) must include resident metadata ({expected_meta_bytes})",
+        neg_fp.ram_bytes
+    );
+
+    // Upserting a fresh delta record must increase measured resident RAM to account for delta metadata & map.
+    let ram_before = ivf_fp.ram_bytes;
+    ivf.upsert(&CanonicalVectorRecord {
+        source_id: "fresh:footprint-delta-check".into(),
+        version: 1,
+        tenant_id: "tenant-hanzo".into(),
+        acl_group: "eng-core".into(),
+        filter_tags: vec!["sel:100".into(), "tag:delta-check".into()],
+        vector: make_unit_vec(64, 9999),
+    })
+    .unwrap();
+    assert!(
+        ivf.footprint().ram_bytes > ram_before,
+        "IVF-PQ resident RAM must increase after delta upsert"
+    );
+}
+
+#[test]
+fn repo_corpus_caps_chunks_at_requested_target_vectors() {
+    let repo_root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .and_then(|p| p.parent())
+        .expect("workspace root");
+
+    let cfg = CorpusConfig {
+        seed: 1347,
+        dim: 32,
+        target_vectors: 128,
+        num_clusters: 8,
+        queries_per_selectivity: 4,
+        downstream_task_count: 8,
+    };
+
+    let with_repo = build_benchmark_corpus(Some(repo_root), &cfg).unwrap();
+    let without_repo = build_benchmark_corpus(None, &cfg).unwrap();
+
+    assert_eq!(with_repo.total_vectors, 128);
+    assert_eq!(with_repo.store.len(), 128);
+    assert_eq!(without_repo.total_vectors, 128);
+    assert!(
+        with_repo.repo_chunks_loaded > 0 && with_repo.repo_chunks_loaded <= 64,
+        "repo chunks ({}) must be bounded by target_vectors / 2 (64)",
+        with_repo.repo_chunks_loaded
+    );
+}
+
+#[test]
+fn repo_corpus_skips_downstream_sampling_when_count_is_zero() {
+    let repo_root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .and_then(|p| p.parent())
+        .expect("workspace root");
+
+    let cfg = CorpusConfig {
+        seed: 1347,
+        dim: 32,
+        target_vectors: 128,
+        num_clusters: 8,
+        queries_per_selectivity: 4,
+        downstream_task_count: 0,
+    };
+
+    let corpus = build_benchmark_corpus(Some(repo_root), &cfg).unwrap();
+    assert_eq!(corpus.total_vectors, 128);
+    assert!(corpus.repo_chunks_loaded > 0, "expected real repo chunks to be loaded");
+    assert!(
+        corpus.downstream_tasks.is_empty(),
+        "downstream_tasks must be empty when downstream_task_count == 0"
+    );
+}

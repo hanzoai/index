@@ -768,12 +768,22 @@ impl LocalMmapVamanaIndex {
         let tombstones = self.base_tombstone_count + self.delta_tombstone_count;
 
         let meta_ram: usize = self.meta.iter().map(|m| m.memory_bytes()).sum();
-        let delta_ram: usize =
-            self.fresh_delta.iter().map(|e| e.meta.memory_bytes() + e.sq8_code.len()).sum();
+        let id_map_ram = crate::canonical::string_index_map_bytes(&self.base_id_to_node)
+            + crate::canonical::string_index_map_bytes(&self.delta_id_to_idx);
+        let tombstone_ram = self.base_tombstones.capacity() * std::mem::size_of::<bool>();
+        let delta_ram: usize = self
+            .fresh_delta
+            .iter()
+            .map(|e| {
+                std::mem::size_of::<DeltaEntry>() - std::mem::size_of::<DerivedRecordMeta>()
+                    + e.meta.memory_bytes()
+                    + e.sq8_code.capacity()
+            })
+            .sum();
         let cache_ram = self.file.cached_bytes();
         let quantizer_ram = self.quantizer.serialized_bytes();
         let ram_bytes =
-            meta_ram + delta_ram + cache_ram + quantizer_ram + self.base_tombstones.len();
+            meta_ram + id_map_ram + tombstone_ram + delta_ram + cache_ram + quantizer_ram;
 
         IndexFootprint::new(live, tombstones, ram_bytes, self.file.file_len)
     }

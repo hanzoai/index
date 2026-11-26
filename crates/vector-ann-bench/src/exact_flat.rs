@@ -131,11 +131,10 @@ impl ExactFlatBaseline {
 
     pub fn footprint(&self) -> IndexFootprint {
         let live = self.meta.len().saturating_sub(self.tombstone_count);
-        let vec_bytes = self.vectors.len() * std::mem::size_of::<f32>();
+        let vec_bytes = self.vectors.capacity() * std::mem::size_of::<f32>();
         let meta_bytes: usize = self.meta.iter().map(|m| m.memory_bytes()).sum();
-        let aux_bytes = self.tombstones.len()
-            + self.id_to_slot.len()
-                * (std::mem::size_of::<String>() + std::mem::size_of::<usize>());
+        let aux_bytes = self.tombstones.capacity() * std::mem::size_of::<bool>()
+            + crate::canonical::string_index_map_bytes(&self.id_to_slot);
         let ram = vec_bytes + meta_bytes + aux_bytes;
         // Exact flat has no separate disk index beyond raw vector + metadata store.
         IndexFootprint::new(live, self.tombstone_count, ram, vec_bytes)

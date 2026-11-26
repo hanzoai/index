@@ -228,6 +228,13 @@ impl DerivedRecordMeta {
     }
 }
 
+/// Consistent resident memory accounting for `HashMap<String, usize>` ID-lookup tables
+/// (hash table bucket allocation plus owned `String` heap capacities).
+pub(crate) fn string_index_map_bytes(map: &std::collections::HashMap<String, usize>) -> usize {
+    map.capacity() * (std::mem::size_of::<String>() + std::mem::size_of::<usize>() + 1)
+        + map.keys().map(|k| k.capacity()).sum::<usize>()
+}
+
 /// Ranked vector search hit returned to callers after pre-return ACL filtering.
 #[derive(Debug, Clone, PartialEq)]
 pub struct SearchHit {

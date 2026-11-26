@@ -565,26 +565,65 @@ impl ObjectNativeIvfPqIndex {
         Ok(hits)
     }
 
-    /// Exact hot compute RAM vs immutable S3 object storage footprint.
+    /// Exact resident compute RAM vs immutable S3 object storage footprint.
+    ///
+    /// Counts ALL resident compute-local allocations consistently with the flat
+    /// and local Vamana baselines: routing state (centroids, PQ codebook, SQ8
+    /// params, partition directory & tenant/tag summaries), resident metadata
+    /// table (`meta`), ID lookup maps (`id_to_base_idx`, `delta_id_to_idx`),
+    /// tombstone bitvec, delta entries, and local object-cache bytes.
     pub fn footprint(&self) -> IndexFootprint {
         let live_base = self.meta.len().saturating_sub(self.base_tombstone_count);
         let live_delta = self.delta_entries.len().saturating_sub(self.delta_tombstone_count);
         let live = live_base + live_delta;
         let tombstones = self.base_tombstone_count + self.delta_tombstone_count;
 
-        // Hot compute-local state: centroids + PQ codebook + SQ8 params + partition directory + delta + cache.
-        let centroids_ram = self.centroids.len() * std::mem::size_of::<f32>();
+        let centroids_ram = self.centroids.capacity() * std::mem::size_of::<f32>();
         let pq_ram = self.pq.memory_bytes();
         let sq8_ram = self.sq8.serialized_bytes();
-        let dir_ram = self.partitions.len() * (std::mem::size_of::<PartitionEntry>() + 64);
-        let delta_ram: usize =
-            self.delta_entries.iter().map(|e| e.pq_codes.len() + e.sq8_code.len() + 32).sum();
+        let dir_ram: usize = self
+            .partitions
+            .iter()
+            .map(|p| {
+                std::mem::size_of::<PartitionEntry>()
+                    + p.object_key.capacity()
+                    + p.tenants_present
+                        .iter()
+                        .map(|s| std::mem::size_of::<String>() + s.capacity())
+                        .sum::<usize>()
+                    + p.tags_present
+                        .iter()
+                        .map(|s| std::mem::size_of::<String>() + s.capacity())
+                        .sum::<usize>()
+            })
+            .sum();
+        let meta_ram: usize = self.meta.iter().map(|m| m.memory_bytes()).sum();
+        let id_map_ram = crate::canonical::string_index_map_bytes(&self.id_to_base_idx)
+            + crate::canonical::string_index_map_bytes(&self.delta_id_to_idx);
+        let tombstone_ram = self.base_tombstones.capacity() * std::mem::size_of::<bool>();
+        let delta_ram: usize = self
+            .delta_entries
+            .iter()
+            .map(|e| {
+                std::mem::size_of::<DeltaSegmentEntry>() - std::mem::size_of::<DerivedRecordMeta>()
+                    + e.meta.memory_bytes()
+                    + e.pq_codes.capacity()
+                    + e.sq8_code.capacity()
+            })
+            .sum();
         let cache_ram = self.store.cached_bytes();
-        // Hot routing RAM excludes full vector payload (which lives in immutable S3 segments).
-        let hot_ram = centroids_ram + pq_ram + sq8_ram + dir_ram + delta_ram + cache_ram;
+        let resident_ram = centroids_ram
+            + pq_ram
+            + sq8_ram
+            + dir_ram
+            + meta_ram
+            + id_map_ram
+            + tombstone_ram
+            + delta_ram
+            + cache_ram;
         let object_bytes = self.store.total_stored_bytes();
 
-        IndexFootprint::new(live, tombstones, hot_ram, object_bytes)
+        IndexFootprint::new(live, tombstones, resident_ram, object_bytes)
     }
 
     /// Exact bytes stored per vector inside the immutable S3 partition pack (`4 + M + D`).

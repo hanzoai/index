@@ -100,32 +100,37 @@ pub fn build_benchmark_corpus(
     }
 
     // Step 1: Load real repository chunks from `hanzoai/index` (if repo_root exists).
+    // Bound repository chunks to at most half of `config.target_vectors` so small
+    // corpora never exceed `target_vectors` and preserve a balanced repo/cluster mix.
+    let max_repo_chunks = config.target_vectors / 2;
     let mut repo_files_scanned = 0usize;
     let mut repo_chunks: Vec<(String, String, String)> = Vec::new();
-    if let Some(root) = repo_root {
-        let mut files = Vec::new();
-        collect_repo_source_files(root, root, &mut files);
-        files.sort();
-        for abs_path in files {
-            if repo_chunks.len() >= (config.target_vectors / 2).max(512) {
-                break;
-            }
-            if let Ok(content) = fs::read_to_string(&abs_path) {
-                let rel = abs_path
-                    .strip_prefix(root)
-                    .unwrap_or(&abs_path)
-                    .to_string_lossy()
-                    .replace('\\', "/");
-                repo_files_scanned += 1;
-                let chunks = chunk_text_lines(&content, 28);
-                for (ci, text) in chunks.into_iter().enumerate() {
-                    if text.trim().len() < 40 {
-                        continue;
-                    }
-                    let source_id = format!("blob:{rel}#chunk{ci}");
-                    repo_chunks.push((source_id, rel.clone(), text));
-                    if repo_chunks.len() >= (config.target_vectors / 2).max(512) {
-                        break;
+    if max_repo_chunks > 0 {
+        if let Some(root) = repo_root {
+            let mut files = Vec::new();
+            collect_repo_source_files(root, root, &mut files);
+            files.sort();
+            for abs_path in files {
+                if repo_chunks.len() >= max_repo_chunks {
+                    break;
+                }
+                if let Ok(content) = fs::read_to_string(&abs_path) {
+                    let rel = abs_path
+                        .strip_prefix(root)
+                        .unwrap_or(&abs_path)
+                        .to_string_lossy()
+                        .replace('\\', "/");
+                    repo_files_scanned += 1;
+                    let chunks = chunk_text_lines(&content, 28);
+                    for (ci, text) in chunks.into_iter().enumerate() {
+                        if text.trim().len() < 40 {
+                            continue;
+                        }
+                        let source_id = format!("blob:{rel}#chunk{ci}");
+                        repo_chunks.push((source_id, rel.clone(), text));
+                        if repo_chunks.len() >= max_repo_chunks {
+                            break;
+                        }
                     }
                 }
             }
@@ -251,8 +256,8 @@ pub fn build_benchmark_corpus(
     // Build downstream agent file-resolution tasks grounded in real repo chunks.
     let mut downstream_tasks = Vec::new();
     let mut task_rng = SplitMix64::new(config.seed ^ 0x7a5c_cafe);
-    if !repo_task_sources.is_empty() {
-        let count = config.downstream_task_count.min(repo_task_sources.len());
+    let count = config.downstream_task_count.min(repo_task_sources.len());
+    if count > 0 {
         let step = (repo_task_sources.len() / count).max(1);
         for (ti, idx) in (0..repo_task_sources.len()).step_by(step).take(count).enumerate() {
             let (_sid, file_prefix, base_vec, tenant, acl) = &repo_task_sources[idx];

@@ -98,3 +98,19 @@ Hanzo Index releases and their associated binaries are available on the project'
 The binaries are versioned following [SemVer conventions](https://semver.org/). To know more, read our [versioning policy](./documentation/versioning-policy.md).
 
 Differently from the binaries, crates in this repository are not currently available on [crates.io](https://crates.io/) and do not follow [SemVer conventions](https://semver.org).
+
+## 🧪 Hybrid Ranking Tests & Recall Benchmark
+
+To run the standalone full-text, dense-vector, and hybrid Reciprocal Rank Fusion (RRF) ranking tests without compiling unrelated binary crates:
+
+```bash
+cargo test -p rag-eval --locked
+```
+
+To measure top-k recall (`Recall@1`, `Recall@3`, `Recall@5`, `Recall@10`, `MRR@10`) and query latency across single-leg and hybrid RRF strategies:
+
+```bash
+cargo run --release -p rag-eval --example hybrid_recall_bench --locked
+```
+
+> **Note:** Checking the full workspace (`cargo check --workspace --locked`) builds `heed`/LMDB and requires a system C compiler (`build-essential` on Debian/Ubuntu).
